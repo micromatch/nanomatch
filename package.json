@@ -1,0 +1,27 @@
+{
+  "name": "nanomatch",
+  "description": "Fast, minimal glob matcher for node.js. ",
+  "version": "0.1.0",
+  "homepage": "https://github.com/jonschlinkert/nanomatch",
+  "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
+  "repository": "jonschlinkert/nanomatch",
+  "bugs": {
+    "url": "https://github.com/jonschlinkert/nanomatch/issues"
+  },
+  "license": "Released under the MIT license.",
+  "files": [
+    "index.js",
+    "LICENSE",
+    "README.md"
+  ],
+  "main": "index.js",
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "nanomatch"
+  ]
+}
