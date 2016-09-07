@@ -8,9 +8,10 @@
   "bugs": {
     "url": "https://github.com/jonschlinkert/nanomatch/issues"
   },
-  "license": "Released under the MIT license.",
+  "license": "MIT",
   "files": [
     "index.js",
+    "lib",
     "LICENSE",
     "README.md"
   ],
@@ -21,7 +22,46 @@
   "scripts": {
     "test": "mocha"
   },
+  "dependencies": {
+    "arr-diff": "^3.0.0",
+    "array-unique": "^0.3.2",
+    "debug": "^2.2.0",
+    "define-property": "^0.2.5",
+    "extend-shallow": "^2.0.1",
+    "fill-array": "^1.0.0",
+    "is-glob": "^3.0.0",
+    "normalize-path": "^2.0.1",
+    "repeat-string": "^1.5.4",
+    "snapdragon": "^0.5.0"
+  },
+  "devDependencies": {
+    "cross-spawn": "^4.0.0",
+    "delete": "^0.3.2",
+    "gulp-format-md": "^0.1.10",
+    "mocha": "^3.0.2",
+    "yargs-parser": "^3.2.0"
+  },
   "keywords": [
     "nanomatch"
-  ]
+  ],
+  "verb": {
+    "toc": false,
+    "layout": "default",
+    "tasks": [
+      "readme"
+    ],
+    "plugins": [
+      "gulp-format-md"
+    ],
+    "lint": {
+      "reflinks": true
+    },
+    "related": {
+      "list": []
+    },
+    "reflinks": [
+      "verb",
+      "verb-generate-readme"
+    ]
+  }
 }
