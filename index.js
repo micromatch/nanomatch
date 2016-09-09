@@ -24,6 +24,7 @@ var regexCache = {};
  */
 
 function nanomatch(str, options) {
+  debug('nanomatch <%s>', str);
   var matcher = new Nanomatch(options);
   var ast = matcher.parse(str, options);
   return matcher.compile(ast, options);
@@ -46,6 +47,7 @@ function nanomatch(str, options) {
  */
 
 nanomatch.match = function(files, pattern, options) {
+  debug('match <%s>', pattern);
   var opts = utils.extend({}, options);
   var isMatch = nanomatch.matcher(pattern, opts);
   var unixify = utils.unixify(opts);
@@ -98,6 +100,7 @@ nanomatch.match = function(files, pattern, options) {
  */
 
 nanomatch.matchEach = function(files, patterns, options) {
+  debug('matchEach <%s>', patterns);
   if (!Array.isArray(files)) {
     return [];
   }
@@ -135,14 +138,18 @@ nanomatch.matchEach = function(files, patterns, options) {
  */
 
 nanomatch.any = function(filepath, patterns, options) {
-  if (!Array.isArray(patterns) && typeof patterns !== 'string') {
+  if (typeof patterns === 'string') {
+    patterns = [patterns];
+  }
+
+  if (!Array.isArray(patterns)) {
     throw new TypeError('expected patterns to be a string or array');
   }
 
+  debug('match <%s>', patterns);
   var unixify = utils.unixify(opts);
   var opts = utils.extend({}, options);
 
-  patterns = utils.arrayify(patterns);
   filepath = unixify(filepath);
   var len = patterns.length;
 
@@ -217,19 +224,21 @@ nanomatch.isMatch = function(filepath, pattern, options) {
     return filepath === pattern;
   }
 
-  var opts = utils.extend({}, options);
-  if (nanomatch.matchBase(pattern, opts)) {
-    filepath = path.basename(filepath);
+  if (options) {
+    if (nanomatch.matchBase(pattern, options)) {
+      filepath = path.basename(filepath);
 
-  } else if (opts.extname === true) {
-    filepath = path.extname(filepath);
+    } else if (options.extname === true) {
+      filepath = path.extname(filepath);
 
-  } else if (opts.dirname === true) {
-    filepath = path.dirname(filepath);
+    } else if (options.dirname === true) {
+      filepath = path.dirname(filepath);
+    }
   }
 
-  var re = nanomatch.makeRe(pattern, utils.extend({prepend: false}, opts));
-  return re.test(filepath);
+  var opts = utils.extend({prepend: false}, options);
+  var isMatch = nanomatch.matcher(pattern, opts);
+  return isMatch(filepath);
 };
 
 /**
@@ -279,12 +288,12 @@ nanomatch.matcher = function(pattern, options) {
   // pattern is a glob string
   var re = nanomatch.makeRe(pattern, utils.extend({prepend: false}, opts));
 
-  // `matchBase` is defined
+  // `options.matchBase` or `options.basename` is defined
   if (nanomatch.matchBase(pattern, options)) {
     return utils.matchBasename(re);
   }
 
-  // `matchBase` is not defined
+  // everything else...
   return function(fp) {
     return re.test(unixify(fp));
   };
