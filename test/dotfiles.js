@@ -73,13 +73,17 @@ describe('dotfiles', function() {
       assert(!mm.isMatch('a/b/.bashrc', '**/*bashrc', {dot: false}));
       assert(!mm.isMatch('a/b/.bashrc', '**/?bashrc', {dot: false}));
     });
-  });
 
-  describe('options.dot', function() {
-    it('should match a dot `options.dot` is true', function() {
-      assert(mm.isMatch('.bashrc', '*bashrc', {dot: true}));
-      assert(mm.isMatch('.bashrc', '[.]bashrc', {dot: true}));
-      assert(mm.isMatch('.bashrc', '?bashrc', {dot: true}));
+    it('should not match dotfiles when `options.dot` is not defined', function() {
+      assert(mm.isMatch('a/b/.bashrc', '.bashrc', {matchBase: true}));
+      assert(mm.isMatch('a/b/.bashrc', '[.]bashrc', {matchBase: true}));
+      assert(mm.isMatch('a/b/.bashrc', '**/[.]bashrc'));
+
+      assert(!mm.isMatch('a/b/.bashrc', '*bashrc', {matchBase: true}));
+      assert(!mm.isMatch('a/b/.bashrc', '?bashrc', {matchBase: true}));
+
+      assert(!mm.isMatch('a/b/.bashrc', '**/*bashrc'));
+      assert(!mm.isMatch('a/b/.bashrc', '**/?bashrc'));
     });
   });
 });

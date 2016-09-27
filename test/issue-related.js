@@ -37,7 +37,9 @@ describe('issue-related tests', function() {
 
   // see https://github.com/jonschlinkert/micromatch/issues/63
   it('issue #63', function() {
-    assert(isMatch('a/b-c/d/e/z.js', 'a/b-*/**/z.js'));
+    assert(isMatch('/aaa/bbb/foo', '/aaa/bbb/**'));
+    assert(isMatch('/aaa/bbb/', '/aaa/bbb/**'));
+    assert(isMatch('/aaa/bbb/foo.git', '/aaa/bbb/**'));
     assert(!isMatch('/aaa/bbb/.git', '/aaa/bbb/**')); // => true; should be false
     assert(!isMatch('aaa/bbb/.git', 'aaa/bbb/**')); // => true; should be false
     assert(!isMatch('/aaa/bbb/ccc/.git', '/aaa/bbb/**')); // => false; correct
