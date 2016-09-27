@@ -364,6 +364,31 @@ nanomatch.matchBase = function(pattern, options) {
 };
 
 /**
+ * Filter the keys of the given object with the given `glob` pattern
+ * and `options`. Does not attempt to match nested keys. If you need this feature,
+ * use [glob-object][] instead.
+ *
+ * ```js
+ * var nm = require('nanomatch');
+ * var obj = { aa: 'a', ab: 'b', ac: 'c' };
+ * console.log(nm.matchKeys(obj, '*b');
+ * //=> { ab: 'b' }
+ * ```
+ * @param  {Object} `object`
+ * @param  {Array|String} `patterns` One or more glob patterns.
+ * @return {Object}
+ * @api public
+ */
+
+nanomatch.matchKeys = function(obj, patterns, options) {
+  if (!utils.isObject(obj)) {
+    throw new TypeError('expected the first argument to be an object');
+  }
+  var keys = nanomatch(Object.keys(obj), patterns, options);
+  return utils.pick(obj, keys);
+};
+
+/**
  * Create a regular expression from the given string `pattern`.
  *
  * ```js
@@ -400,6 +425,10 @@ nanomatch.makeRe = function(pattern, options) {
   return regex;
 };
 
+/**
+ * Memoize a generated regex or function
+ */
+
 function memoize(type, pattern, options, fn) {
   if (!utils.isString(pattern)) {
     return fn(pattern, options);
@@ -414,6 +443,12 @@ function memoize(type, pattern, options, fn) {
   cache.set(type, key, val);
   return val;
 }
+
+/**
+ * Create the key to use for memoization. The key is generated
+ * by iterating over the options and concatenating key-value pairs
+ * to the pattern string.
+ */
 
 function createKey(pattern, options) {
   var key = pattern;

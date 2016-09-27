@@ -31,7 +31,7 @@
     "is-glob": "^3.0.0",
     "isobject": "^2.1.0",
     "normalize-path": "^2.0.1",
-    "object.omit": "^2.0.0",
+    "object.pick": "^1.1.2",
     "snapdragon": "^0.7.0",
     "to-regex": "^0.1.1"
   },
