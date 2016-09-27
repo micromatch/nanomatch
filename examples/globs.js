@@ -1,3 +1,2 @@
-var mm = require('minimatch');
-
+var mm = require('..');
 console.log(mm.match(['z.js'], '**/z*'));

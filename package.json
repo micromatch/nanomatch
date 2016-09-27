@@ -11,9 +11,7 @@
   "license": "MIT",
   "files": [
     "index.js",
-    "lib",
-    "LICENSE",
-    "README.md"
+    "lib"
   ],
   "main": "index.js",
   "engines": {
@@ -24,28 +22,60 @@
   },
   "dependencies": {
     "arr-diff": "^3.0.0",
+    "arr-union": "^3.1.0",
     "array-unique": "^0.3.2",
     "debug": "^2.2.0",
     "define-property": "^0.2.5",
     "extend-shallow": "^2.0.1",
-    "fill-array": "^1.0.0",
+    "fragment-cache": "^0.1.0",
     "is-glob": "^3.0.0",
+    "isobject": "^2.1.0",
     "normalize-path": "^2.0.1",
-    "repeat-string": "^1.5.4",
-    "snapdragon": "^0.5.0"
+    "object.omit": "^2.0.0",
+    "snapdragon": "^0.7.0",
+    "to-regex": "^0.1.1"
   },
   "devDependencies": {
-    "cross-spawn": "^4.0.0",
+    "cross-spawn": "^4.0.2",
     "delete": "^0.3.2",
-    "gulp-format-md": "^0.1.10",
+    "gulp-format-md": "^0.1.11",
+    "minimatch": "^3.0.3",
     "mocha": "^3.0.2",
-    "yargs-parser": "^3.2.0"
+    "multimatch": "^2.1.0",
+    "yargs-parser": "^4.0.0"
   },
   "keywords": [
-    "nanomatch"
+    "bash",
+    "expand",
+    "expansion",
+    "expression",
+    "file",
+    "files",
+    "filter",
+    "find",
+    "glob",
+    "globbing",
+    "globs",
+    "globstar",
+    "match",
+    "matcher",
+    "matches",
+    "matching",
+    "micromatch",
+    "minimatch",
+    "multimatch",
+    "nanomatch",
+    "path",
+    "pattern",
+    "patterns",
+    "regex",
+    "regexp",
+    "regular",
+    "shell",
+    "wildcard"
   ],
   "verb": {
-    "toc": false,
+    "toc": true,
     "layout": "default",
     "tasks": [
       "readme"
@@ -53,15 +83,21 @@
     "plugins": [
       "gulp-format-md"
     ],
-    "lint": {
-      "reflinks": true
-    },
     "related": {
-      "list": []
+      "list": [
+        "expand-brackets",
+        "extglob",
+        "micromatch"
+      ]
     },
     "reflinks": [
+      "micromatch",
+      "node-glob",
       "verb",
       "verb-generate-readme"
-    ]
+    ],
+    "lint": {
+      "reflinks": true
+    }
   }
 }

@@ -8,7 +8,7 @@ describe('.isMatch()', function() {
     it('should throw on undefined args:', function() {
       assert.throws(function() {
         mm.isMatch();
-      }, /expected pattern to be a string, regex or function/);
+      }, /expected filepath to be a string/);
     });
 
     it('should throw on bad args:', function() {
@@ -25,6 +25,54 @@ describe('.isMatch()', function() {
       assert(mm.isMatch('coffee+/src/glimini.js', 'coffee+/src/*.js'));
       assert(mm.isMatch('coffee+/src/glimini.js', 'coffee+/src/*.js'));
       assert(mm.isMatch('coffee+/src/glimini.js', 'coffee+/src/*'));
+    });
+
+    it('should not escape plus signs that follow brackets', function() {
+      assert(mm.isMatch('a', '[a]+'));
+      assert(mm.isMatch('aa', '[a]+'));
+      assert(mm.isMatch('aaa', '[a]+'));
+      assert(mm.isMatch('az', '[a-z]+'));
+      assert(mm.isMatch('zzz', '[a-z]+'));
+    });
+
+    it('should support stars following brackets', function() {
+      assert(mm.isMatch('a', '[a]*'));
+      assert(mm.isMatch('aa', '[a]*'));
+      assert(mm.isMatch('aaa', '[a]*'));
+      assert(mm.isMatch('az', '[a-z]*'));
+      assert(mm.isMatch('zzz', '[a-z]*'));
+    });
+
+    it('should not escape plus signs that follow parens', function() {
+      assert(mm.isMatch('a', '(a)+'));
+      assert(mm.isMatch('ab', '(a|b)+'));
+      assert(mm.isMatch('aa', '(a)+'));
+      assert(mm.isMatch('aaab', '(a|b)+'));
+      assert(mm.isMatch('aaabbb', '(a|b)+'));
+    });
+
+    it('should support stars following parens', function() {
+      assert(mm.isMatch('a', '(a)*'));
+      assert(mm.isMatch('ab', '(a|b)*'));
+      assert(mm.isMatch('aa', '(a)*'));
+      assert(mm.isMatch('aaab', '(a|b)*'));
+      assert(mm.isMatch('aaabbb', '(a|b)*'));
+    });
+
+    it('should not match slashes with single stars', function() {
+      assert(!mm.isMatch('a/b', '(a)*'));
+      assert(!mm.isMatch('a/b', '[a]*'));
+      assert(!mm.isMatch('a/b', 'a*'));
+      assert(!mm.isMatch('a/b', '(a|b)*'));
+    });
+
+    it('should not match dots with stars by default', function() {
+      assert(!mm.isMatch('.a', '(a)*'));
+      assert(!mm.isMatch('.a', '*[a]*'));
+      assert(!mm.isMatch('.a', '*[a]'));
+      assert(!mm.isMatch('.a', '*a*'));
+      assert(!mm.isMatch('.a', '*a'));
+      assert(!mm.isMatch('.a', '*(a|b)'));
     });
 
     it('should correctly deal with empty globs', function() {

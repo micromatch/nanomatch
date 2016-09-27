@@ -2,6 +2,6 @@
 
 var nanomatch = require('../../..');
 
-module.exports = function(args) {
-  return nanomatch.match.apply(null, arguments);
+module.exports = function(files, pattern) {
+  return nanomatch.match(files, pattern);
 };
