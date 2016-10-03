@@ -24,37 +24,7 @@ describe('special characters', function() {
     it('should treat common URL characters as literals', function() {
       assert(matcher.isMatch(':', ':'));
       assert(matcher.isMatch(':/foo', ':/*'));
-      assert(matcher.isMatch('D:\\/\\/foo', 'D:\\/\\/*'));
-    });
-  });
-
-  describe('?:', function() {
-    it('should match one character per question mark:', function() {
-      match(['a/b/c.md'], 'a/?/c.md', ['a/b/c.md']);
-      match(['a/bb/c.md'], 'a/?/c.md', []);
-      match(['a/bb/c.md'], 'a/??/c.md', ['a/bb/c.md']);
-      match(['a/bbb/c.md'], 'a/??/c.md', []);
-      match(['a/bbb/c.md'], 'a/???/c.md', ['a/bbb/c.md']);
-      match(['a/bbbb/c.md'], 'a/????/c.md', ['a/bbbb/c.md']);
-    });
-
-    it('should match multiple groups of question marks:', function() {
-      match(['a/bb/c/dd/e.md'], 'a/?/c/?/e.md', []);
-      match(['a/b/c/d/e.md'], 'a/?/c/?/e.md', ['a/b/c/d/e.md']);
-      match(['a/b/c/d/e.md'], 'a/?/c/???/e.md', []);
-      match(['a/b/c/zzz/e.md'], 'a/?/c/???/e.md', ['a/b/c/zzz/e.md']);
-    });
-
-    it('should use special characters and glob stars together:', function() {
-      match(['a/b/c/d/e.md'], 'a/?/c/?/*/e.md', []);
-      match(['a/b/c/d/e/e.md'], 'a/?/c/?/*/e.md', ['a/b/c/d/e/e.md']);
-      match(['a/b/c/d/efghijk/e.md'], 'a/?/c/?/*/e.md', ['a/b/c/d/efghijk/e.md']);
-      match(['a/b/c/d/efghijk/e.md'], 'a/?/**/e.md', ['a/b/c/d/efghijk/e.md']);
-      // match(['a/bb/c/d/efghijk/e.md'], 'a/?/**/e.md', []);
-      match(['a/b/c/d/efghijk/e.md'], 'a/*/?/**/e.md', ['a/b/c/d/efghijk/e.md']);
-      match(['a/b/c/d/efgh.ijk/e.md'], 'a/*/?/**/e.md', ['a/b/c/d/efgh.ijk/e.md']);
-      match(['a/b.bb/c/d/efgh.ijk/e.md'], 'a/*/?/**/e.md', ['a/b.bb/c/d/efgh.ijk/e.md']);
-      match(['a/bbb/c/d/efgh.ijk/e.md'], 'a/*/?/**/e.md', ['a/bbb/c/d/efgh.ijk/e.md']);
+      assert(matcher.isMatch('D:\\/\\/foo', 'D:\\\\/\\\\/*'));
     });
   });
 

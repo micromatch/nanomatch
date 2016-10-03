@@ -37,8 +37,8 @@ describe('issue-related tests', function() {
 
   // see https://github.com/jonschlinkert/micromatch/issues/59
   it('should only match nested directories when `**` is the only thing in a segment', function() {
-    assert(!mm.isMatch('a/b/c', 'a/b**'));
-    assert(mm.isMatch('a/c/b', 'a/**b'));
+    assert(!isMatch('a/b/c', 'a/b**'));
+    assert(!isMatch('a/c/b', 'a/**b'));
   });
 
   // see https://github.com/jonschlinkert/micromatch/issues/63

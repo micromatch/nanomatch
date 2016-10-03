@@ -200,11 +200,6 @@ describe('.contains()', function() {
       assert(mm.contains('a\\b\\c\\d\\e\\j\\n\\p\\o\\z\\c.md', 'a/**/j/**/z/*.md', opts));
     });
 
-    it('question marks should not match slashes:', function() {
-      assert(!mm.contains('aaa/bbb', 'aaa?bbb'));
-      assert(!mm.contains('aaa\\bbb', 'aaa?bbb'));
-    });
-
     it('should match path segments:', function() {
       assert(mm.contains('aaa', 'aaa'));
       assert(mm.contains('aaa', 'aa'));
@@ -220,7 +215,7 @@ describe('.contains()', function() {
       assert(mm.contains('aaa/bba/ccc', 'bb'));
       assert(mm.contains('aaa/bba/ccc', 'bb*'));
       assert(!mm.contains('aaa/bba/ccc', 'aaa/*ccc'));
-      assert(mm.contains('aaa/bba/ccc', 'aaa/**ccc'));
+      assert(!mm.contains('aaa/bba/ccc', 'aaa/**ccc'));
       assert(!mm.contains('aaa/bba/ccc', 'aaa/*z'));
       assert(!mm.contains('aaa/bba/ccc', 'aaa/**z'));
       assert(mm.contains('aaa/bbb', 'aaa[/]bbb'));
@@ -245,7 +240,7 @@ describe('.contains()', function() {
       assert(mm.contains('aaa\\bba\\ccc', 'bb', opts));
       assert(mm.contains('aaa\\bba\\ccc', 'bb*', opts));
       assert(!mm.contains('aaa\\bba\\ccc', 'aaa/*ccc', opts));
-      assert(mm.contains('aaa\\bba\\ccc', 'aaa/**ccc', opts));
+      assert(!mm.contains('aaa\\bba\\ccc', 'aaa/**ccc', opts));
       assert(!mm.contains('aaa\\bba\\ccc', 'aaa/*z', opts));
       assert(!mm.contains('aaa\\bba\\ccc', 'aaa/**z', opts));
       assert(mm.contains('aaa\\bbb', 'aaa[/]bbb', opts));

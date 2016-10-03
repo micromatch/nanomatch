@@ -8,7 +8,7 @@ describe('.isMatch()', function() {
     it('should throw on undefined args:', function() {
       assert.throws(function() {
         mm.isMatch();
-      }, /expected filepath to be a string/);
+      }, /expected a string/);
     });
 
     it('should throw on bad args:', function() {

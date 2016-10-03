@@ -53,10 +53,10 @@ describe('nanomatch', function() {
   });
 
   it('should support negation patterns', function() {
-    match(['a/a', 'a/b', 'a/c', 'b/a', 'b/b', 'b/c'], ['!a/b'],  ['a/a', 'a/c', 'b/a', 'b/b', 'b/c']);
-    match(['a/a', 'a/b', 'a/c', 'b/a', 'b/b', 'b/c'], ['*/*', '!a/b', '!*/c'],  ['a/a', 'b/a', 'b/b']);
-    match(['a/a', 'a/b', 'a/c', 'b/a', 'b/b', 'b/c'], ['!a/b', '!*/c'],  ['a/a', 'b/a', 'b/b']);
-    match(['a/a', 'a/b', 'a/c', 'b/a', 'b/b', 'b/c'], ['!a/b', '!a/c'],  ['a/a', 'b/a', 'b/b', 'b/c']);
+    match(['a/a', 'a/b', 'a/c', 'b/a', 'b/b', 'b/c'], ['!a/b'], ['a/a', 'a/c', 'b/a', 'b/b', 'b/c']);
+    match(['a/a', 'a/b', 'a/c', 'b/a', 'b/b', 'b/c'], ['*/*', '!a/b', '!*/c'], ['a/a', 'b/a', 'b/b']);
+    match(['a/a', 'a/b', 'a/c', 'b/a', 'b/b', 'b/c'], ['!a/b', '!*/c'], ['a/a', 'b/a', 'b/b']);
+    match(['a/a', 'a/b', 'a/c', 'b/a', 'b/b', 'b/c'], ['!a/b', '!a/c'], ['a/a', 'b/a', 'b/b', 'b/c']);
     match(['a/a', 'a/b', 'a/c', 'b/a', 'b/b', 'b/c'], ['!a/(b)'], ['a/a', 'a/c', 'b/a', 'b/b', 'b/c']);
     match(['a/a', 'a/b', 'a/c', 'b/a', 'b/b', 'b/c'], ['!(a/b)'], ['a/a', 'a/c', 'b/a', 'b/b', 'b/c']);
   });

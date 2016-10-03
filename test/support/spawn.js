@@ -34,4 +34,4 @@ module.exports = function buffered(command, args, options, callback) {
     code !== 0 && stderr && console.warn(stderr);
     callback(null, stdout, code);
   });
-}
+};

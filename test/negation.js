@@ -19,6 +19,16 @@ describe('negation', function() {
     match(['foo.md'], '!.md', ['foo.md']);
   });
 
+  it('should only treat leading exclamation as special', function() {
+    match(['foo!.md', 'bar.md'], 'foo!.md', ['foo!.md']);
+    match(['foo!.md', 'bar.md'], '*.md', ['foo!.md', 'bar.md']);
+    match(['foo!.md', 'bar.md'], '*!.md', ['foo!.md']);
+    match(['foobar.md'], '*b*.md', ['foobar.md']);
+    match(['foo!bar.md', 'foo!.md', '!foo!.md'], '*!*.md', ['foo!bar.md', 'foo!.md', '!foo!.md']);
+    match(['foo!bar.md', 'foo!.md', '!foo!.md'], '\\!*!*.md', ['!foo!.md']);
+    match(['foo!.md', 'ba!r.js'], '**/*!*.*', ['foo!.md', 'ba!r.js']);
+  });
+
   it('should support negated globs ("*")', function() {
     match(['a.js', 'b.txt', 'c.md'], '!*.md', ['a.js', 'b.txt']);
     match(['a/a/a.js', 'a/b/a.js', 'a/c/a.js'], '!a/*/a.js', []);
@@ -39,6 +49,7 @@ describe('negation', function() {
   it('should negate dotfiles:', function() {
     match(['.dotfile.md'], '!*.md', ['.dotfile.md']);
     match(['.dotfile.txt'], '!*.md', ['.dotfile.txt']);
+    match(['.dotfile.txt', 'a/b/.dotfile'], '!*.md', ['.dotfile.txt', 'a/b/.dotfile']);
     match(['.gitignore', 'a', 'b'], '!.gitignore', ['a', 'b']);
   });
 
