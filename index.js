@@ -117,8 +117,8 @@ nanomatch.create = function(pattern, options) {
   parsers(snapdragon);
 
   var ast = snapdragon.parse(pattern, options);
+  ast.input = pattern;
   var res = snapdragon.compile(ast, options);
-  res.input = pattern;
   return res;
 };
 
@@ -149,9 +149,16 @@ nanomatch.match = function(list, pattern, options) {
   var idx = -1;
 
   while (++idx < len) {
-    var file = unixify(list[idx]);
-    if (isMatch(file)) {
+    var file = list[idx];
+
+    if (file === pattern) {
       matches.push(file);
+      continue;
+    }
+
+    var unix = unixify(file);
+    if (isMatch(unix)) {
+      matches.push(options && options.unixify ? unix : file);
     }
   }
 
@@ -166,7 +173,7 @@ nanomatch.match = function(list, pattern, options) {
       throw new Error('no matches found for "' + pattern + '"');
     }
     if (opts.nonull === true || opts.nullglob === true) {
-      return [pattern.split('\\').join('')];
+      return [opts.unescape ? utils.unescape(pattern) : pattern];
     }
   }
 
@@ -176,6 +183,63 @@ nanomatch.match = function(list, pattern, options) {
   }
 
   return opts.nodupes !== false ? utils.unique(matches) : matches;
+};
+
+/**
+ * Takes a glob pattern and returns a matcher function. The returned
+ * function takes the string to match as its only argument.
+ *
+ * ```js
+ * var nanomatch = require('nanomatch');
+ * var isMatch = nanomatch.matcher('*.!(*a)');
+ *
+ * console.log(isMatch('a.a'));
+ * //=> false
+ * console.log(isMatch('a.b'));
+ * //=> true
+ * ```
+ * @param {String} `pattern` Glob pattern
+ * @param {String} `options`
+ * @return {Boolean}
+ * @api public
+ */
+
+nanomatch.matcher = function(pattern, options) {
+  if (typeof pattern === 'function') {
+    return pattern;
+  }
+
+  var opts = utils.extend({}, options);
+  var unixify = utils.unixify(opts);
+
+  // pattern is a regex
+  if (pattern instanceof RegExp) {
+    return function(fp) {
+      return pattern.test(unixify(fp));
+    };
+  }
+
+  if (typeof pattern !== 'string') {
+    throw new TypeError('expected pattern to be a string, regex or function');
+  }
+
+  // pattern is a non-glob string
+  if (!utils.hasSpecialChars(pattern)) {
+    return utils.matchPath(unixify(pattern), opts);
+  }
+
+  // pattern is a glob string
+  var re = nanomatch.makeRe(pattern, options);
+
+  // `options.matchBase` or `options.basename` is defined
+  if (nanomatch.matchBase(pattern, options)) {
+    return utils.matchBasename(re);
+  }
+
+  // everything else...
+  return function(fp) {
+    return re.test(unixify(fp));
+  };
 };
 
 /**
@@ -321,63 +385,6 @@ nanomatch.contains = function(filepath, pattern, options) {
 };
 
 /**
- * Takes a glob pattern and returns a matcher function. The returned
- * function takes the string to match as its only argument.
- *
- * ```js
- * var nanomatch = require('nanomatch');
- * var isMatch = nanomatch.matcher('*.!(*a)');
- *
- * console.log(isMatch('a.a'));
- * //=> false
- * console.log(isMatch('a.b'));
- * //=> true
- * ```
- * @param {String} `pattern` Glob pattern
- * @param {String} `options`
- * @return {Boolean}
- * @api public
- */
-
-nanomatch.matcher = function(pattern, options) {
-  if (typeof pattern === 'function') {
-    return pattern;
-  }
-
-  var opts = utils.extend({}, options);
-  var unixify = utils.unixify(opts);
-
-  // pattern is a regex
-  if (pattern instanceof RegExp) {
-    return function(fp) {
-      return pattern.test(unixify(fp));
-    };
-  }
-
-  if (typeof pattern !== 'string') {
-    throw new TypeError('expected pattern to be a string, regex or function');
-  }
-
-  // pattern is a non-glob string
-  if (!utils.hasSpecialChars(pattern)) {
-    return utils.matchPath(unixify(pattern), opts);
-  }
-
-  // pattern is a glob string
-  var re = nanomatch.makeRe(pattern, options);
-
-  // `options.matchBase` or `options.basename` is defined
-  if (nanomatch.matchBase(pattern, options)) {
-    return utils.matchBasename(re);
-  }
-
-  // everything else...
-  return function(fp) {
-    return re.test(unixify(fp));
-  };
-};
-
-/**
  * Returns true if the given pattern and options should enable
  * the `matchBase` option.
  * @return {Boolean}
@@ -447,6 +454,7 @@ nanomatch.makeRe = function(pattern, options) {
   if (regex.source.length > MAX_LENGTH) {
     throw new SyntaxError('potentially malicious regex detected');
   }
+
   return regex;
 };
 
@@ -465,6 +473,10 @@ function memoize(type, pattern, options, fn) {
   }
 
   var val = fn(pattern, options);
+  if (options && options.cache === false) {
+    return val;
+  }
+
   val.key = key;
   cache.set(type, key, val);
   return val;

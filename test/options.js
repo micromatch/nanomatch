@@ -37,12 +37,14 @@ describe('options', function() {
     it('should support the `matchBase` option:', function() {
       match(['a/b/c/d.md'], '*.md', []);
       match(['a/b/c/d.md'], '*.md', ['a/b/c/d.md'], {matchBase: true});
+      match(['x/y/acb', 'acb/', 'acb/d/e', 'x/y/acb/d'], 'a?b', []);
+      match(['x/y/acb', 'acb/', 'acb/d/e', 'x/y/acb/d'], 'a?b', ['x/y/acb', 'acb/'], {matchBase: true});
     });
-  });
 
-  describe('options.basename', function() {
-    it('should support the `basename` option:', function() {
+    it('should support `options.basename` as an alternative to `matchBase`', function() {
       match(['a/b/c/d.md'], '*.md', []);
+      match(['x/y/acb', 'acb/', 'acb/d/e', 'x/y/acb/d'], 'a?b', []);
+      match(['x/y/acb', 'acb/', 'acb/d/e', 'x/y/acb/d'], 'a?b', ['x/y/acb', 'acb/'], {basename: true});
       match(['a/b/c/d.md'], '*.md', ['a/b/c/d.md'], {basename: true});
     });
   });
@@ -65,15 +67,18 @@ describe('options', function() {
 
   describe('options.nonegate', function() {
     it('should support the `nonegate` option:', function() {
+      match(['a/a/a', 'a/b/a', 'b/b/a', 'c/c/a', 'c/c/b'], '!**/a', ['c/c/b']);
       match(['.dotfile.txt', 'a/b/.dotfile'], '!*.md', [], {nonegate: true});
-      match(['a/a/a', 'a/b/a', 'b/b/a', 'c/c/a'], '!**/a', []);
-      match(['a/a/a', 'a/b/a', 'b/b/a', 'c/c/a'], '!**/a', ['a/a/a', 'a/b/a', 'b/b/a', 'c/c/a'], {nonegate: true});
+      match(['!a/a/a', 'a/b/a', 'b/b/a', '!c/c/a'], '!**/a', ['!a/a/a', '!c/c/a'], {nonegate: true});
       match(['!*.md', '.dotfile.txt', 'a/b/.dotfile'], '!*.md', ['!*.md'], {nonegate: true});
     });
   });
 
   describe('options.dot', function() {
     it('should match dotfiles when `options.dot` is true:', function() {
+      match(['a/./b', 'a/../b', 'a/c/b', 'a/.d/b'], 'a/.*/b', [ 'a/../b', 'a/./b', 'a/.d/b' ], {dot: true});
+      match(['a/./b', 'a/../b', 'a/c/b', 'a/.d/b'], 'a/.*/b', [ 'a/../b', 'a/./b', 'a/.d/b' ], {dot: false});
+      match(['a/./b', 'a/../b', 'a/c/b', 'a/.d/b'], 'a/*/b', ['a/c/b', 'a/.d/b'], {dot: true});
       match(['.dotfile'], '*.*', ['.dotfile'], {dot: true});
       match(['.dotfile'], '*.md', [], {dot: true});
       match(['.dotfile'], '.dotfile', ['.dotfile'], {dot: true});

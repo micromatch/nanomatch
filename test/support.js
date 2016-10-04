@@ -6,10 +6,15 @@ var generate = require('./support/generate');
 var exists = require('./support/exists');
 var write = require('./support/write');
 var bash = require('./support/bash');
+var del = require('delete');
 var cwd = path.join.bind(path, __dirname, 'fixtures');
 var base = path.join(__dirname, '..');
 
-describe('when doing bash comparisons', function() {
+describe.skip('when doing bash comparisons', function() {
+  afterEach(function(cb) {
+    del(cwd, {force: true}, cb);
+  });
+
   describe('.exists', function() {
     it('should return true when a file exists', function() {
       assert(exists(path.join(__dirname, '../index.js')));
@@ -54,9 +59,10 @@ describe('when doing bash comparisons', function() {
 
   describe('.bash', function() {
     it('should return an array of fixtures that match the given pattern', function(cb) {
-      bash(['a.txt', 'a/b/c/one.txt'], '**/*.txt', function(err, matches) {
+      var fixtures = ['a.txt', 'a/b/c/one.txt', 'foo/bar'];
+      bash(fixtures, '**/*.txt', function(err, matches) {
         if (err) return cb(err);
-        console.log(matches)
+        assert.deepEqual(matches, ['a.txt', 'a/b/c/one.txt']);
         cb();
       });
     });
