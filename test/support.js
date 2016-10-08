@@ -50,12 +50,17 @@ describe('when doing bash comparisons', function() {
     });
   });
 
+
   describe('.bash', function() {
     afterEach(function(cb) {
       del(dir(), {force: true}, cb);
     });
 
     it('should return an array of fixtures that match the given pattern', function() {
+      if (process.env.TRAVIS) {
+        return this.skip();
+      }
+
       var fixtures = ['a.txt', 'a/b/c/one.txt', 'foo/bar'];
       var matches = bash(fixtures, '**/*.txt');
       assert.deepEqual(matches, ['a.txt', 'a/b/c/one.txt']);

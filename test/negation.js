@@ -36,7 +36,9 @@ describe('negation', function() {
     match(['foo.md'], '!*.md', []);
     match(['foo.md'], '!.md', ['foo.md']);
 
-    compareBash(['a.js', 'b.md', 'c.txt'], '!(**/*.md)');
+    if (!process.env.TRAVIS) {
+      compareBash(['a.js', 'b.md', 'c.txt'], '!(**/*.md)');
+    }
   });
 
   it('should only treat leading exclamation as special', function() {
