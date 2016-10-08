@@ -8,7 +8,7 @@ var isPrimitive = require('is-primitive');
 var isObject = require('is-object');
 var Suite = require('benchmarked');
 
-function run(type) {
+function run(type, pattern) {
   var suite = new Suite({
     cwd: __dirname,
     fixtures: path.join('fixtures', type, '*.js'),
@@ -16,6 +16,7 @@ function run(type) {
   });
 
   if (argv.dry) {
+    console.log(type);
     suite.dryRun(function(code, fixture) {
       console.log(cyan('%s > %s'), code.key, fixture.key);
       var args = require(fixture.path);
