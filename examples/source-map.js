@@ -1,7 +1,12 @@
-'use strict';
-
-var nanomatch = require('..');
-var pattern = '*(*(of*(a)x)z)';
-
-var res = nanomatch(pattern, {sourcemap: true});
-console.log(res);
+var nm = require('..');
+console.log(nm.create('abc/*.js', {sourcemap: true}));
+// {
+//   output: '(\\.[\\\\\\/])?(?!\\.)(?=.)[^\\/]*?(([^\\/]*?)?(of([^\\/]*?)?(a)x)z)',
+//   map: {
+//     version: 3,
+//     sources: ['string'],
+//     names: [],
+//     mappings: 'AAAA,kBAAC,CAAC,UAAC,GAAG,UAAC,OAAO',
+//     sourcesContent: ['*(*(of*(a)x)z)']
+//   }
+// }
