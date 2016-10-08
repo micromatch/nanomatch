@@ -3,15 +3,15 @@
 var assert = require('assert');
 var mm = require('..');
 
-describe('.isMatch()', function() {
+describe('.isMatch():', function() {
   describe('error handling:', function() {
-    it('should throw on undefined args:', function() {
+    it('should throw on undefined args', function() {
       assert.throws(function() {
         mm.isMatch();
       }, /expected a string/);
     });
 
-    it('should throw on bad args:', function() {
+    it('should throw on bad args', function() {
       assert.throws(function() {
         mm.isMatch({});
       }, /expected pattern to be a string, regex or function/);
@@ -94,7 +94,7 @@ describe('.isMatch()', function() {
       assert(!mm.isMatch('abcd', 'ab'));
     });
 
-    it('should match file names:', function() {
+    it('should match file names', function() {
       assert(mm.isMatch('a.b', 'a.b'));
       assert(mm.isMatch('a.b', '*.b'));
       assert(mm.isMatch('a.b', 'a.*'));
@@ -123,7 +123,7 @@ describe('.isMatch()', function() {
       assert(mm.isMatch('ab', 'ab'));
     });
 
-    it('should match files with the given extension:', function() {
+    it('should match files with the given extension', function() {
       assert(!mm.isMatch('.md', '*.md'));
       assert(mm.isMatch('.md', '.md'));
       assert(!mm.isMatch('.c.md', '*.md'));
@@ -137,7 +137,7 @@ describe('.isMatch()', function() {
       assert(mm.isMatch('a/b/c.js', 'a/**/*.*'));
     });
 
-    it('should match wildcards:', function() {
+    it('should match wildcards', function() {
       assert(!mm.isMatch('a/b/c/z.js', '*.js'));
       assert(!mm.isMatch('a/b/z.js', '*.js'));
       assert(!mm.isMatch('a/z.js', '*.js'));
@@ -148,7 +148,7 @@ describe('.isMatch()', function() {
       assert(mm.isMatch('a/z.js', '*/z*.js'));
     });
 
-    it('should match globstars:', function() {
+    it('should match globstars', function() {
       assert(mm.isMatch('a/b/c/z.js', '**/*.js'));
       assert(mm.isMatch('a/b/z.js', '**/*.js'));
       assert(mm.isMatch('a/z.js', '**/*.js'));
@@ -233,11 +233,11 @@ describe('.isMatch()', function() {
       assert(mm.isMatch('a/b/j/c/z/x.md', 'a/**/j/**/z/*.md'));
     });
 
-    it('question marks should not match slashes:', function() {
+    it('question marks should not match slashes', function() {
       assert(!mm.isMatch('aaa/bbb', 'aaa?bbb'));
     });
 
-    it('should not match dotfiles when `dot` or `dotfiles` are not set:', function() {
+    it('should not match dotfiles when `dot` or `dotfiles` are not set', function() {
       assert(!mm.isMatch('.c.md', '*.md'));
       assert(!mm.isMatch('a/.c.md', '*.md'));
       assert(mm.isMatch('a/.c.md', 'a/.c.md'));
@@ -258,14 +258,14 @@ describe('.isMatch()', function() {
       assert(!mm.isMatch('a/b/d/.md', 'a/b/c/*.md'));
     });
 
-    it('should match dotfiles when `dot` or `dotfiles` is set:', function() {
+    it('should match dotfiles when `dot` or `dotfiles` is set', function() {
       assert(mm.isMatch('.c.md', '*.md', {dot: true}));
       assert(mm.isMatch('.c.md', '.*', {dot: true}));
       assert(mm.isMatch('a/b/c/.xyz.md', 'a/b/c/*.md', {dot: true}));
       assert(mm.isMatch('a/b/c/.xyz.md', 'a/b/c/.*.md', {dot: true}));
     });
 
-    it('should match file paths:', function() {
+    it('should match file paths', function() {
       assert(mm.isMatch('a/b/c/xyz.md', 'a/b/c/*.md'));
       assert(mm.isMatch('a/bb/c/xyz.md', 'a/*/c/*.md'));
       assert(mm.isMatch('a/bbbb/c/xyz.md', 'a/*/c/*.md'));
@@ -274,7 +274,7 @@ describe('.isMatch()', function() {
       assert(mm.isMatch('a/bb.bb/aa/b.b/aa/c/xyz.md', 'a/**/c/*.md'));
     });
 
-    it('should match full file paths:', function() {
+    it('should match full file paths', function() {
       assert(!mm.isMatch('a/.b', 'a/**/z/*.md'));
       assert(mm.isMatch('a/.b', 'a/.*'));
       assert(!mm.isMatch('a/b/z/.a', 'a/**/z/*.a'));
@@ -285,17 +285,36 @@ describe('.isMatch()', function() {
       assert(!mm.isMatch('a/b/c/j/e/z/c.txt', 'a/**/j/**/z/*.md'));
     });
 
-    it('should match paths with leading `./`:', function() {
-      assert(!mm.isMatch('./.a', 'a/**/z/*.md'));
-      assert(!mm.isMatch('./a/b/z/.a', 'a/**/z/.a'));
-      assert(mm.isMatch('./a/b/z/.a', './a/**/z/.a'));
-      assert(!mm.isMatch('./a/b/c/d/e/z/c.md', 'a/**/z/*.md'));
-      assert(mm.isMatch('./a/b/c/d/e/z/c.md', './a/**/z/*.md'));
-      assert(!mm.isMatch('./a/b/c/d/e/z/c.md', './a/**/j/**/z/*.md'));
-      assert(mm.isMatch('./a/b/c/j/e/z/c.md', './a/**/j/**/z/*.md'));
-      assert(!mm.isMatch('./a/b/c/j/e/z/c.md', 'a/**/j/**/z/*.md'));
+    it('should match paths with leading `./` when pattern has `./`', function() {
       assert(mm.isMatch('./a/b/c/d/e/j/n/p/o/z/c.md', './a/**/j/**/z/*.md'));
+      assert(mm.isMatch('./a/b/c/d/e/z/c.md', './a/**/z/*.md'));
+      assert(mm.isMatch('./a/b/c/j/e/z/c.md', './a/**/j/**/z/*.md'));
+      assert(mm.isMatch('./a/b/z/.a', './a/**/z/.a'));
+      // sanity checks
+      assert(!mm.isMatch('./a/b/c/d/e/z/c.md', './a/**/j/**/z/*.md'));
       assert(!mm.isMatch('./a/b/c/j/e/z/c.txt', './a/**/j/**/z/*.md'));
+    });
+
+    it('should match paths with leading `./`', function() {
+      assert(!mm.isMatch('./.a', 'a/**/z/*.md'));
+      assert(mm.isMatch('./a/b/c/d/e/z/c.md', 'a/**/z/*.md'));
+      assert(mm.isMatch('./a/b/c/d/e/z/c.md', '**/*.md'));
+      assert(mm.isMatch('a/b/c/d/e/z/c.md', 'a/**/z/*.md'));
+      assert(mm.isMatch('a/b/c/j/e/z/c.md', 'a/**/j/**/z/*.md'));
+      assert(mm.isMatch('./a/b/z/.a', 'a/**/z/.a'));
+    });
+
+    it('should not match paths with leading `./` when `opts.strictOpen` is true', function() {
+      assert(!mm.isMatch('./.a', 'a/**/z/*.md', {strictOpen: true}));
+      assert(!mm.isMatch('./a/b/c/d/e/z/c.md', './a/**/j/**/z/*.md', {strictOpen: true}));
+      assert(!mm.isMatch('./a/b/c/d/e/z/c.md', 'a/**/z/*.md', {strictOpen: true}));
+      assert(!mm.isMatch('./a/b/c/j/e/z/c.md', 'a/**/j/**/z/*.md', {strictOpen: true}));
+      assert(!mm.isMatch('./a/b/c/j/e/z/c.txt', './a/**/j/**/z/*.md', {strictOpen: true}));
+      assert(!mm.isMatch('./a/b/z/.a', 'a/**/z/.a', {strictOpen: true}));
+      assert(mm.isMatch('./a/b/c/d/e/j/n/p/o/z/c.md', './a/**/j/**/z/*.md', {strictOpen: true}));
+      assert(mm.isMatch('./a/b/c/d/e/z/c.md', './a/**/z/*.md', {strictOpen: true}));
+      assert(mm.isMatch('./a/b/c/j/e/z/c.md', './a/**/j/**/z/*.md', {strictOpen: true}));
+      assert(mm.isMatch('./a/b/z/.a', './a/**/z/.a', {strictOpen: true}));
     });
   });
 });

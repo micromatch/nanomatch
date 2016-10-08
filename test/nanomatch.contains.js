@@ -9,10 +9,10 @@ var opts = path.sep === '/' ? { unixify: true } : {};
 
 describe('.contains()', function() {
   describe('error handling', function() {
-    it('should throw on invalid filepath:', function() {
+    it('should throw on invalid argument:', function() {
       assert.throws(function() {
         mm.contains();
-      }, /expected filepath to be a string/);
+      }, /expected a string/);
     });
 
     it('should throw on invalid pattern:', function() {
@@ -85,10 +85,10 @@ describe('.contains()', function() {
       assert(!mm.contains('ab', '/a'));
       assert(!mm.contains('/ab', 'a/*'));
       assert(!mm.contains('ef', '/*'));
-      assert(!mm.contains('ab', './*'));
     });
 
     it('should match files that contain the given extension:', function() {
+      assert(mm.contains('ab', './*'));
       assert(mm.contains('.c.md', '*.md'));
       assert(mm.contains('.c.md', '.*.md'));
       assert(mm.contains('.c.md', '.c.'));
@@ -239,11 +239,12 @@ describe('.contains()', function() {
       assert(mm.contains('aaa\\bba\\ccc', 'aaa/*/ccc', opts));
       assert(mm.contains('aaa\\bba\\ccc', 'bb', opts));
       assert(mm.contains('aaa\\bba\\ccc', 'bb*', opts));
+      assert(mm.contains('aaa\\bbb', 'aaa[/]bbb', opts));
+      assert(mm.contains('aaa\\bbb', 'aaa[\\\\/]bbb', opts));
       assert(!mm.contains('aaa\\bba\\ccc', 'aaa/*ccc', opts));
       assert(!mm.contains('aaa\\bba\\ccc', 'aaa/**ccc', opts));
       assert(!mm.contains('aaa\\bba\\ccc', 'aaa/*z', opts));
       assert(!mm.contains('aaa\\bba\\ccc', 'aaa/**z', opts));
-      assert(mm.contains('aaa\\bbb', 'aaa[/]bbb', opts));
       assert(!mm.contains('\\aaa', '*/*/*', opts));
       assert(!mm.contains('aaa\\bbb', '*/*/*', opts));
       assert(mm.contains('aaa\\bba\\ccc', '*/*/*', opts));

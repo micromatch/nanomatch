@@ -30,7 +30,7 @@ function match(fixtures, pattern, expected, options) {
 
   function compareRefs() {
     var bashRes = opts.bash.skip !== true ? bash(fixtures, pattern, opts).sort(compare) : [];
-    var muRes = mm(fixtures, pattern, opts).sort(compare)
+    var muRes = mm(fixtures, pattern, opts).sort(compare);
     var mcRes = mc(fixtures, pattern, opts).sort(compare);
     var miRes = mi.match(fixtures, pattern, opts).sort(compare);
     var nmRes = actual;

@@ -11,16 +11,18 @@ var cache = require('./lib/cache');
 var MAX_LENGTH = 1024 * 64;
 
 /**
- * Convert the given `glob` pattern into a regex-compatible string.
+ * The main function takes a list of strings and one or more
+ * glob patterns to use for matching.
  *
  * ```js
  * var nanomatch = require('nanomatch');
- * var str = nanomatch('*.js');
- * console.log(str);
+ * console.log(nanomatch(['a.js', 'a.txt'], ['*.js']));
+ * //=> [ 'a.js' ]
  * ```
- * @param {String} `str`
+ * @param {Array} `list`
+ * @param {String|Array} `patterns` Glob patterns
  * @param {Object} `options`
- * @return {String}
+ * @return {Array} Returns an array of matches
  * @api public
  */
 
@@ -66,75 +68,17 @@ function nanomatch(list, patterns, options) {
 }
 
 /**
- * Parses the given glob `pattern` and returns an object with the compiled `output`
- * and optional source `map`.
- *
- * ```js
- * var nanomatch = require('nanomatch');
- * console.log(nanomatch.create('*.js'));
- * //{ options: { source: 'string' },
- * //  state: {},
- * //  compilers:
- * //   { eos: [Function],
- * //     noop: [Function],
- * //     bos: [Function],
- * //     not: [Function],
- * //     escape: [Function],
- * //     text: [Function],
- * //     regex: [Function],
- * //     dot: [Function],
- * //     dots: [Function],
- * //     separator: [Function],
- * //     backslash: [Function],
- * //     square: [Function],
- * //     plus: [Function],
- * //     qmark: [Function],
- * //     globstar: [Function],
- * //     star: [Function],
- * //     colon: [Function] },
- * //  output: '(?!\\.)[^/]*?\\.js',
- * //  ast:
- * //   { type: 'root',
- * //     errors: [],
- * //     nodes: [ [Object], [Object], [Object], [Object], [Object] ] },
- * //  parsingErrors: [],
- * //  idx: 4,
- * //  input: '*.js' }
- * ```
- * @param {Array} `arr` Array of strings to match
- * @param {String} `pattern` Glob pattern
- * @param {Object} `options`
- * @return {Array}
- * @api public
- */
-
-nanomatch.create = function(pattern, options) {
-  debug('nanomatch.create <%s>', pattern);
-  options = options || {};
-
-  var snapdragon = options.snapdragon || new Snapdragon(options);
-  compilers(snapdragon);
-  parsers(snapdragon);
-
-  var ast = snapdragon.parse(pattern, options);
-  ast.input = pattern;
-  var res = snapdragon.compile(ast, options);
-  return res;
-};
-
-/**
- * Takes an array of strings and a glob pattern and returns a new
- * array that contains only the strings that match the pattern.
+ * Similar to the main function, but `pattern` must be a string.
  *
  * ```js
  * var nanomatch = require('nanomatch');
  * console.log(nanomatch.match(['a.a', 'a.aa', 'a.b', 'a.c'], '*.a'));
  * //=> ['a.a', 'a.aa']
  * ```
- * @param {Array} `arr` Array of strings to match
+ * @param {Array} `list` Array of strings to match
  * @param {String} `pattern` Glob pattern
  * @param {Object} `options`
- * @return {Array}
+ * @return {Array} Returns an array of matches
  * @api public
  */
 
@@ -143,7 +87,7 @@ nanomatch.match = function(list, pattern, options) {
 
   list = utils.arrayify(list);
   var unixify = utils.unixify(options);
-  var isMatch = memoize('isMatch', pattern, options, nanomatch.matcher);
+  var isMatch = memoize('match', pattern, options, nanomatch.matcher);
   var matches = [];
   var len = list.length;
   var idx = -1;
@@ -157,6 +101,11 @@ nanomatch.match = function(list, pattern, options) {
     }
 
     var unix = unixify(file);
+    if (unix === pattern) {
+      matches.push(options && options.unixify ? unix : file);
+      continue;
+    }
+
     if (isMatch(unix)) {
       matches.push(options && options.unixify ? unix : file);
     }
@@ -164,7 +113,7 @@ nanomatch.match = function(list, pattern, options) {
 
   // if not options were passed, return now
   if (typeof options === 'undefined') {
-    return matches;
+    return utils.unique(matches);
   }
 
   var opts = utils.extend({}, options);
@@ -186,8 +135,8 @@ nanomatch.match = function(list, pattern, options) {
 };
 
 /**
- * Takes a glob pattern and returns a matcher function. The returned
- * function takes the string to match as its only argument.
+ * Creates a matcher function from the given glob `pattern` and `options`. The returned
+ * function takes a string to match as its only argument.
  *
  * ```js
  * var nanomatch = require('nanomatch');
@@ -200,46 +149,50 @@ nanomatch.match = function(list, pattern, options) {
  * ```
  * @param {String} `pattern` Glob pattern
  * @param {String} `options`
- * @return {Boolean}
+ * @return {Function} Returns a matcher function.
  * @api public
  */
 
 nanomatch.matcher = function(pattern, options) {
-  if (typeof pattern === 'function') {
-    return pattern;
-  }
+  function matcher() {
+    if (typeof pattern === 'function') {
+      return pattern;
+    }
 
-  var opts = utils.extend({}, options);
-  var unixify = utils.unixify(opts);
+    var opts = utils.extend({}, options);
+    var unixify = utils.unixify(opts);
 
-  // pattern is a regex
-  if (pattern instanceof RegExp) {
+    // pattern is a regex
+    if (pattern instanceof RegExp) {
+      return function(fp) {
+        return pattern.test(unixify(fp));
+      };
+    }
+
+    if (typeof pattern !== 'string') {
+      throw new TypeError('expected pattern to be a string, regex or function');
+    }
+
+    // pattern is a non-glob string
+    if (!utils.hasSpecialChars(pattern)) {
+      return utils.matchPath(unixify(pattern), opts);
+    }
+
+    // pattern is a glob string
+    var re = nanomatch.makeRe(pattern, options);
+
+    // `options.matchBase` or `options.basename` is defined
+    if (nanomatch.matchBase(pattern, options)) {
+      return utils.matchBasename(re);
+    }
+
+    // everything else...
     return function(fp) {
-      return pattern.test(unixify(fp));
+      return re.test(unixify(fp));
     };
   }
 
-  if (typeof pattern !== 'string') {
-    throw new TypeError('expected pattern to be a string, regex or function');
-  }
-
-  // pattern is a non-glob string
-  if (!utils.hasSpecialChars(pattern)) {
-    return utils.matchPath(unixify(pattern), opts);
-  }
-
-  // pattern is a glob string
-  var re = nanomatch.makeRe(pattern, options);
-
-  // `options.matchBase` or `options.basename` is defined
-  if (nanomatch.matchBase(pattern, options)) {
-    return utils.matchBasename(re);
-  }
-
-  // everything else...
-  return function(fp) {
-    return re.test(unixify(fp));
-  };
+  return memoize('matcher', pattern, options, matcher);
 };
 
 /**
@@ -247,7 +200,6 @@ nanomatch.matcher = function(pattern, options) {
  *
  * ```js
  * var nanomatch = require('nanomatch');
- *
  * console.log(nanomatch.isMatch('a.a', '*.a'));
  * //=> true
  * console.log(nanomatch.isMatch('a.b', '*.a'));
@@ -256,7 +208,7 @@ nanomatch.matcher = function(pattern, options) {
  * @param {String} `string` String to match
  * @param {String} `pattern` Glob pattern
  * @param {String} `options`
- * @return {Boolean}
+ * @return {Boolean} Returns true if the string matches the glob pattern.
  * @api public
  */
 
@@ -283,34 +235,49 @@ nanomatch.isMatch = function(str, pattern, options) {
 /**
  * Returns a list of strings that do _not_ match any of the given `patterns`.
  *
- * @param {Array} `arr` Array of strings to match.
+ * ```js
+ * var nanomatch = require('nanomatch');
+ * console.log(nanomatch.not(['a.a', 'b.b', 'c.c'], '*.a'));
+ * //=> ['b.b', 'c.c']
+ * ```
+ * @param {Array} `list` Array of strings to match.
  * @param {String} `pattern` One or more glob patterns.
  * @param {Object} `options`
- * @return {String}
+ * @return {Array} Returns an array of strings that do not match the given patterns.
+ * @api public
  */
 
 nanomatch.not = function(list, patterns, options) {
   var opts = utils.extend({}, options);
   var ignore = opts.ignore;
   delete opts.ignore;
-  var res = utils.diff(list.slice(), nanomatch(list, patterns, opts));
+
+  var matches = utils.diff(list.slice(), nanomatch(list, patterns, opts));
   if (ignore) {
-    return utils.diff(res, nanomatch(list, ignore));
+    return utils.diff(matches, nanomatch(list, ignore));
   }
-  return res;
+
+  return matches;
 };
 
 /**
- * Returns true if a file path matches any of the
- * given patterns.
+ * Returns true if the given `string` matches any of the given glob `patterns`.
  *
- * @param  {String} `fp` The filepath to test.
+ * ```js
+ * var nanomatch = require('nanomatch');
+ * console.log(nanomatch.any('a.a', ['b.*', '*.a']));
+ * //=> true
+ * console.log(nanomatch.any('a.a', 'b.*'));
+ * //=> false
+ * ```
+ * @param  {String} `str` The string to test.
  * @param  {String|Array} `patterns` Glob patterns to use.
- * @param  {Object} `opts` Options to pass to the `matcher()` function.
- * @return {String}
+ * @param  {Object} `options` Options to pass to the `matcher()` function.
+ * @return {Boolean} Returns true if any patterns match `str`
+ * @api public
  */
 
-nanomatch.any = function(filepath, patterns, options) {
+nanomatch.any = function(str, patterns, options) {
   if (typeof patterns === 'string') {
     patterns = [patterns];
   }
@@ -323,21 +290,21 @@ nanomatch.any = function(filepath, patterns, options) {
   var unixify = utils.unixify(opts);
   var opts = utils.extend({}, options);
 
-  filepath = unixify(filepath);
+  str = unixify(str);
   var len = patterns.length;
 
   for (var i = 0; i < len; i++) {
     var pattern = patterns[i];
     if (!utils.isGlob(pattern)) {
-      if (filepath === pattern) {
+      if (str === pattern) {
         return true;
       }
-      if (opts.contains && filepath.indexOf(pattern) !== -1) {
+      if (opts.contains && str.indexOf(pattern) !== -1) {
         return true;
       }
       continue;
     }
-    if (nanomatch.isMatch(filepath, pattern, opts)) {
+    if (nanomatch.isMatch(str, pattern, opts)) {
       return true;
     }
   }
@@ -345,27 +312,26 @@ nanomatch.any = function(filepath, patterns, options) {
 };
 
 /**
- * Returns true if the filepath contains the given pattern. Similar to `.isMatch` but
- * the pattern can match any part of the filepath.
+ * Returns true if the given `string` contains the given pattern. Similar to `.isMatch` but
+ * the pattern can match any part of the string.
  *
  * ```js
  * var nanomatch = require('nanomatch');
- *
  * console.log(nanomatch.contains('aa/bb/cc', '*b'));
  * //=> true
  * console.log(nanomatch.contains('aa/bb/cc', '*d'));
  * //=> false
  * ```
- * @param {String} `filepath`
- * @param {String} `pattern`
+ * @param {String} `str` The string to match.
+ * @param {String} `pattern` Glob pattern to use for matching.
  * @param {Object} `options`
- * @return {Boolean}
+ * @return {Boolean} Returns true if the patter matches any part of `str`.
  * @api public
  */
 
-nanomatch.contains = function(filepath, pattern, options) {
-  if (typeof filepath !== 'string') {
-    throw new TypeError('expected filepath to be a string');
+nanomatch.contains = function(str, pattern, options) {
+  if (typeof str !== 'string') {
+    throw new TypeError('expected a string');
   }
 
   if (typeof pattern !== 'string') {
@@ -377,11 +343,11 @@ nanomatch.contains = function(filepath, pattern, options) {
   opts.strictOpen = false;
 
   if (opts.contains && !utils.isGlob(pattern)) {
-    filepath = utils.unixify(opts)(filepath);
-    return filepath.indexOf(pattern) !== -1;
+    str = utils.unixify(opts)(str);
+    return str.indexOf(pattern) !== -1;
   }
 
-  return nanomatch.matcher(pattern, opts)(filepath);
+  return nanomatch.matcher(pattern, opts)(str);
 };
 
 /**
@@ -401,14 +367,14 @@ nanomatch.matchBase = function(pattern, options) {
  * use [glob-object][] instead.
  *
  * ```js
- * var nm = require('nanomatch');
+ * var nanomatch = require('nanomatch');
  * var obj = { aa: 'a', ab: 'b', ac: 'c' };
- * console.log(nm.matchKeys(obj, '*b');
+ * console.log(nanomatch.matchKeys(obj, '*b'));
  * //=> { ab: 'b' }
  * ```
  * @param  {Object} `object`
  * @param  {Array|String} `patterns` One or more glob patterns.
- * @return {Object}
+ * @return {Object} Returns an object with only keys that match the given patterns.
  * @api public
  */
 
@@ -421,17 +387,16 @@ nanomatch.matchKeys = function(obj, patterns, options) {
 };
 
 /**
- * Create a regular expression from the given string `pattern`.
+ * Create a regular expression from the given glob `pattern`.
  *
  * ```js
  * var nanomatch = require('nanomatch');
- * var re = nanomatch.makeRe('[[:alpha:]]');
- * console.log(re);
- * //=> /^(?:[a-zA-Z])$/
+ * console.log(nanomatch.makeRe('*.js'));
+ * //=> /^(?:(\.[\\\/])?(?!\.)(?=.)[^\/]*?\.js)$/
  * ```
  * @param {String} `pattern` The pattern to convert to regex.
  * @param {Object} `options`
- * @return {RegExp}
+ * @return {RegExp} Returns a regex created from the given pattern.
  * @api public
  */
 
@@ -446,7 +411,7 @@ nanomatch.makeRe = function(pattern, options) {
 
   function makeRe() {
     var res = nanomatch.create(pattern, options);
-    var opts = utils.extend({strictErrors: false}, options);
+    var opts = utils.extend({strictErrors: false, wrap: false}, options);
     return toRegex(res.output, opts);
   }
 
@@ -456,6 +421,57 @@ nanomatch.makeRe = function(pattern, options) {
   }
 
   return regex;
+};
+
+/**
+ * Parses the given glob `pattern` and returns an object with the compiled `output`
+ * and optional source `map`.
+ *
+ * ```js
+ * var nanomatch = require('nanomatch');
+ * console.log(nanomatch.create('abc/*.js'));
+ * // { options: { source: 'string', sourcemap: true },
+ * //   state: {},
+ * //   compilers:
+ * //    { ... },
+ * //   output: '(\\.[\\\\\\/])?abc\\/(?!\\.)(?=.)[^\\/]*?\\.js',
+ * //   ast:
+ * //    { type: 'root',
+ * //      errors: [],
+ * //      nodes:
+ * //       [ ... ],
+ * //      dot: false,
+ * //      input: 'abc/*.js' },
+ * //   parsingErrors: [],
+ * //   map:
+ * //    { version: 3,
+ * //      sources: [ 'string' ],
+ * //      names: [],
+ * //      mappings: 'AAAA,GAAG,EAAC,kBAAC,EAAC,EAAE',
+ * //      sourcesContent: [ 'abc/*.js' ] },
+ * //   position: { line: 1, column: 28 },
+ * //   content: {},
+ * //   files: {},
+ * //   idx: 6 }
+ * ```
+ * @param {String} `pattern` Glob pattern
+ * @param {Object} `options`
+ * @return {Object} Returns an object with the parsed AST, compiled string and optional source map.
+ * @api public
+ */
+
+nanomatch.create = function(pattern, options) {
+  debug('nanomatch.create <%s>', pattern);
+  options = options || {};
+
+  var snapdragon = options.snapdragon || new Snapdragon(options);
+  compilers(snapdragon);
+  parsers(snapdragon);
+
+  var ast = snapdragon.parse(pattern, options);
+  ast.input = pattern;
+  var res = snapdragon.compile(ast, options);
+  return res;
 };
 
 /**

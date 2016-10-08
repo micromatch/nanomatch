@@ -29,16 +29,16 @@
     "extend-shallow": "^2.0.1",
     "fragment-cache": "^0.1.0",
     "is-glob": "^3.0.0",
+    "is-odd": "^0.1.0",
     "isobject": "^2.1.0",
     "normalize-path": "^2.0.1",
     "object.pick": "^1.1.2",
-    "snapdragon": "^0.7.0",
-    "to-regex": "^0.1.1"
+    "regex-not": "^1.0.0",
+    "snapdragon": "^0.7.2",
+    "to-regex": "^2.1.0"
   },
   "devDependencies": {
-    "async-each": "^1.0.1",
     "bash-glob": "^0.1.1",
-    "cross-spawn": "^4.0.2",
     "delete": "^0.3.2",
     "fs-exists-sync": "^0.1.0",
     "gulp": "^3.9.1",
@@ -47,14 +47,14 @@
     "gulp-istanbul": "^1.1.1",
     "gulp-mocha": "^3.0.1",
     "gulp-unused": "^0.2.0",
-    "is-absolute": "^0.2.5",
+    "helper-changelog": "^0.3.0",
     "micromatch": "^2.3.11",
     "minimatch": "^3.0.3",
     "mkdirp": "^0.5.1",
-    "mocha": "^3.0.2",
+    "mocha": "^3.1.0",
     "multimatch": "^2.1.0",
     "write": "^0.3.2",
-    "yargs-parser": "^4.0.0"
+    "yargs-parser": "^4.0.2"
   },
   "keywords": [
     "bash",
@@ -88,9 +88,12 @@
   ],
   "verb": {
     "toc": true,
-    "layout": "default",
+    "layout": "common-minimal",
     "tasks": [
       "readme"
+    ],
+    "helpers": [
+      "helper-changelog"
     ],
     "plugins": [
       "gulp-format-md"
@@ -103,8 +106,10 @@
       ]
     },
     "reflinks": [
+      "expand-brackets",
+      "expand-tilde",
+      "glob-object",
       "micromatch",
-      "node-glob",
       "verb",
       "verb-generate-readme"
     ],

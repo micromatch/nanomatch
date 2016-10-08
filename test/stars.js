@@ -63,4 +63,39 @@ describe('stars', function() {
     match(fixtures, '\\**.md', ['**a.md', '**.md', '*.md']);
     match(fixtures, 'a\\**.md', ['a**a.md']);
   });
+
+  it('should match leading `./`', function() {
+    var fixture = ['./a', 'b', 'a/a', './a/b', 'a/c', './a/x', './a/a/a', 'a/a/b', './a/a/a/a', './a/a/a/a/a', 'x/y', './z/z'];
+    match(fixture, '*', ['./a', 'b']);
+    match(fixture, '*/*', ['a/a', './a/b', 'a/c', './a/x', 'x/y', './z/z']);
+    match(fixture, '*/*/*', ['./a/a/a', 'a/a/b']);
+    match(fixture, '*/*/*/*', ['./a/a/a/a']);
+    match(fixture, '*/*/*/*/*', ['./a/a/a/a/a']);
+    match(fixture, 'a/*', ['a/a', './a/b', 'a/c', './a/x']);
+    match(fixture, 'a/*/*', ['./a/a/a', 'a/a/b']);
+    match(fixture, 'a/*/*/*', ['./a/a/a/a']);
+    match(fixture, 'a/*/*/*/*', ['./a/a/a/a/a']);
+    match(fixture, 'a/*/a', ['./a/a/a']);
+  });
+
+  it('should not match leading `./` when `options.strictOpen` is true', function() {
+    var fixture = ['./a', 'b', 'a/a', './a/b', 'a/c', './a/x', './a/a/a', 'a/a/b', './a/a/a/a', './a/a/a/a/a', 'x/y', './z/z'];
+    match(fixture, '*', ['b'], {strictOpen: true});
+    match(fixture, '*/*', ['a/a', 'a/c', 'x/y'], {strictOpen: true});
+    match(fixture, '*/*/*', ['a/a/b'], {strictOpen: true});
+    match(fixture, '*/*/*/*', [], {strictOpen: true});
+    match(fixture, '*/*/*/*/*', [], {strictOpen: true});
+    match(fixture, 'a/*', ['a/a', 'a/c'], {strictOpen: true});
+    match(fixture, 'a/*/*', ['a/a/b'], {strictOpen: true});
+    match(fixture, 'a/*/*/*', [], {strictOpen: true});
+    match(fixture, 'a/*/*/*/*', [], {strictOpen: true});
+    match(fixture, 'a/*/a', [], {strictOpen: true});
+  });
+
+  it('should exactly match `./` when pattern begins with `./`', function() {
+    var fixture = ['a', './a', 'b', 'a/a', './a/b', 'a/c', './a/x', './a/a/a', 'a/a/b', './a/a/a/a', './a/a/a/a/a', 'x/y', './z/z'];
+    match(fixture, '*', ['a', 'b'], {strictOpen: true});
+    match(fixture, './*', ['./a'], {strictOpen: true});
+    match(fixture, './*', ['./a', 'a', 'b'], {strictOpen: false});
+  });
 });

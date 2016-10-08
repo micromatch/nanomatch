@@ -4,8 +4,6 @@ var fs = require('fs');
 var path = require('path');
 var write = require('write');
 var mkdirp = require('mkdirp');
-var each = require('async-each');
-var isAbsolute = require('is-absolute');
 var del = require('delete');
 
 module.exports = function(fixtures, content, options) {

@@ -2,8 +2,9 @@
 
 var assert = require('assert');
 var argv = require('yargs-parser')(process.argv.slice(2));
-var matcher = argv.mm ? require('minimatch') : require('..');
-var isMatch = argv.mm ? matcher : matcher.isMatch;
+var nm = require('..');
+var matcher = argv.mm ? require('minimatch') : nm;
+var isMatch = argv.mm ? matcher : matcher.isMatch.bind(matcher);
 
 describe('issue-related tests', function() {
   // see https://github.com/jonschlinkert/micromatch/issues/15
@@ -46,8 +47,14 @@ describe('issue-related tests', function() {
     assert(isMatch('/aaa/bbb/foo', '/aaa/bbb/**'));
     assert(isMatch('/aaa/bbb/', '/aaa/bbb/**'));
     assert(isMatch('/aaa/bbb/foo.git', '/aaa/bbb/**'));
-    assert(!isMatch('/aaa/bbb/.git', '/aaa/bbb/**')); // => true; should be false
-    assert(!isMatch('aaa/bbb/.git', 'aaa/bbb/**')); // => true; should be false
-    assert(!isMatch('/aaa/bbb/ccc/.git', '/aaa/bbb/**')); // => false; correct
+    assert(!isMatch('/aaa/bbb/.git', '/aaa/bbb/**'));
+    assert(!isMatch('aaa/bbb/.git', 'aaa/bbb/**'));
+    assert(!isMatch('/aaa/bbb/ccc/.git', '/aaa/bbb/**'));
+    assert(!isMatch('/aaa/.git/foo', '/aaa/**/*'));
+    assert(isMatch('/aaa/.git/foo', '/aaa/**/*', {dot: true}));
+    assert(isMatch('/aaa/bbb/.git', '/aaa/bbb/*', {dot: true}));
+    assert(isMatch('aaa/bbb/.git', 'aaa/bbb/**', {dot: true}));
+    assert(isMatch('/aaa/bbb/.git', '/aaa/bbb/**', {dot: true}));
+    assert(isMatch('/aaa/bbb/ccc/.git', '/aaa/bbb/**', {dot: true}));
   });
 });

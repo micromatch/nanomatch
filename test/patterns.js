@@ -1,6 +1,8 @@
 'use strict';
 
 /**
+ * HEADS UP! Only tests for unsupported extglob features are commented out.
+ *
  * The contents of this file was copied (and modified) from:
  * minimatch v3.0.3, ISC LICENSE, Copyright (c) Isaac Z. Schlueter and Contributors
  * https://github.com/isaacs/minimatch
@@ -180,7 +182,6 @@ module.exports = [
   // test partial parsing in the presence of comment/negation chars
   ['[!a*', ['[!ab'], {}, ['[!ab', '[ab']],
 
-
 //   // crazy nested {,,} and *(||) tests.
 //   function() {
 //     fixtures = [
@@ -203,6 +204,7 @@ module.exports = [
 //     ['x(a|b|c)', 'x(a|c)', '(a|b|c)', '(a|c)'],
 //     { noext: true }
 //   ],
+
   ['a?b', ['acb'], {}, ['x/y/acb', 'acb', 'acb/', 'acb/d/e']],
   ['a?b', ['x/y/acb', 'acb/', 'acb'], {matchBase: true}, ['x/y/acb', 'acb', 'acb/', 'acb/d/e']],
 

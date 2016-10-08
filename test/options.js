@@ -1,14 +1,8 @@
 'use strict';
 
 var path = require('path');
-var assert = require('assert');
-var argv = require('yargs-parser')(process.argv.slice(2));
-var matcher = argv.mm ? require('minimatch') : require('..');
-
-function match(arr, pattern, expected, options) {
-  var actual = matcher.match(arr, pattern, options);
-  assert.deepEqual(actual.sort(), expected.sort());
-}
+var match = require('./support/match');
+var sep = path.sep;
 
 describe('options', function() {
   describe('options.ignore', function() {
@@ -100,6 +94,7 @@ describe('options', function() {
     it('should unixify file paths', function() {
       if (path.sep === '\\') {
         match(['a\\b\\c.md'], '**/*.md', ['a/b/c.md']);
+        path.sep = sep;
       }
       match(['a\\b\\c.md'], '**/*.md', ['a/b/c.md'], {unixify: true});
     });
@@ -107,8 +102,34 @@ describe('options', function() {
     it('should unixify absolute paths', function() {
       if (path.sep === '\\') {
         match(['E:\\a\\b\\c.md'], 'E:/**/*.md', ['E:/a/b/c.md']);
+        path.sep = sep;
       }
       match(['E:\\a\\b\\c.md'], 'E:/**/*.md', ['E:/a/b/c.md'], {unixify: true});
+    });
+  });
+
+  describe('options.normalize', function() {
+    it('should normalize leading `./`', function() {
+      if (path.sep === '\\') {
+        match(['.\\a\\b\\c.md', 'a.md'], '**/*.md', ['.\\a\\b\\c.md', 'a.md']);
+        match(['.\\a\\b\\c.md', 'a.md'], '**/*.md', ['.\\a\\b\\c.md', 'a.md'], {normalize: true});
+        path.sep = sep;
+      }
+      match(['./a/b/c.md', 'a.md', 'a/b/c.md'], '**/*.md', ['a.md', 'a/b/c.md'], {strictOpen: true});
+      match(['.\\a\\b\\c.md', 'a/b/c.md', 'a.md'], '**/*.md', ['.\\a\\b\\c.md', 'a.md', 'a/b/c.md']);
+      match(['.\\a\\b\\c.md', 'a/b/c.md', 'a.md'], '**/*.md', ['.\\a\\b\\c.md', 'a/b/c.md', 'a.md'], {normalize: true});
+      match(['a/b/c.md', './a/b/c.md', './b/c.md'], '**/*.md', ['a/b/c.md', './a/b/c.md', './b/c.md'], {normalize: true});
+      match(['a\\b\\c.md', 'a/b/d.md'], '**/*.md', ['a\\b\\c.md', 'a/b/d.md'], {normalize: true});
+    });
+  });
+
+  describe('options.normalize', function() {
+    it('should not match leading `./` when `options.strictOpen` is true', function() {
+      match(['./a/b/c.md', 'a.md', 'a/b/c.md'], '**/*.md', ['a.md', 'a/b/c.md'], {strictOpen: true});
+      match(['.\\a\\b\\c.md', 'a/b/c.md', 'a.md'], '**/*.md', ['a.md', 'a/b/c.md'], {strictOpen: true});
+      match(['.\\a\\b\\c.md', 'a/b/c.md', 'a.md'], '**/*.md', ['a/b/c.md', 'a.md'], {strictOpen: true});
+      match(['a/b/c.md', './a/b/c.md', './b/c.md'], '**/*.md', ['a/b/c.md'], {strictOpen: true});
+      match(['a\\b\\c.md', 'a/b/d.md'], '**/*.md', ['a\\b\\c.md', 'a/b/d.md'], {strictOpen: true});
     });
   });
 });

@@ -1,13 +1,6 @@
 'use strict';
 
-var assert = require('assert');
-var argv = require('yargs-parser')(process.argv.slice(2));
-var matcher = argv.mm ? require('multimatch') : require('..');
-
-function match(arr, pattern, expected, options) {
-  var actual = matcher(arr, pattern, options);
-  assert.deepEqual(actual.sort(), expected.sort());
-}
+var match = require('./support/match');
 
 describe('nanomatch', function() {
   it('should return an array of matches for a literal string', function() {
@@ -31,25 +24,31 @@ describe('nanomatch', function() {
   });
 
   it('should support single globs (*)', function() {
-    var fixture = ['a', 'b', 'a/a', 'a/b', 'a/c', 'a/x', 'a/a/a', 'a/a/b', 'a/a/a/a', 'a/a/a/a/a', 'x/y', 'z/z'];
-    match(fixture, ['*'], ['a', 'b']);
-    match(fixture, ['*/*'], ['a/a', 'a/b', 'a/c', 'a/x', 'x/y', 'z/z']);
-    match(fixture, ['*/*/*'], ['a/a/a', 'a/a/b']);
-    match(fixture, ['*/*/*/*'], ['a/a/a/a']);
-    match(fixture, ['*/*/*/*/*'], ['a/a/a/a/a']);
-    match(fixture, ['a/*'], ['a/a', 'a/b', 'a/c', 'a/x']);
-    match(fixture, ['a/*/*'], ['a/a/a', 'a/a/b']);
-    match(fixture, ['a/*/*/*'], ['a/a/a/a']);
-    match(fixture, ['a/*/*/*/*'], ['a/a/a/a/a']);
-    match(fixture, ['a/*/a'], ['a/a/a']);
-    match(fixture, ['a/*/b'], ['a/a/b']);
+    var fixtures = ['a', 'b', 'a/a', 'a/b', 'a/c', 'a/x', 'a/a/a', 'a/a/b', 'a/a/a/a', 'a/a/a/a/a', 'x/y', 'z/z'];
+    match(fixtures, ['*'], ['a', 'b']);
+    match(fixtures, ['*/*'], ['a/a', 'a/b', 'a/c', 'a/x', 'x/y', 'z/z']);
+    match(fixtures, ['*/*/*'], ['a/a/a', 'a/a/b']);
+    match(fixtures, ['*/*/*/*'], ['a/a/a/a']);
+    match(fixtures, ['*/*/*/*/*'], ['a/a/a/a/a']);
+    match(fixtures, ['a/*'], ['a/a', 'a/b', 'a/c', 'a/x']);
+    match(fixtures, ['a/*/*'], ['a/a/a', 'a/a/b']);
+    match(fixtures, ['a/*/*/*'], ['a/a/a/a']);
+    match(fixtures, ['a/*/*/*/*'], ['a/a/a/a/a']);
+    match(fixtures, ['a/*/a'], ['a/a/a']);
+    match(fixtures, ['a/*/b'], ['a/a/b']);
   });
 
   it('should support globstars (**)', function() {
-    var fixture = ['a/a', 'a/b', 'a/c', 'a/x', 'a/x/y', 'a/x/y/z'];
-    match(fixture, ['a/**'], fixture);
-    match(fixture, ['a/**/*'], fixture);
-    match(fixture, ['a/**/**/*'], fixture);
+    var fixtures = ['a/a', 'a/b', 'a/c', 'a/x', 'a/x/y', 'a/x/y/z'];
+    match(fixtures, ['a/**'], fixtures);
+    match(fixtures, ['a/**/*'], fixtures);
+    match(fixtures, ['a/**/**/*'], fixtures);
+  });
+
+  it('should work with windows paths', function() {
+    var fixtures = ['a.txt', 'a/b.txt', 'a/x/y.txt', 'a/x/y/z', 'a\\z.txt', 'a\\z\\z.txt', 'a\\z\\y\\z', 'a\\b\\z.txt'];
+    match(fixtures, ['a/**/*.txt'], ['a/b.txt', 'a/x/y.txt', 'a/z.txt', 'a/z/z.txt', 'a/b/z.txt'], {unixify: true});
+    match(fixtures, ['a/**/*.txt'], ['a/b.txt', 'a/x/y.txt']);
   });
 
   it('should support negation patterns', function() {

@@ -81,6 +81,19 @@ describe('negation', function() {
     match(['a/b.js', 'a.js', 'a/b.md', 'a.md'], '!*.md', ['a/b.js', 'a.js', 'a/b.md']);
   });
 
+  it('should support any number of leading exclamations', function() {
+    match(['d', 'e', '!ab', '!abc', 'a!b', '\\!a'], '!a*', ['d', 'e', '!ab', '!abc', '\\!a']);
+    match(['d', 'e', '!ab', '!abc', 'a!b', '\\!a'], '!!a*', ['a!b']);
+    match(['d', 'e', '!ab', '!abc', 'a!b', '\\!a'], '!!!a*', ['d', 'e', '!ab', '!abc', '\\!a']);
+    match(['d', 'e', '!ab', '!abc', 'a!b', '\\!a'], '!!!!a*', ['a!b']);
+    match(['d', 'e', '!ab', '!abc', 'a!b', '\\!a'], '!!!!!a*', ['d', 'e', '!ab', '!abc', '\\!a']);
+    match(['d', 'e', '!ab', '!abc', 'a!b', '\\!a'], '!!!!!!a*', ['a!b']);
+  });
+
+  it('should not give special meaning to non-leading exclamations', function() {
+    match(['a', 'aa', 'a/b', 'a!b', 'a!!b', 'a/!!/b'], 'a!!b', ['a!!b']);
+  });
+
   it('should negate files in any directory:', function() {
     match(['a/a.txt', 'a/b.txt', 'a/c.txt'], '!a/b.txt', ['a/a.txt', 'a/c.txt']);
   });

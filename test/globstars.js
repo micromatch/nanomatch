@@ -1,40 +1,45 @@
 'use strict';
 
 var assert = require('assert');
-var argv = require('yargs-parser')(process.argv.slice(2));
-var mm = require('..');
-var matcher = argv.mm ? require('minimatch') : mm;
-
-function match(arr, pattern, expected, options) {
-  var actual = matcher.match(arr, pattern, options);
-  assert.deepEqual(actual.sort(), expected.sort());
-}
+var match = require('./support/match');
+var nm = require('..');
 
 describe('globstars', function() {
   it('should support globstars (**)', function() {
-    var fixture = ['a/a', 'a/b', 'a/c', 'a/x', 'a/x/y', 'a/x/y/z'];
-    match(fixture, '**', fixture);
-    match(fixture, 'a/**', fixture);
-    match(fixture, 'a/**/*', fixture);
-    match(fixture, 'a/**/**/*', fixture);
-    match(fixture, 'b/**', []);
-    match(fixture, '**/x/**', ['a/x/y', 'a/x/y/z']);
-    match(fixture, '**/x/*', ['a/x/y']);
-    match(fixture, '**/x/*/*', ['a/x/y/z']);
-    match(fixture, '**/**/x', ['a/x']);
-    match(fixture, '**/x', ['a/x']);
+    var fixtures = ['.a/a', 'a/a', 'a/.a', 'a/b', 'a/c', 'a/x', 'a/x/y', 'a/x/y/z', 'a/../a', 'ab/../ac', '../a', 'a', '../../b', '../c', '../c/d'];
 
-    assert(!mm.isMatch('.gitignore', 'a/**/z/*.md'));
-    assert(!mm.isMatch('a/b/c/d/e/z/foo.md', 'a/**/j/**/z/*.md'));
-    assert(!mm.isMatch('a/b/c/j/e/z/foo.txt', 'a/**/j/**/z/*.md'));
-    assert(!mm.isMatch('a/b/z/.dotfile', 'a/**/z/*.md'));
-    assert(!mm.isMatch('a/b/z/.dotfile.md', '**/c/.*.md'));
+    match(fixtures, '**', ['a', 'a/a', 'a/b', 'a/c', 'a/x', 'a/x/y', 'a/x/y/z']);
+    match(fixtures, '**/**', ['a', 'a/a', 'a/b', 'a/c', 'a/x', 'a/x/y', 'a/x/y/z']);
+    match(fixtures, '**/', []);
+    match(fixtures, '**/**/*', ['a', 'a/a', 'a/b', 'a/c', 'a/x', 'a/x/y', 'a/x/y/z']);
+    match(fixtures, '**/**/x', ['a/x']);
+    match(fixtures, '**/x', ['a/x']);
+    match(fixtures, '**/x/*', ['a/x/y']);
+    match(fixtures, '*/x/**', ['a/x/y', 'a/x/y/z']);
+    match(fixtures, '**/x/**', ['a/x/y', 'a/x/y/z']);
+    match(fixtures, '**/x/*/*', ['a/x/y/z']);
+    match(fixtures, 'a/**', ['a/a', 'a/b', 'a/c', 'a/x', 'a/x/y', 'a/x/y/z']);
+    match(fixtures, 'a/**/*', ['a/a', 'a/b', 'a/c', 'a/x', 'a/x/y', 'a/x/y/z']);
+    match(fixtures, 'a/**/**/*', ['a/a', 'a/b', 'a/c', 'a/x', 'a/x/y', 'a/x/y/z']);
+    match(fixtures, 'b/**', []);
+  });
 
-    assert(mm.isMatch('a/b/c/d/e/j/n/p/o/z/foo.md', 'a/**/j/**/z/*.md'));
-    assert(mm.isMatch('a/b/c/d/e/z/foo.md', 'a/**/z/*.md'));
-    assert(mm.isMatch('a/b/c/j/e/z/foo.md', 'a/**/j/**/z/*.md'));
-    assert(mm.isMatch('a/b/z/.dotfile.md', '**/.*.md'));
-    assert(mm.isMatch('a/b/z/.dotfile.md', 'a/**/z/.*.md'));
+  it('should support multiple globstars in one pattern', function() {
+    assert(!nm.isMatch('a/b/c/d/e/z/foo.md', 'a/**/j/**/z/*.md'));
+    assert(!nm.isMatch('a/b/c/j/e/z/foo.txt', 'a/**/j/**/z/*.md'));
+    assert(nm.isMatch('a/b/c/d/e/j/n/p/o/z/foo.md', 'a/**/j/**/z/*.md'));
+    assert(nm.isMatch('a/b/c/d/e/z/foo.md', 'a/**/z/*.md'));
+    assert(nm.isMatch('a/b/c/j/e/z/foo.md', 'a/**/j/**/z/*.md'));
+  });
+
+  it('should match dotfiles', function() {
+    var fixtures = ['.gitignore', 'a/b/z/.dotfile', 'a/b/z/.dotfile.md', 'a/b/z/.dotfile.md', 'a/b/z/.dotfile.md'];
+    assert(!nm.isMatch('.gitignore', 'a/**/z/*.md'));
+    assert(!nm.isMatch('a/b/z/.dotfile', 'a/**/z/*.md'));
+    assert(!nm.isMatch('a/b/z/.dotfile.md', '**/c/.*.md'));
+    assert(nm.isMatch('a/b/z/.dotfile.md', '**/.*.md'));
+    assert(nm.isMatch('a/b/z/.dotfile.md', 'a/**/z/.*.md'));
+    assert.deepEqual(nm.match(fixtures, 'a/**/z/.*.md'), [ 'a/b/z/.dotfile.md' ]);
   });
 
   it('should match file extensions:', function() {
@@ -43,23 +48,32 @@ describe('globstars', function() {
   });
 
   it('should respect trailing slashes on paterns', function() {
-    var fixture = ['a', 'a/', 'b', 'b/', 'a/a', 'a/a/', 'a/b', 'a/b/', 'a/c', 'a/c/', 'a/x', 'a/x/', 'a/a/a', 'a/a/b', 'a/a/b/', 'a/a/a/', 'a/a/a/a', 'a/a/a/a/', 'a/a/a/a/a', 'a/a/a/a/a/', 'x/y', 'z/z', 'x/y/', 'z/z/', 'a/b/c/.d/e/'];
-    match(fixture, '**/*/a/', ['a/a/', 'a/a/a/', 'a/a/a/a/', 'a/a/a/a/a/']);
-    match(fixture, '**/*/a/*/', ['a/a/a/', 'a/a/a/a/', 'a/a/a/a/a/', 'a/a/b/']);
-    match(fixture, '**/*/x/', ['a/x/']);
-    match(fixture, '**/*/*/*/*/', ['a/a/a/a/', 'a/a/a/a/a/']);
-    match(fixture, '**/*/*/*/*/*/', ['a/a/a/a/a/']);
-    match(fixture, '*a/a/*/', ['a/a/a/', 'a/a/b/']);
-    match(fixture, '**a/a/*/', ['a/a/a/', 'a/a/b/']);
-    match(fixture, '**/a/*/*/', ['a/a/a/', 'a/a/b/', 'a/a/a/a/', 'a/a/a/a/a/']);
-    match(fixture, '**/a/*/*/*/', ['a/a/a/a/', 'a/a/a/a/a/']);
-    match(fixture, '**/a/*/*/*/*/', ['a/a/a/a/a/']);
-    match(fixture, '**/a/*/a/', ['a/a/a/', 'a/a/a/a/', 'a/a/a/a/a/']);
-    match(fixture, '**/a/*/b/', ['a/a/b/']);
+    var fixtures = ['a', 'a/', 'b', 'b/', 'a/a', 'a/a/', 'a/b', 'a/b/', 'a/c', 'a/c/', 'a/x', 'a/x/', 'a/a/a', 'a/a/b', 'a/a/b/', 'a/a/a/', 'a/a/a/a', 'a/a/a/a/', 'a/a/a/a/a', 'a/a/a/a/a/', 'x/y', 'z/z', 'x/y/', 'z/z/', 'a/b/c/.d/e/'];
+    match(fixtures, '**/*/a/', ['a/a/', 'a/a/a/', 'a/a/a/a/', 'a/a/a/a/a/']);
+    match(fixtures, '**/*/a/*/', ['a/a/a/', 'a/a/a/a/', 'a/a/a/a/a/', 'a/a/b/']);
+    match(fixtures, '**/*/x/', ['a/x/']);
+    match(fixtures, '**/*/*/*/*/', ['a/a/a/a/', 'a/a/a/a/a/']);
+    match(fixtures, '**/*/*/*/*/*/', ['a/a/a/a/a/']);
+    match(fixtures, '*a/a/*/', ['a/a/a/', 'a/a/b/']);
+    match(fixtures, '**a/a/*/', ['a/a/a/', 'a/a/b/']);
+    match(fixtures, '**/a/*/*/', ['a/a/a/', 'a/a/b/', 'a/a/a/a/', 'a/a/a/a/a/']);
+    match(fixtures, '**/a/*/*/*/', ['a/a/a/a/', 'a/a/a/a/a/']);
+    match(fixtures, '**/a/*/*/*/*/', ['a/a/a/a/a/']);
+    match(fixtures, '**/a/*/a/', ['a/a/a/', 'a/a/a/a/', 'a/a/a/a/a/']);
+    match(fixtures, '**/a/*/b/', ['a/a/b/']);
   });
 
   it('should match literal globstars when escaped', function() {
-    match(['.md', '**a.md', '**.md', '.md', '**'], '\\*\\**.md', ['**a.md', '**.md']);
-    match(['.md', '**a.md', '**.md', '.md', '**'], '\\*\\*.md', ['**.md']);
+    var fixtures = ['.md', '**a.md', '**.md', '.md', '**'];
+    match(fixtures, '\\*\\**.md', ['**a.md', '**.md']);
+    match(fixtures, '\\*\\*.md', ['**.md']);
+  });
+
+  // related to https://github.com/isaacs/minimatch/issues/67
+  it('should work consistently with `makeRe` and matcher functions', function() {
+    var re = nm.makeRe('node_modules/foobar/**/*.bar');
+    assert(re.test('node_modules/foobar/foo.bar'));
+    assert(nm.isMatch('node_modules/foobar/foo.bar', 'node_modules/foobar/**/*.bar'));
+    match(['node_modules/foobar/foo.bar'], 'node_modules/foobar/**/*.bar', ['node_modules/foobar/foo.bar']);
   });
 });
