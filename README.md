@@ -296,16 +296,15 @@ Nanomatch has full support for standard Bash glob features, including the follow
 
 Here are some examples of how they work:
 
-**Pattern** | **Description**
-
---- | ---
-`*`         | Matches any string except for `/`, leading `.`, or `/.` inside a path
-`**`        | Matches any string including `/`, but not a leading `.` or `/.` inside a path. More than two stars (e.g. `***` is treated the same as one star, and `**` loses its special meaning when it's not the only thing in a path segment, per Bash specifications)
-`foo*`      | Matches any string beginning with `foo`
-`*bar*`     | Matches any string containing `bar` (beginning, middle or end)
-`*.min.js`  | Matches any string ending with `.min.js`
-`[abc]*.js` | Matches any string beginning with `a`, `b`, or `c` and ending with `.js`
-`abc?`      | Matches `abcd` or `abcz` but not `abcde`
+| **Pattern** | **Description** | 
+| --- | --- |
+| `*` | Matches any string except for `/`, leading `.`, or `/.` inside a path |
+| `**` | Matches any string including `/`, but not a leading `.` or `/.` inside a path. More than two stars (e.g. `***` is treated the same as one star, and `**` loses its special meaning | when it's not the only thing in a path segment, per Bash specifications) |
+| `foo*` | Matches any string beginning with `foo` |
+| `*bar*` | Matches any string containing `bar` (beginning, middle or end) |
+| `*.min.js` | Matches any string ending with `.min.js` |
+| `[abc]*.js` | Matches any string beginning with `a`, `b`, or `c` and ending with `.js` |
+| `abc?` | Matches `abcd` or `abcz` but not `abcde` |
 
 The exceptions noted for `*` apply to all patterns that contain a `*`.
 
