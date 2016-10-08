@@ -322,15 +322,14 @@ If you need any of these features consider using [micromatch](https://github.com
 
 Nanomatch is part of a suite of libraries aimed at bringing the power and expressiveness of [Bash's][] matching and expansion capabilities to JavaScript, _and - as you can see by the [benchmarks](#benchmarks) - without sacrificing speed_.
 
-**Related library** | **Matching Type** | **Example** | **Description**
-
---- | --- | --- | ---
-[micromatch](https://github.com/jonschlinkert/micromatch)       | Wildcards  | `*`           | [Filename expansion](https://www.gnu.org/software/bash/manual/html_node/Filename-Expansion.html#Filename-Expansion), also referred to as globbing and pathname expansion, allows the use of [wildcards](#features) for matching.
-[expand-tilde](https://github.com/jonschlinkert/expand-tilde)     | Tildes     | `~`           | [Tilde expansion](https://www.gnu.org/software/bash/manual/html_node/Tilde-Expansion.html#Tilde-Expansion) converts the leading tilde in a file path to the user home directory.
-[braces](https://github.com/jonschlinkert/braces)           | Braces     | `{a,b,c}`     | [Brace expansion](https://www.gnu.org/software/bash/manual/html_node/Brace-Expansion.html)
-[expand-brackets](https://github.com/jonschlinkert/expand-brackets)  | Brackets   | `[[:alpha:]]` | [POSIX character classes](https://www.gnu.org/software/grep/manual/html_node/Character-Classes-and-Bracket-Expressions.html) (also referred to as POSIX brackets, or POSIX character classes)
-[extglob](https://github.com/jonschlinkert/extglob)          | Parens     | `!(a|b)`      | [Extglobs](https://www.gnu.org/software/bash/manual/html_node/Pattern-Matching.html#Pattern-Matching)
-[micromatch](https://github.com/jonschlinkert/micromatch)       | All        | all           | Micromatch is built on top of the other libraries.
+| **Related library** | **Matching Type** | **Example** | **Description** | 
+| --- | --- | --- | --- | --- | --- |
+| [micromatch](https://github.com/jonschlinkert/micromatch) | Wildcards | `*` | [Filename expansion](https://www.gnu.org/software/bash/manual/html_node/Filename-Expansion.html#Filename-Expansion), also referred to as globbing and pathname expansion, allows the use of [wildcards](#features) for matching. |
+| [expand-tilde](https://github.com/jonschlinkert/expand-tilde) | Tildes | `~` | [Tilde expansion](https://www.gnu.org/software/bash/manual/html_node/Tilde-Expansion.html#Tilde-Expansion) converts the leading tilde in a file path to the user home directory. |
+| [braces](https://github.com/jonschlinkert/braces) | Braces | `{a,b,c}` | [Brace expansion](https://www.gnu.org/software/bash/manual/html_node/Brace-Expansion.html) |
+| [expand-brackets](https://github.com/jonschlinkert/expand-brackets) | Brackets | `[[:alpha:]]` | [POSIX character classes](https://www.gnu.org/software/grep/manual/html_node/Character-Classes-and-Bracket-Expressions.html) (also referred to as POSIX brackets, or POSIX character classes) |
+| [extglob](https://github.com/jonschlinkert/extglob) | Parens | `!(a | b)` | [Extglobs](https://www.gnu.org/software/bash/manual/html_node/Pattern-Matching.html#Pattern-Matching) |
+| [micromatch](https://github.com/jonschlinkert/micromatch) | All | all | Micromatch is built on top of the other libraries. |
 
 There are many resources available on the web if you want to dive deeper into how these features work in Bash.
 
