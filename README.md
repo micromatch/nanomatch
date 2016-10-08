@@ -1,6 +1,6 @@
 # nanomatch [![NPM version](https://img.shields.io/npm/v/nanomatch.svg?style=flat)](https://www.npmjs.com/package/nanomatch) [![NPM downloads](https://img.shields.io/npm/dm/nanomatch.svg?style=flat)](https://npmjs.org/package/nanomatch) [![Build Status](https://img.shields.io/travis/jonschlinkert/nanomatch.svg?style=flat)](https://travis-ci.org/jonschlinkert/nanomatch)
 
-> Fast, minimal glob matcher for node.js. Complete Bash 4.3 wildcard support (no support for exglobs, brackets or braces)
+> Fast, minimal glob matcher for node.js. Similar to micromatch, minimatch and multimatch, but complete Bash 4.3 wildcard support only (no support for exglobs, posix brackets or braces)
 
 ## Table of Contents
 

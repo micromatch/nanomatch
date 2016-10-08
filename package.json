@@ -1,6 +1,6 @@
 {
   "name": "nanomatch",
-  "description": "Fast, minimal glob matcher for node.js. Complete Bash 4.3 wildcard support (no support for exglobs, brackets or braces)",
+  "description": "Fast, minimal glob matcher for node.js. Similar to micromatch, minimatch and multimatch, but complete Bash 4.3 wildcard support only (no support for exglobs, posix brackets or braces)",
   "version": "0.1.2",
   "homepage": "https://github.com/jonschlinkert/nanomatch",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
