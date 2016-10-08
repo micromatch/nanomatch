@@ -12,9 +12,13 @@ Creating an issue is the simplest form of contributing to a project. But there a
 
 If you'd like to learn more about contributing in general, the [Guide to Idiomatic Contributing](https://github.com/jonschlinkert/idiomatic-contributing) has a lot of useful information.
 
-**Showing support for nanomatch**
+**Nanomatch is open source**
 
-Please keep in mind that open source software is built by people like you, who spend their free time creating things the rest the community can use.
+Please keep in mind that nanomatch is open source and is maintained by fellow developers just like you, who spend their free time writing code and creating things for the rest the community to use.
+
+If you're frustrated about something with this project, we're very sorry and we want to help you get it resolved. The best way to accomplish this is to remember that we're human, and it takes the same amount of effort to inspire someone as it does to disparage them.
+
+**Showing support for nanomatch**
 
 Don't have time to contribute? No worries, here are some other ways to show your support for nanomatch:
 
