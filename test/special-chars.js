@@ -48,8 +48,11 @@ describe('special characters', function() {
   });
 
   describe('slashes', function() {
-    it('should match a forward slash', function() {
+    it('should match forward slashes', function() {
       assert(mm.isMatch('/', '/'));
+    });
+
+    it('should match backslashes', function() {
       assert(mm.isMatch('\\', '[\\\\]'));
       assert(mm.isMatch('\\', '[\\\\]+'));
       assert(mm.isMatch('\\\\', '[\\\\]+'));
