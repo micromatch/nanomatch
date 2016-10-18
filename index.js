@@ -1,13 +1,23 @@
 'use strict';
 
+/**
+ * Module dependencies
+ */
+
 var path = require('path');
 var toRegex = require('to-regex');
 var Snapdragon = require('snapdragon');
 var debug = require('debug')('nanomatch');
+var extend = require('extend-shallow');
+
+/**
+ * Local dependencies
+ */
+
 var compilers = require('./lib/compilers');
 var parsers = require('./lib/parsers');
-var utils = require('./lib/utils');
 var cache = require('./lib/cache');
+var utils = require('./lib/utils');
 var MAX_LENGTH = 1024 * 64;
 
 /**
@@ -41,7 +51,6 @@ function nanomatch(list, patterns, options) {
     return nanomatch.match(list, patterns[0], options);
   }
 
-  var opts = utils.extend({}, options);
   var negated = false;
   var omit = [];
   var keep = [];
@@ -51,21 +60,34 @@ function nanomatch(list, patterns, options) {
     var pattern = patterns[idx];
 
     if (typeof pattern === 'string' && pattern.charCodeAt(0) === 33 /* ! */) {
-      omit.push.apply(omit, nanomatch.match(list, pattern.slice(1), opts));
+      omit.push.apply(omit, nanomatch.match(list, pattern.slice(1), options));
       negated = true;
     } else {
-      keep.push.apply(keep, nanomatch.match(list, pattern, opts));
+      keep.push.apply(keep, nanomatch.match(list, pattern, options));
     }
   }
 
   // minimatch.match parity
   if (negated && keep.length === 0) {
-    keep = list;
+    keep = list.map(utils.unixify(options));
   }
 
   var matches = utils.diff(keep, omit);
-  return opts.nodupes !== false ? utils.unique(matches) : matches;
+  if (!options || options.nodupes !== false) {
+    return utils.unique(matches);
+  }
+
+  return matches;
 }
+
+/**
+ * Cache
+ */
+
+nanomatch.cache = cache;
+nanomatch.clearCache = function() {
+  nanomatch.cache.__data__ = {};
+};
 
 /**
  * Similar to the main function, but `pattern` must be a string.
@@ -83,116 +105,48 @@ function nanomatch(list, patterns, options) {
  */
 
 nanomatch.match = function(list, pattern, options) {
-  debug('match <%s>', pattern);
+  var unixify = utils.unixify(options);
+  var isMatch = nanomatch.matcher(pattern, options);
 
   list = utils.arrayify(list);
-  var unixify = utils.unixify(options);
-  var isMatch = memoize('match', pattern, options, nanomatch.matcher);
-  var matches = [];
   var len = list.length;
   var idx = -1;
+  var matches = [];
 
   while (++idx < len) {
-    var file = list[idx];
+    var ele = list[idx];
 
-    if (file === pattern) {
-      matches.push(file);
+    if (ele === pattern) {
+      matches.push(unixify(ele));
       continue;
     }
 
-    var unix = unixify(file);
-    if (unix === pattern) {
-      matches.push(options && options.unixify ? unix : file);
-      continue;
-    }
-
-    if (isMatch(unix)) {
-      matches.push(options && options.unixify ? unix : file);
+    var unix = unixify(ele);
+    if (unix === pattern || isMatch(unix)) {
+      matches.push(unix);
     }
   }
 
-  // if not options were passed, return now
+  // if no options were passed, uniquify results and return
   if (typeof options === 'undefined') {
     return utils.unique(matches);
   }
 
-  var opts = utils.extend({}, options);
   if (matches.length === 0) {
-    if (opts.failglob === true) {
+    if (options.failglob === true) {
       throw new Error('no matches found for "' + pattern + '"');
     }
-    if (opts.nonull === true || opts.nullglob === true) {
-      return [opts.unescape ? utils.unescape(pattern) : pattern];
+    if (options.nonull === true || options.nullglob === true) {
+      return [options.unescape ? utils.unescape(pattern) : pattern];
     }
   }
 
   // if `opts.ignore` was defined, diff ignored list
-  if (opts.ignore) {
-    matches = nanomatch.not(matches, opts.ignore, opts);
+  if (options.ignore) {
+    matches = nanomatch.not(matches, options.ignore, options);
   }
 
-  return opts.nodupes !== false ? utils.unique(matches) : matches;
-};
-
-/**
- * Creates a matcher function from the given glob `pattern` and `options`. The returned
- * function takes a string to match as its only argument.
- *
- * ```js
- * var nanomatch = require('nanomatch');
- * var isMatch = nanomatch.matcher('*.!(*a)');
- *
- * console.log(isMatch('a.a'));
- * //=> false
- * console.log(isMatch('a.b'));
- * //=> true
- * ```
- * @param {String} `pattern` Glob pattern
- * @param {String} `options`
- * @return {Function} Returns a matcher function.
- * @api public
- */
-
-nanomatch.matcher = function(pattern, options) {
-  function matcher() {
-    if (typeof pattern === 'function') {
-      return pattern;
-    }
-
-    var opts = utils.extend({}, options);
-    var unixify = utils.unixify(opts);
-
-    // pattern is a regex
-    if (pattern instanceof RegExp) {
-      return function(fp) {
-        return pattern.test(unixify(fp));
-      };
-    }
-
-    if (typeof pattern !== 'string') {
-      throw new TypeError('expected pattern to be a string, regex or function');
-    }
-
-    // pattern is a non-glob string
-    if (!utils.hasSpecialChars(pattern)) {
-      return utils.matchPath(unixify(pattern), opts);
-    }
-
-    // pattern is a glob string
-    var re = nanomatch.makeRe(pattern, options);
-
-    // `options.matchBase` or `options.basename` is defined
-    if (nanomatch.matchBase(pattern, options)) {
-      return utils.matchBasename(re);
-    }
-
-    // everything else...
-    return function(fp) {
-      return re.test(unixify(fp));
-    };
-  }
-
-  return memoize('matcher', pattern, options, matcher);
+  return options.nodupes !== false ? utils.unique(matches) : matches;
 };
 
 /**
@@ -213,20 +167,12 @@ nanomatch.matcher = function(pattern, options) {
  */
 
 nanomatch.isMatch = function(str, pattern, options) {
-  if (typeof str === 'undefined') {
-    throw new TypeError('expected a string');
+  if (pattern === str) {
+    return true;
   }
 
-  if (typeof pattern === 'undefined') {
-    throw new TypeError('expected pattern to be a string, regex or function');
-  }
-
-  if (pattern === '' || pattern === ' ') {
+  if (pattern === '' || pattern === ' ' || pattern === '/' || pattern === '.') {
     return str === pattern;
-  }
-
-  if (options && nanomatch.matchBase(pattern, options)) {
-    str = path.basename(str);
   }
 
   return nanomatch.matcher(pattern, options)(str);
@@ -248,16 +194,21 @@ nanomatch.isMatch = function(str, pattern, options) {
  */
 
 nanomatch.not = function(list, patterns, options) {
-  var opts = utils.extend({}, options);
+  var opts = extend({}, options);
   var ignore = opts.ignore;
   delete opts.ignore;
 
-  var matches = utils.diff(list.slice(), nanomatch(list, patterns, opts));
+  var unixify = utils.unixify(opts);
+  var unixified = list.map(function(fp) {
+    return unixify(fp, opts);
+  });
+
+  var matches = utils.diff(unixified, nanomatch(unixified, patterns, opts));
   if (ignore) {
-    return utils.diff(matches, nanomatch(list, ignore));
+    matches = utils.diff(matches, nanomatch(unixified, ignore));
   }
 
-  return matches;
+  return opts.nodupes !== false ? utils.unique(matches) : matches;
 };
 
 /**
@@ -278,33 +229,9 @@ nanomatch.not = function(list, patterns, options) {
  */
 
 nanomatch.any = function(str, patterns, options) {
-  if (typeof patterns === 'string') {
-    patterns = [patterns];
-  }
-
-  if (!Array.isArray(patterns)) {
-    throw new TypeError('expected patterns to be a string or array');
-  }
-
-  debug('match <%s>', patterns);
-  var unixify = utils.unixify(opts);
-  var opts = utils.extend({}, options);
-
-  str = unixify(str);
-  var len = patterns.length;
-
-  for (var i = 0; i < len; i++) {
-    var pattern = patterns[i];
-    if (!utils.isGlob(pattern)) {
-      if (str === pattern) {
-        return true;
-      }
-      if (opts.contains && str.indexOf(pattern) !== -1) {
-        return true;
-      }
-      continue;
-    }
-    if (nanomatch.isMatch(str, pattern, opts)) {
+  patterns = utils.arrayify(patterns);
+  for (var i = 0; i < patterns.length; i++) {
+    if (nanomatch.isMatch(str, patterns[i], options)) {
       return true;
     }
   }
@@ -330,24 +257,15 @@ nanomatch.any = function(str, patterns, options) {
  */
 
 nanomatch.contains = function(str, pattern, options) {
-  if (typeof str !== 'string') {
-    throw new TypeError('expected a string');
+  if (pattern === '' || pattern === ' ') {
+    return pattern === str;
   }
 
-  if (typeof pattern !== 'string') {
-    throw new TypeError('expected pattern to be a string');
-  }
-
-  var opts = utils.extend({contains: pattern !== ''}, options);
+  var opts = extend({}, options, {contains: true});
   opts.strictClose = false;
   opts.strictOpen = false;
 
-  if (opts.contains && !utils.isGlob(pattern)) {
-    str = utils.unixify(opts)(str);
-    return str.indexOf(pattern) !== -1;
-  }
-
-  return nanomatch.matcher(pattern, opts)(str);
+  return nanomatch.match(str, pattern, opts).length > 0;
 };
 
 /**
@@ -387,6 +305,66 @@ nanomatch.matchKeys = function(obj, patterns, options) {
 };
 
 /**
+ * Creates a matcher function from the given glob `pattern` and `options`. The returned
+ * function takes a string to match as its only argument.
+ *
+ * ```js
+ * var nanomatch = require('nanomatch');
+ * var isMatch = nanomatch.matcher('*.!(*a)');
+ *
+ * console.log(isMatch('a.a'));
+ * //=> false
+ * console.log(isMatch('a.b'));
+ * //=> true
+ * ```
+ * @param {String} `pattern` Glob pattern
+ * @param {String} `options`
+ * @return {Function} Returns a matcher function.
+ * @api public
+ */
+
+nanomatch.matcher = function(pattern, options) {
+  function matcher() {
+    var unixify = utils.unixify(options);
+
+    // if pattern is a regex
+    if (pattern instanceof RegExp) {
+      return function(str) {
+        return pattern.test(str) || pattern.test(unixify(str));
+      };
+    }
+
+    // if pattern is invalid
+    if (!utils.isString(pattern)) {
+      throw new TypeError('expected pattern to be a string or regex');
+    }
+
+    // if pattern is a non-glob string
+    if (!utils.hasSpecialChars(pattern)) {
+      if (options && options.nocase === true) {
+        pattern = pattern.toLowerCase();
+      }
+      return utils.matchPath(pattern, options);
+    }
+
+    // if pattern is a glob string
+    var re = nanomatch.makeRe(pattern, options);
+
+    // if `options.matchBase` or `options.basename` is defined
+    if (nanomatch.matchBase(pattern, options)) {
+      return utils.matchBasename(re, options);
+    }
+
+    // everything else...
+    return function(str) {
+      return re.test(str) || re.test(unixify(str));
+    };
+  }
+
+  return memoize('matcher', pattern, options, matcher);
+};
+
+/**
  * Create a regular expression from the given glob `pattern`.
  *
  * ```js
@@ -405,13 +383,18 @@ nanomatch.makeRe = function(pattern, options) {
     return pattern;
   }
 
+  if (typeof pattern !== 'string') {
+    throw new TypeError('expected pattern to be a string');
+  }
+
   if (pattern.length > MAX_LENGTH) {
     throw new Error('expected pattern to be less than ' + MAX_LENGTH + ' characters');
   }
 
   function makeRe() {
-    var res = nanomatch.create(pattern, options);
-    var opts = utils.extend({strictErrors: false, wrap: false}, options);
+    var opts = extend({strictErrors: false}, options);
+    if (opts.strictErrors === true) opts.strict = true;
+    var res = nanomatch.create(pattern, opts);
     return toRegex(res.output, opts);
   }
 
@@ -461,17 +444,26 @@ nanomatch.makeRe = function(pattern, options) {
  */
 
 nanomatch.create = function(pattern, options) {
-  debug('nanomatch.create <%s>', pattern);
-  options = options || {};
+  if (typeof pattern !== 'string') {
+    throw new TypeError('expected a string');
+  }
 
-  var snapdragon = options.snapdragon || new Snapdragon(options);
-  compilers(snapdragon);
-  parsers(snapdragon);
+  function create() {
+    var snapdragon = (options && options.snapdragon) || new Snapdragon(options);
+    compilers(snapdragon);
+    parsers(snapdragon);
 
-  var ast = snapdragon.parse(pattern, options);
-  ast.input = pattern;
-  var res = snapdragon.compile(ast, options);
-  return res;
+    if (pattern.slice(0, 2) === './') {
+      pattern = pattern.slice(2);
+    }
+
+    pattern = utils.combineDuplicates(pattern, '\\*\\*\\/|\\/\\*\\*');
+    var ast = snapdragon.parse(pattern, options);
+    ast.input = pattern;
+    return snapdragon.compile(ast, options);
+  }
+
+  return memoize('create', pattern, options, create);
 };
 
 /**
@@ -479,11 +471,8 @@ nanomatch.create = function(pattern, options) {
  */
 
 function memoize(type, pattern, options, fn) {
-  if (!utils.isString(pattern)) {
-    return fn(pattern, options);
-  }
+  var key = utils.createKey(type + pattern, options);
 
-  var key = createKey(pattern, options);
   if (cache.has(type, key)) {
     return cache.get(type, key);
   }
@@ -493,28 +482,8 @@ function memoize(type, pattern, options, fn) {
     return val;
   }
 
-  val.key = key;
   cache.set(type, key, val);
   return val;
-}
-
-/**
- * Create the key to use for memoization. The key is generated
- * by iterating over the options and concatenating key-value pairs
- * to the pattern string.
- */
-
-function createKey(pattern, options) {
-  var key = pattern;
-  if (typeof options === 'undefined') {
-    return key;
-  }
-  for (var prop in options) {
-    if (options.hasOwnProperty(prop)) {
-      key += ';' + prop + '=' + String(options[prop]);
-    }
-  }
-  return key;
 }
 
 /**
