@@ -320,7 +320,7 @@ If you need any of these features consider using [micromatch](https://github.com
 
 ### Bash pattern matching
 
-Nanomatch is part of a suite of libraries aimed at bringing the power and expressiveness of [Bash's][] matching and expansion capabilities to JavaScript, _and - as you can see by the [benchmarks](#benchmarks) - without sacrificing speed_.
+Nanomatch is part of a suite of libraries aimed at bringing the power and expressiveness of [Bash's](https://www.gnu.org/software/bash/) matching and expansion capabilities to JavaScript, _and - as you can see by the [benchmarks](#benchmarks) - without sacrificing speed_.
 
 | **Related library** | **Matching Type** | **Example** | **Description** | 
 | --- | --- | --- | --- | --- | --- |
