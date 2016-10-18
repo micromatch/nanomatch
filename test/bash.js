@@ -9,11 +9,11 @@
 
 require('mocha');
 var assert = require('assert');
-var nm = require('./support/match');
+var mm = require('./support/match');
 
 /**
- * Heads up! In these tests, `nm` is a custom function that can
- * be either `nanomatch` or `minimatch` (if the `--mm` flag is passed)
+ * Heads up! In these tests, `mm` is a custom function that can
+ * be either `nanomatch` or `minimatch` if the `--mm` flag is passed
  */
 
 // from the Bash 4.3 specification/unit tests
@@ -31,149 +31,195 @@ describe('bash options and features:', function() {
   // $echo a/{1..3}/b
   describe('bash', function() {
     it('should handle "regular globbing":', function() {
-      nm(fixtures, 'a*', ['a', 'abc', 'abd', 'abe']);
-      nm(fixtures, '\\a*', ['a', 'abc', 'abd', 'abe']);
+      mm(fixtures, 'a*', ['a', 'abc', 'abd', 'abe']);
+      mm(fixtures, '\\a*', ['a', 'abc', 'abd', 'abe']);
     });
 
     it('should match directories:', function() {
-      nm(fixtures, 'b*/', ['bdir/']);
+      mm(fixtures, 'b*/', ['bdir/']);
     });
 
     it('should use quoted characters as literals:', function() {
-      nm(fixtures, '\\*', {nonull: true}, ['*', '\\*']);
-      nm(fixtures, '\\^', {nonull: true}, ['\\^']);
-      nm(fixtures, '\\^', []);
+      mm(fixtures, '\\*', {nonull: true}, ['*', '\\*']);
+      mm(fixtures, '\\^', {nonull: true}, ['\\^']);
+      mm(fixtures, '\\^', []);
 
-      nm(fixtures, 'a\\*', {nonull: true}, ['a\\*']);
-      nm(fixtures, 'a\\*', {nonull: true, unescape: true}, ['a\\*']);
-      nm(fixtures, 'a\\*', []);
+      mm(fixtures, 'a\\*', {nonull: true}, ['a\\*']);
+      mm(fixtures, 'a\\*', ['a*'], {nonull: true, unescape: true});
+      mm(fixtures, 'a\\*', []);
 
-      nm(fixtures, ['a\\*', '\\*'], {nonull: true}, ['a\\*', '*', '\\*']);
-      nm(fixtures, ['a\\*', '\\*'], {nonull: true, unescape: true}, ['a\\*', '*', '\\*']);
-      nm(fixtures, ['a\\*', '\\*'], {unescape: true}, ['*', '\\*']);
-      nm(fixtures, ['a\\*', '\\*'], ['*', '\\*']);
+      mm(fixtures, ['a\\*', '\\*'], {nonull: true}, ['a\\*', '*', '\\*']);
+      mm(fixtures, ['a\\*', '\\*'], {nonull: true, unescape: true}, ['a*', '*']);
+      mm(fixtures, ['a\\*', '\\*'], {unescape: true}, ['*']);
+      mm(fixtures, ['a\\*', '\\*'], ['*', '\\*']);
 
-      nm(fixtures, ['a\\*'], {nonull: true}, ['a\\*']);
-      nm(fixtures, ['a\\*'], []);
+      mm(fixtures, ['a\\*'], {nonull: true}, ['a\\*']);
+      mm(fixtures, ['a\\*'], []);
 
-      nm(fixtures, ['c*', 'a\\*', '*q*'], {nonull: true}, ['c', 'ca', 'cb', 'a\\*', '*q*']);
-      nm(fixtures, ['c*', 'a\\*', '*q*'], ['c', 'ca', 'cb']);
+      mm(fixtures, ['c*', 'a\\*', '*q*'], {nonull: true}, ['c', 'ca', 'cb', 'a\\*', '*q*']);
+      mm(fixtures, ['c*', 'a\\*', '*q*'], ['c', 'ca', 'cb']);
 
-      nm(fixtures, '"*"*', {nonull: true}, ['"*"*']);
-      nm(fixtures, '"*"*', []);
+      mm(fixtures, '"*"*', {nonull: true}, ['"*"*']);
+      mm(fixtures, '"*"*', []);
 
-      nm(fixtures, '\\**', ['*']); // `*` is in the fixtures array
+      mm(fixtures, '\\**', ['*']); // `*` is in the fixtures array
     });
 
     it('should work for escaped paths/dots:', function() {
-      nm(fixtures, '"\\.\\./*/"', {nonull: true}, ['"\\.\\./*/"']);
-      nm(fixtures, '"\\.\\./*/"', {nonull: true, unescape: true}, ['"../*/"']);
-      nm(fixtures, 's/\\..*//', {nonull: true}, ['s/\\..*//']);
+      mm(fixtures, '"\\.\\./*/"', {nonull: true}, ['"\\.\\./*/"']);
+      mm(fixtures, '"\\.\\./*/"', {nonull: true, unescape: true}, ['"../*/"']);
+      mm(fixtures, 's/\\..*//', {nonull: true}, ['s/\\..*//']);
     });
 
     it('Pattern from Larry Wall\'s Configure that caused bash to blow up:', function() {
-      nm(fixtures, '"/^root:/{s/^[^:]*:[^:]*:\\([^:]*\\).*"\'$\'"/\\1/"', {nonull: true}, ['"/^root:/{s/^[^:]*:[^:]*:\\([^:]*\\).*"\'$\'"/\\1/"']);
-      nm(fixtures, '[a-c]b*', ['abc', 'abd', 'abe', 'bb', 'cb']);
+      mm(fixtures, '"/^root:/{s/^[^:]*:[^:]*:\\([^:]*\\).*"\'$\'"/\\1/"', {nonull: true}, ['"/^root:/{s/^[^:]*:[^:]*:\\([^:]*\\).*"\'$\'"/\\1/"']);
+      mm(fixtures, '[a-c]b*', ['abc', 'abd', 'abe', 'bb', 'cb']);
     });
 
-    it('Make sure character classes work properly:', function() {
-      nm(fixtures, '[a-y]*[^c]', ['abd', 'abe', 'bb', 'bcd', 'ca', 'cb', 'dd', 'de', 'bdir/']);
-      nm(fixtures, 'a*[^c]', ['abd', 'abe']);
+    it('should support character classes', function() {
+      var f = fixtures.slice();
+      f.push('baz', 'bzz', 'BZZ', 'beware', 'BewAre');
+      mm(f, '[a-y]*[^c]', ['abd', 'abe', 'baz', 'beware', 'bzz', 'bb', 'bcd', 'ca', 'cb', 'dd', 'de', 'bdir/']);
+      mm(f, 'a*[^c]', ['abd', 'abe']);
+      mm(['a-b', 'aXb'], 'a[X-]b', ['a-b', 'aXb']);
+      mm(f, '[^a-c]*', ['d', 'dd', 'de', 'BewAre', 'BZZ', '*', '\\*']);
+      mm(['a*b/ooo'], 'a\\*b/*', ['a*b/ooo']);
+      mm(['a*b/ooo'], 'a\\*?/*', ['a*b/ooo']);
+      mm(f, 'a[b]c', ['abc']);
+      mm(f, 'a["b"]c', ['abc']);
+      mm(f, 'a[\\\\b]c', ['abc']);
+      mm(f, 'a[\\b]c', ['abc']);
+      mm(f, 'a?c', ['abc']);
+      mm(['a-b'], 'a[]-]b', ['a-b']);
+      mm(['man/man1/bash.1'], '*/man*/bash.*', ['man/man1/bash.1']);
+    });
 
-      nm(['a-b', 'aXb'], 'a[X-]b', ['a-b', 'aXb']);
-      nm(fixtures, '[^a-c]*', ['d', 'dd', 'de', 'Beware', '*', '\\*']);
-      nm(['a*b/ooo'], 'a\\*b/*', ['a*b/ooo']);
-      nm(['a*b/ooo'], 'a\\*?/*', ['a*b/ooo']);
-      nm(fixtures, 'a[b]c', ['abc']);
-      nm(fixtures, 'a["b"]c', ['abc']);
-      nm(fixtures, 'a[\\b]c', ['abc']);
-      nm(fixtures, 'a?c', ['abc']);
-      nm(['man/man1/bash.1'], '*/man*/bash.*', ['man/man1/bash.1']);
+    it('should support basic wildmatch (brackets) features', function() {
+      assert(!mm.isMatch('aab', 'a[]-]b'));
+      assert(!mm.isMatch('ten', '[ten]'));
+      assert(!mm.isMatch('ten', 't[!a-g]n'));
+      assert(mm.isMatch(']', ']'));
+      assert(mm.isMatch('a-b', 'a[]-]b'));
+      assert(mm.isMatch('a]b', 'a[]-]b'));
+      assert(mm.isMatch('a]b', 'a[]]b'));
+      assert(mm.isMatch('aab', 'a[\\]a\\-]b'));
+      assert(mm.isMatch('ten', 't[a-g]n'));
+      assert(mm.isMatch('ton', 't[!a-g]n'));
+      assert(mm.isMatch('ton', 't[^a-g]n'));
+    });
+
+    it('should support Extended slash-matching features', function() {
+      assert(!mm.isMatch('foo/bar', 'f[^eiu][^eiu][^eiu][^eiu][^eiu]r'));
+      assert(mm.isMatch('foo/bar', 'foo[/]bar'));
+      assert(mm.isMatch('foo-bar', 'f[^eiu][^eiu][^eiu][^eiu][^eiu]r'));
+    });
+
+    it('should match braces', function() {
+      assert(mm.isMatch('foo{}baz', 'foo[{a,b}]+baz'));
+    });
+
+    it('should match parens', function() {
+      assert(mm.isMatch('foo(bar)baz', 'foo[bar()]+baz'));
+    });
+
+    it('should match escaped characters', function() {
+      assert(!mm.isMatch('', '\\'));
+      assert(!mm.isMatch('XXX/\\', '[A-Z]+/\\'));
+      assert(mm.isMatch('\\', '\\'));
+      assert(mm.isMatch('XXX/\\', '[A-Z]+/\\\\'));
+      assert(mm.isMatch('[ab]', '\\[ab]'));
+      assert(mm.isMatch('[ab]', '[\\[:]ab]'));
+    });
+
+    it('should match brackets', function() {
+      assert(!mm.isMatch(']', '[!]-]'));
+      assert(mm.isMatch('a', '[!]-]'));
+      assert(mm.isMatch('[ab]', '[[]ab]'));
     });
 
     it('tests with multiple `*\'s:', function() {
-      nm(['bbc', 'abc', 'bbd'], 'a**c', ['abc']);
-      nm(['bbc', 'abc', 'bbd'], 'a***c', ['abc']);
-      nm(['bbc', 'abc', 'bbc'], 'a*****?c', ['abc']);
-      nm(['bbc', 'abc'], '?*****??', ['bbc', 'abc']);
-      nm(['bbc', 'abc'], '*****??', ['bbc', 'abc']);
-      nm(['bbc', 'abc'], '?*****?c', ['bbc', 'abc']);
-      nm(['bbc', 'abc', 'bbd'], '?***?****c', ['bbc', 'abc']);
-      nm(['bbc', 'abc'], '?***?****?', ['bbc', 'abc']);
-      nm(['bbc', 'abc'], '?***?****', ['bbc', 'abc']);
-      nm(['bbc', 'abc'], '*******c', ['bbc', 'abc']);
-      nm(['bbc', 'abc'], '*******?', ['bbc', 'abc']);
-      nm(['abcdecdhjk'], 'a*cd**?**??k', ['abcdecdhjk']);
-      nm(['abcdecdhjk'], 'a**?**cd**?**??k', ['abcdecdhjk']);
-      nm(['abcdecdhjk'], 'a**?**cd**?**??k***', ['abcdecdhjk']);
-      nm(['abcdecdhjk'], 'a**?**cd**?**??***k', ['abcdecdhjk']);
-      nm(['abcdecdhjk'], 'a**?**cd**?**??***k**', ['abcdecdhjk']);
-      nm(['abcdecdhjk'], 'a****c**?**??*****', ['abcdecdhjk']);
+      mm(['bbc', 'abc', 'bbd'], 'a**c', ['abc']);
+      mm(['bbc', 'abc', 'bbd'], 'a***c', ['abc']);
+      mm(['bbc', 'abc', 'bbc'], 'a*****?c', ['abc']);
+      mm(['bbc', 'abc'], '?*****??', ['bbc', 'abc']);
+      mm(['bbc', 'abc'], '*****??', ['bbc', 'abc']);
+      mm(['bbc', 'abc'], '?*****?c', ['bbc', 'abc']);
+      mm(['bbc', 'abc', 'bbd'], '?***?****c', ['bbc', 'abc']);
+      mm(['bbc', 'abc'], '?***?****?', ['bbc', 'abc']);
+      mm(['bbc', 'abc'], '?***?****', ['bbc', 'abc']);
+      mm(['bbc', 'abc'], '*******c', ['bbc', 'abc']);
+      mm(['bbc', 'abc'], '*******?', ['bbc', 'abc']);
+      mm(['abcdecdhjk'], 'a*cd**?**??k', ['abcdecdhjk']);
+      mm(['abcdecdhjk'], 'a**?**cd**?**??k', ['abcdecdhjk']);
+      mm(['abcdecdhjk'], 'a**?**cd**?**??k***', ['abcdecdhjk']);
+      mm(['abcdecdhjk'], 'a**?**cd**?**??***k', ['abcdecdhjk']);
+      mm(['abcdecdhjk'], 'a**?**cd**?**??***k**', ['abcdecdhjk']);
+      mm(['abcdecdhjk'], 'a****c**?**??*****', ['abcdecdhjk']);
     });
 
     it('none of these should output anything:', function() {
-      nm(['abc'], '??**********?****?', []);
-      nm(['abc'], '??**********?****c', []);
-      nm(['abc'], '?************c****?****', []);
-      nm(['abc'], '*c*?**', []);
-      nm(['abc'], 'a*****c*?**', []);
-      nm(['abc'], 'a********???*******', []);
-      nm(['a'], '[]', []);
-      nm(['['], '[abc', []);
+      mm(['abc'], '??**********?****?', []);
+      mm(['abc'], '??**********?****c', []);
+      mm(['abc'], '?************c****?****', []);
+      mm(['abc'], '*c*?**', []);
+      mm(['abc'], 'a*****c*?**', []);
+      mm(['abc'], 'a********???*******', []);
+      mm(['a'], '[]', []);
+      mm(['['], '[abc', []);
     });
   });
 
   describe('wildmat', function() {
     it('Basic wildmat features', function() {
-      assert(!nm.isMatch('foo', '*f'));
-      assert(!nm.isMatch('foo', '??'));
-      assert(!nm.isMatch('foo', 'bar'));
-      assert(!nm.isMatch('foobar', 'foo\\*bar'));
-      assert(nm.isMatch('', ''));
-      assert(nm.isMatch('?a?b', '\\??\\?b'));
-      assert(nm.isMatch('aaaaaaabababab', '*ab'));
-      assert(nm.isMatch('f\\oo', 'f\\oo'));
-      assert(nm.isMatch('foo', '*'));
-      assert(nm.isMatch('foo', '*foo*'));
-      assert(nm.isMatch('foo', '???'));
-      assert(nm.isMatch('foo', 'f*'));
-      assert(nm.isMatch('foo', 'foo'));
-      assert(nm.isMatch('foo*', 'foo\\*', {unixify: false}));
-      assert(nm.isMatch('foobar', '*ob*a*r*'));
+      assert(!mm.isMatch('foo', '*f'));
+      assert(!mm.isMatch('foo', '??'));
+      assert(!mm.isMatch('foo', 'bar'));
+      assert(!mm.isMatch('foobar', 'foo\\*bar'));
+      assert(mm.isMatch('', ''));
+      assert(mm.isMatch('?a?b', '\\??\\?b'));
+      assert(mm.isMatch('aaaaaaabababab', '*ab'));
+      assert(mm.isMatch('f\\oo', 'f\\oo'));
+      assert(mm.isMatch('foo', '*'));
+      assert(mm.isMatch('foo', '*foo*'));
+      assert(mm.isMatch('foo', '???'));
+      assert(mm.isMatch('foo', 'f*'));
+      assert(mm.isMatch('foo', 'foo'));
+      assert(mm.isMatch('foo*', 'foo\\*', {unixify: false}));
+      assert(mm.isMatch('foobar', '*ob*a*r*'));
     });
 
-    it('Test recursion and the abort code', function() {
-      assert(!nm.isMatch('-adobe-courier-bold-o-normal--12-120-75-75-/-70-iso8859-1', '-*-*-*-*-*-*-12-*-*-*-m-*-*-*'));
-      assert(!nm.isMatch('-adobe-courier-bold-o-normal--12-120-75-75-X-70-iso8859-1', '-*-*-*-*-*-*-12-*-*-*-m-*-*-*'));
-      assert(!nm.isMatch('ab/cXd/efXg/hi', '*X*i'));
-      assert(!nm.isMatch('ab/cXd/efXg/hi', '*Xg*i'));
-      assert(!nm.isMatch('abcd/abcdefg/abcdefghijk/abcdefghijklmnop.txtz', '**/*a*b*g*n*t'));
-      assert(!nm.isMatch('foo', '*/*/*'));
-      assert(!nm.isMatch('foo', 'fo'));
-      assert(!nm.isMatch('foo/bar', '*/*/*'));
-      assert(!nm.isMatch('foo/bar', 'foo?bar'));
-      assert(!nm.isMatch('foo/bb/aa/rr', '*/*/*'));
-      assert(!nm.isMatch('foo/bba/arr', 'foo*'));
-      assert(!nm.isMatch('foo/bba/arr', 'foo**'));
-      assert(!nm.isMatch('foo/bba/arr', 'foo/*'));
-      assert(!nm.isMatch('foo/bba/arr', 'foo/**arr'));
-      assert(!nm.isMatch('foo/bba/arr', 'foo/**z'));
-      assert(!nm.isMatch('foo/bba/arr', 'foo/*arr'));
-      assert(!nm.isMatch('foo/bba/arr', 'foo/*z'));
-      assert(!nm.isMatch('XXX/adobe/courier/bold/o/normal//12/120/75/75/X/70/iso8859/1', 'XXX/*/*/*/*/*/*/12/*/*/*/m/*/*/*'));
-      assert(nm.isMatch('-adobe-courier-bold-o-normal--12-120-75-75-m-70-iso8859-1', '-*-*-*-*-*-*-12-*-*-*-m-*-*-*'));
-      assert(nm.isMatch('ab/cXd/efXg/hi', '**/*X*/**/*i'));
-      assert(nm.isMatch('ab/cXd/efXg/hi', '*/*X*/*/*i'));
-      assert(nm.isMatch('abcd/abcdefg/abcdefghijk/abcdefghijklmnop.txt', '**/*a*b*g*n*t'));
-      assert(nm.isMatch('abcXdefXghi', '*X*i'));
-      assert(nm.isMatch('foo', 'foo'));
-      assert(nm.isMatch('foo/bar', 'foo/*'));
-      assert(nm.isMatch('foo/bar', 'foo/bar'));
-      assert(nm.isMatch('foo/bar', 'foo[/]bar'));
-      assert(nm.isMatch('foo/bb/aa/rr', '**/**/**'));
-      assert(nm.isMatch('foo/bba/arr', '*/*/*'));
-      assert(nm.isMatch('foo/bba/arr', 'foo/**'));
-      assert(nm.isMatch('XXX/adobe/courier/bold/o/normal//12/120/75/75/m/70/iso8859/1', 'XXX/*/*/*/*/*/*/12/*/*/*/m/*/*/*', {unixify: false}));
+    it('should support recursion', function() {
+      assert(!mm.isMatch('-adobe-courier-bold-o-normal--12-120-75-75-/-70-iso8859-1', '-*-*-*-*-*-*-12-*-*-*-m-*-*-*'));
+      assert(!mm.isMatch('-adobe-courier-bold-o-normal--12-120-75-75-X-70-iso8859-1', '-*-*-*-*-*-*-12-*-*-*-m-*-*-*'));
+      assert(!mm.isMatch('ab/cXd/efXg/hi', '*X*i'));
+      assert(!mm.isMatch('ab/cXd/efXg/hi', '*Xg*i'));
+      assert(!mm.isMatch('abcd/abcdefg/abcdefghijk/abcdefghijklmnop.txtz', '**/*a*b*g*n*t'));
+      assert(!mm.isMatch('foo', '*/*/*'));
+      assert(!mm.isMatch('foo', 'fo'));
+      assert(!mm.isMatch('foo/bar', '*/*/*'));
+      assert(!mm.isMatch('foo/bar', 'foo?bar'));
+      assert(!mm.isMatch('foo/bb/aa/rr', '*/*/*'));
+      assert(!mm.isMatch('foo/bba/arr', 'foo*'));
+      assert(!mm.isMatch('foo/bba/arr', 'foo**'));
+      assert(!mm.isMatch('foo/bba/arr', 'foo/*'));
+      assert(!mm.isMatch('foo/bba/arr', 'foo/**arr'));
+      assert(!mm.isMatch('foo/bba/arr', 'foo/**z'));
+      assert(!mm.isMatch('foo/bba/arr', 'foo/*arr'));
+      assert(!mm.isMatch('foo/bba/arr', 'foo/*z'));
+      assert(!mm.isMatch('XXX/adobe/courier/bold/o/normal//12/120/75/75/X/70/iso8859/1', 'XXX/*/*/*/*/*/*/12/*/*/*/m/*/*/*'));
+      assert(mm.isMatch('-adobe-courier-bold-o-normal--12-120-75-75-m-70-iso8859-1', '-*-*-*-*-*-*-12-*-*-*-m-*-*-*'));
+      assert(mm.isMatch('ab/cXd/efXg/hi', '**/*X*/**/*i'));
+      assert(mm.isMatch('ab/cXd/efXg/hi', '*/*X*/*/*i'));
+      assert(mm.isMatch('abcd/abcdefg/abcdefghijk/abcdefghijklmnop.txt', '**/*a*b*g*n*t'));
+      assert(mm.isMatch('abcXdefXghi', '*X*i'));
+      assert(mm.isMatch('foo', 'foo'));
+      assert(mm.isMatch('foo/bar', 'foo/*'));
+      assert(mm.isMatch('foo/bar', 'foo/bar'));
+      assert(mm.isMatch('foo/bar', 'foo[/]bar'));
+      assert(mm.isMatch('foo/bb/aa/rr', '**/**/**'));
+      assert(mm.isMatch('foo/bba/arr', '*/*/*'));
+      assert(mm.isMatch('foo/bba/arr', 'foo/**'));
+      assert(mm.isMatch('XXX/adobe/courier/bold/o/normal//12/120/75/75/m/70/iso8859/1', 'XXX/*/*/*/*/*/*/12/*/*/*/m/*/*/*', {unixify: false}));
     });
   });
 });

@@ -205,7 +205,7 @@ module.exports = [
 //     { noext: true }
 //   ],
 
-  ['a?b', ['acb'], {}, ['x/y/acb', 'acb', 'acb/', 'acb/d/e']],
+  ['a?b', ['acb', 'acb/'], {}, ['x/y/acb', 'acb', 'acb/', 'acb/d/e']],
   ['a?b', ['x/y/acb', 'acb/', 'acb'], {matchBase: true}, ['x/y/acb', 'acb', 'acb/', 'acb/d/e']],
 
   // begin channelling Boole and deMorgan...

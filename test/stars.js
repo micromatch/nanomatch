@@ -12,48 +12,48 @@ function match(arr, pattern, expected, options) {
 
 describe('stars', function() {
   it('should match one directory level with a single star (*)', function() {
-    var fixture = ['a', 'b', 'a/a', 'a/b', 'a/c', 'a/x', 'a/a/a', 'a/a/b', 'a/a/a/a', 'a/a/a/a/a', 'x/y', 'z/z'];
-    match(fixture, '*', ['a', 'b']);
-    match(fixture, '*/*', ['a/a', 'a/b', 'a/c', 'a/x', 'x/y', 'z/z']);
-    match(fixture, '*/*/*', ['a/a/a', 'a/a/b']);
-    match(fixture, '*/*/*/*', ['a/a/a/a']);
-    match(fixture, '*/*/*/*/*', ['a/a/a/a/a']);
-    match(fixture, 'a/*', ['a/a', 'a/b', 'a/c', 'a/x']);
-    match(fixture, 'a/*/*', ['a/a/a', 'a/a/b']);
-    match(fixture, 'a/*/*/*', ['a/a/a/a']);
-    match(fixture, 'a/*/*/*/*', ['a/a/a/a/a']);
-    match(fixture, 'a/*/a', ['a/a/a']);
-    match(fixture, 'a/*/b', ['a/a/b']);
+    var fixtures = ['a', 'b', 'a/a', 'a/b', 'a/c', 'a/x', 'a/a/a', 'a/a/b', 'a/a/a/a', 'a/a/a/a/a', 'x/y', 'z/z'];
+    match(fixtures, '*', ['a', 'b']);
+    match(fixtures, '*/*', ['a/a', 'a/b', 'a/c', 'a/x', 'x/y', 'z/z']);
+    match(fixtures, '*/*/*', ['a/a/a', 'a/a/b']);
+    match(fixtures, '*/*/*/*', ['a/a/a/a']);
+    match(fixtures, '*/*/*/*/*', ['a/a/a/a/a']);
+    match(fixtures, 'a/*', ['a/a', 'a/b', 'a/c', 'a/x']);
+    match(fixtures, 'a/*/*', ['a/a/a', 'a/a/b']);
+    match(fixtures, 'a/*/*/*', ['a/a/a/a']);
+    match(fixtures, 'a/*/*/*/*', ['a/a/a/a/a']);
+    match(fixtures, 'a/*/a', ['a/a/a']);
+    match(fixtures, 'a/*/b', ['a/a/b']);
   });
 
   it('should match one or more characters', function() {
-    var fixture = ['a', 'aa', 'aaa', 'aaaa', 'ab', 'b', 'bb', 'c', 'cc', 'cac', 'a/a', 'a/b', 'a/c', 'a/x', 'a/a/a', 'a/a/b', 'a/a/a/a', 'a/a/a/a/a', 'x/y', 'z/z'];
-    match(fixture, '*', ['a', 'aa', 'aaa', 'aaaa', 'ab', 'b', 'bb', 'c', 'cc', 'cac']);
-    match(fixture, 'a*', ['a', 'aa', 'aaa', 'aaaa', 'ab']);
-    match(fixture, '*b', ['ab', 'b', 'bb']);
+    var fixtures = ['a', 'aa', 'aaa', 'aaaa', 'ab', 'b', 'bb', 'c', 'cc', 'cac', 'a/a', 'a/b', 'a/c', 'a/x', 'a/a/a', 'a/a/b', 'a/a/a/a', 'a/a/a/a/a', 'x/y', 'z/z'];
+    match(fixtures, '*', ['a', 'aa', 'aaa', 'aaaa', 'ab', 'b', 'bb', 'c', 'cc', 'cac']);
+    match(fixtures, 'a*', ['a', 'aa', 'aaa', 'aaaa', 'ab']);
+    match(fixtures, '*b', ['ab', 'b', 'bb']);
   });
 
   it('should match one or zero characters', function() {
-    var fixture = ['a', 'aa', 'aaa', 'aaaa', 'ab', 'b', 'bb', 'c', 'cc', 'cac', 'a/a', 'a/b', 'a/c', 'a/x', 'a/a/a', 'a/a/b', 'a/a/a/a', 'a/a/a/a/a', 'x/y', 'z/z'];
-    match(fixture, '*', ['a', 'aa', 'aaa', 'aaaa', 'ab', 'b', 'bb', 'c', 'cc', 'cac']);
-    match(fixture, '*a*', ['a', 'aa', 'aaa', 'aaaa', 'ab', 'cac']);
-    match(fixture, '*b*', ['ab', 'b', 'bb']);
-    match(fixture, '*c*', ['c', 'cc', 'cac']);
+    var fixtures = ['a', 'aa', 'aaa', 'aaaa', 'ab', 'b', 'bb', 'c', 'cc', 'cac', 'a/a', 'a/b', 'a/c', 'a/x', 'a/a/a', 'a/a/b', 'a/a/a/a', 'a/a/a/a/a', 'x/y', 'z/z'];
+    match(fixtures, '*', ['a', 'aa', 'aaa', 'aaaa', 'ab', 'b', 'bb', 'c', 'cc', 'cac']);
+    match(fixtures, '*a*', ['a', 'aa', 'aaa', 'aaaa', 'ab', 'cac']);
+    match(fixtures, '*b*', ['ab', 'b', 'bb']);
+    match(fixtures, '*c*', ['c', 'cc', 'cac']);
   });
 
   it('should respect trailing slashes on paterns', function() {
-    var fixture = ['a', 'a/', 'b', 'b/', 'a/a', 'a/a/', 'a/b', 'a/b/', 'a/c', 'a/c/', 'a/x', 'a/x/', 'a/a/a', 'a/a/b', 'a/a/b/', 'a/a/a/', 'a/a/a/a', 'a/a/a/a/', 'a/a/a/a/a', 'a/a/a/a/a/', 'x/y', 'z/z', 'x/y/', 'z/z/', 'a/b/c/.d/e/'];
-    match(fixture, '*/', ['a/', 'b/']);
-    match(fixture, '*/*/', ['a/a/', 'a/b/', 'a/c/', 'a/x/', 'x/y/', 'z/z/']);
-    match(fixture, '*/*/*/', ['a/a/a/', 'a/a/b/']);
-    match(fixture, '*/*/*/*/', ['a/a/a/a/']);
-    match(fixture, '*/*/*/*/*/', ['a/a/a/a/a/']);
-    match(fixture, 'a/*/', ['a/a/', 'a/b/', 'a/c/', 'a/x/']);
-    match(fixture, 'a/*/*/', ['a/a/a/', 'a/a/b/']);
-    match(fixture, 'a/*/*/*/', ['a/a/a/a/']);
-    match(fixture, 'a/*/*/*/*/', ['a/a/a/a/a/']);
-    match(fixture, 'a/*/a/', ['a/a/a/']);
-    match(fixture, 'a/*/b/', ['a/a/b/']);
+    var fixtures = ['a', 'a/', 'b', 'b/', 'a/a', 'a/a/', 'a/b', 'a/b/', 'a/c', 'a/c/', 'a/x', 'a/x/', 'a/a/a', 'a/a/b', 'a/a/b/', 'a/a/a/', 'a/a/a/a', 'a/a/a/a/', 'a/a/a/a/a', 'a/a/a/a/a/', 'x/y', 'z/z', 'x/y/', 'z/z/', 'a/b/c/.d/e/'];
+    match(fixtures, '*/', ['a/', 'b/']);
+    match(fixtures, '*/*/', ['a/a/', 'a/b/', 'a/c/', 'a/x/', 'x/y/', 'z/z/']);
+    match(fixtures, '*/*/*/', ['a/a/a/', 'a/a/b/']);
+    match(fixtures, '*/*/*/*/', ['a/a/a/a/']);
+    match(fixtures, '*/*/*/*/*/', ['a/a/a/a/a/']);
+    match(fixtures, 'a/*/', ['a/a/', 'a/b/', 'a/c/', 'a/x/']);
+    match(fixtures, 'a/*/*/', ['a/a/a/', 'a/a/b/']);
+    match(fixtures, 'a/*/*/*/', ['a/a/a/a/']);
+    match(fixtures, 'a/*/*/*/*/', ['a/a/a/a/a/']);
+    match(fixtures, 'a/*/a/', ['a/a/a/']);
+    match(fixtures, 'a/*/b/', ['a/a/b/']);
   });
 
   it('should match a literal star when escaped', function() {
@@ -65,37 +65,20 @@ describe('stars', function() {
   });
 
   it('should match leading `./`', function() {
-    var fixture = ['./a', 'b', 'a/a', './a/b', 'a/c', './a/x', './a/a/a', 'a/a/b', './a/a/a/a', './a/a/a/a/a', 'x/y', './z/z'];
-    match(fixture, '*', ['./a', 'b']);
-    match(fixture, '*/*', ['a/a', './a/b', 'a/c', './a/x', 'x/y', './z/z']);
-    match(fixture, '*/*/*', ['./a/a/a', 'a/a/b']);
-    match(fixture, '*/*/*/*', ['./a/a/a/a']);
-    match(fixture, '*/*/*/*/*', ['./a/a/a/a/a']);
-    match(fixture, 'a/*', ['a/a', './a/b', 'a/c', './a/x']);
-    match(fixture, 'a/*/*', ['./a/a/a', 'a/a/b']);
-    match(fixture, 'a/*/*/*', ['./a/a/a/a']);
-    match(fixture, 'a/*/*/*/*', ['./a/a/a/a/a']);
-    match(fixture, 'a/*/a', ['./a/a/a']);
-  });
-
-  it('should not match leading `./` when `options.strictOpen` is true', function() {
-    var fixture = ['./a', 'b', 'a/a', './a/b', 'a/c', './a/x', './a/a/a', 'a/a/b', './a/a/a/a', './a/a/a/a/a', 'x/y', './z/z'];
-    match(fixture, '*', ['b'], {strictOpen: true});
-    match(fixture, '*/*', ['a/a', 'a/c', 'x/y'], {strictOpen: true});
-    match(fixture, '*/*/*', ['a/a/b'], {strictOpen: true});
-    match(fixture, '*/*/*/*', [], {strictOpen: true});
-    match(fixture, '*/*/*/*/*', [], {strictOpen: true});
-    match(fixture, 'a/*', ['a/a', 'a/c'], {strictOpen: true});
-    match(fixture, 'a/*/*', ['a/a/b'], {strictOpen: true});
-    match(fixture, 'a/*/*/*', [], {strictOpen: true});
-    match(fixture, 'a/*/*/*/*', [], {strictOpen: true});
-    match(fixture, 'a/*/a', [], {strictOpen: true});
-  });
-
-  it('should exactly match `./` when pattern begins with `./`', function() {
-    var fixture = ['a', './a', 'b', 'a/a', './a/b', 'a/c', './a/x', './a/a/a', 'a/a/b', './a/a/a/a', './a/a/a/a/a', 'x/y', './z/z'];
-    match(fixture, '*', ['a', 'b'], {strictOpen: true});
-    match(fixture, './*', ['./a'], {strictOpen: true});
-    match(fixture, './*', ['./a', 'a', 'b'], {strictOpen: false});
+    var fixtures = ['a', './a', 'b', 'a/a', './a/b', 'a/c', './a/x', './a/a/a', 'a/a/b', './a/a/a/a', './a/a/a/a/a', 'x/y', './z/z'];
+    match(fixtures, '*', ['a', 'b']);
+    match(fixtures, '**/a/**', ['a/a', 'a/c', 'a/b', 'a/x', 'a/a/a', 'a/a/b', 'a/a/a/a', 'a/a/a/a/a']);
+    match(fixtures, '*/*', ['a/a', 'a/b', 'a/c', 'a/x', 'x/y', 'z/z']);
+    match(fixtures, '*/*/*', ['a/a/a', 'a/a/b']);
+    match(fixtures, '*/*/*/*', ['a/a/a/a']);
+    match(fixtures, '*/*/*/*/*', ['a/a/a/a/a']);
+    match(fixtures, './*', ['a', 'b']);
+    match(fixtures, './**/a/**', ['a/a', 'a/b', 'a/c', 'a/x', 'a/a/a', 'a/a/b', 'a/a/a/a', 'a/a/a/a/a']);
+    match(fixtures, './a/*/a', ['a/a/a']);
+    match(fixtures, 'a/*', ['a/a', 'a/b', 'a/c', 'a/x']);
+    match(fixtures, 'a/*/*', ['a/a/a', 'a/a/b']);
+    match(fixtures, 'a/*/*/*', ['a/a/a/a']);
+    match(fixtures, 'a/*/*/*/*', ['a/a/a/a/a']);
+    match(fixtures, 'a/*/a', ['a/a/a']);
   });
 });

@@ -1,36 +1,57 @@
 'use strict';
 
 var assert = require('assert');
-var argv = require('yargs-parser')(process.argv.slice(2));
-var mm = require('multimatch');
-mm.multimatch = true;
-var nm = require('../..');
+var utils = require('../../lib/utils');
+var matcher = require('./matcher');
+var compare = require('./compare');
 
-var matcher = argv.mm ? mm : nm;
-if (argv.mi) {
-  matcher = require('minimatch').match;
-  matcher.minimatch = true;
-}
-
-function compare(a, b) {
-  return a === b ? 0 : a > b ? 1 : -1;
-}
-
-module.exports = function(fixtures, pattern, expected, options) {
+module.exports = function(fixtures, patterns, expected, options) {
   if (!Array.isArray(expected)) {
     var tmp = expected;
     expected = options;
     options = tmp;
   }
 
-  fixtures = Array.isArray(fixtures) ? fixtures : [fixtures];
-  var actual = matcher(fixtures, pattern, options);
-  actual.sort(compare);
+  var actual = matcher(utils.arrayify(fixtures), patterns, options);
   expected.sort(compare);
-  assert.deepEqual(actual, expected);
+  actual.sort(compare);
+
+  assert.deepEqual(actual, expected, patterns);
+};
+
+module.exports.match = function(fixtures, pattern, expected, options) {
+  if (!Array.isArray(expected)) {
+    var tmp = expected;
+    expected = options;
+    options = tmp;
+  }
+
+  var actual = matcher.match(utils.arrayify(fixtures), pattern, options);
+  expected.sort(compare);
+  actual.sort(compare);
+
+  assert.deepEqual(actual, expected, pattern);
 };
 
 module.exports.isMatch = function() {
-  var fn = argv.mm ? mm : nm.isMatch;
-  return fn.apply(matcher, arguments);
+  return matcher.isMatch.apply(null, arguments);
+};
+
+module.exports.makeRe = function() {
+  return matcher.makeRe.apply(null, arguments);
+};
+
+function isMatch(fixture, pattern, expected, options) {
+  if (typeof expected !== 'boolean') {
+    var tmp = expected;
+    expected = options;
+    options = tmp;
+  }
+
+  var isMatch = matcher.isMatch(fixture, pattern, options);
+  if (expected === false) {
+    assert(!isMatch, 'should not match ' + pattern);
+  } else {
+    assert(isMatch, 'should match ' + pattern);
+  }
 };

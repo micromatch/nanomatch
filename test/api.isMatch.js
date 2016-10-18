@@ -5,16 +5,10 @@ var mm = require('..');
 
 describe('.isMatch():', function() {
   describe('error handling:', function() {
-    it('should throw on undefined args', function() {
-      assert.throws(function() {
-        mm.isMatch();
-      }, /expected a string/);
-    });
-
     it('should throw on bad args', function() {
       assert.throws(function() {
         mm.isMatch({});
-      }, /expected pattern to be a string, regex or function/);
+      }, /expected pattern to be a string or regex/);
     });
   });
 
@@ -118,9 +112,16 @@ describe('.isMatch():', function() {
       assert(mm.isMatch('/ab', '/*'));
       assert(mm.isMatch('/cd', '/*'));
       assert(!mm.isMatch('ef', '/*'));
-      assert(!mm.isMatch('ab', './*'));
+      assert(mm.isMatch('ab', './*'));
+      assert(mm.isMatch('ab/', './*/'));
+      assert(!mm.isMatch('ab', './*/'));
       assert(mm.isMatch('ab', '*'));
       assert(mm.isMatch('ab', 'ab'));
+    });
+
+    it('should exactly match leading slash', function() {
+      assert(!mm.isMatch('ef', '/*'));
+      assert(mm.isMatch('/ef', '/*'));
     });
 
     it('should match files with the given extension', function() {
@@ -186,7 +187,7 @@ describe('.isMatch():', function() {
       assert(mm.isMatch('a/b/c/d/g/e.f', 'a/b/**/d/**/*.*'));
       assert(mm.isMatch('a/b/c/d/g/g/e.f', 'a/b/**/d/**/*.*'));
 
-      // issue #15
+      // https://github.com/jonschlinkert/micromatch/issues/15
       assert(mm.isMatch('z.js', 'z*'));
       assert(mm.isMatch('z.js', '**/z*'));
       assert(mm.isMatch('z.js', '**/z*.js'));
@@ -197,40 +198,34 @@ describe('.isMatch():', function() {
       assert(mm.isMatch('a/b-c/d/e/z.js', 'a/b-*/**/z.js'));
     });
 
-    /**
-     * 1. micromatch differs from spec
-     * 2. minimatch differs from spec
-     * 3. both micromatch and minimatch differ from spec
-     */
-
-    it('Extended slash-matching features', function() {
-      assert(!mm.isMatch('foo/baz/bar', 'foo*bar'));
-      assert(!mm.isMatch('foo/baz/bar', 'foo**bar'));
-      assert(mm.isMatch('foobazbar', 'foo**bar')); // 3
-      assert(mm.isMatch('foo/baz/bar', 'foo/**/bar'));
-      assert(mm.isMatch('foo/baz/bar', 'foo/**/**/bar'));
-      assert(mm.isMatch('foo/b/a/z/bar', 'foo/**/bar'));
-      assert(mm.isMatch('foo/b/a/z/bar', 'foo/**/**/bar'));
-      assert(mm.isMatch('foo/bar', 'foo/**/bar'));
-      assert(mm.isMatch('foo/bar', 'foo/**/**/bar'));
-      assert(!mm.isMatch('foo/bar', 'foo?bar'));
-      assert(mm.isMatch('foo/bar', 'foo[/]bar')); // 2
-      assert(!mm.isMatch('foo', 'foo/**'));
-      assert(mm.isMatch('XXX/foo', '**/foo'));
-      assert(mm.isMatch('bar/baz/foo', '**/foo'));
+    it('should match slashes', function() {
       assert(!mm.isMatch('bar/baz/foo', '*/foo'));
-      assert(!mm.isMatch('foo/bar/baz', '**/bar*'));
-      assert(mm.isMatch('deep/foo/bar/baz', '**/bar/*'));
-      assert(!mm.isMatch('deep/foo/bar/baz/', '**/bar/*'));
-      assert(mm.isMatch('deep/foo/bar/baz/', '**/bar/**'));
       assert(!mm.isMatch('deep/foo/bar', '**/bar/*'));
-      assert(mm.isMatch('deep/foo/bar/', '**/bar/**'));
-      assert(!mm.isMatch('foo/bar/baz', '**/bar**'));
-      assert(mm.isMatch('foo/bar/baz/x', '*/bar/**'));
       assert(!mm.isMatch('deep/foo/bar/baz/x', '*/bar/**'));
-      assert(mm.isMatch('deep/foo/bar/baz/x', '**/bar/*/*'));
-      assert(mm.isMatch('a/j/z/x.md', 'a/**/j/**/z/*.md'));
+      assert(!mm.isMatch('foo', 'foo/**'));
+      assert(!mm.isMatch('foo/bar', 'foo?bar'));
+      assert(!mm.isMatch('foo/bar/baz', '**/bar*'));
+      assert(!mm.isMatch('foo/bar/baz', '**/bar**'));
+      assert(!mm.isMatch('foo/baz/bar', 'foo**bar'));
+      assert(!mm.isMatch('foo/baz/bar', 'foo*bar'));
       assert(mm.isMatch('a/b/j/c/z/x.md', 'a/**/j/**/z/*.md'));
+      assert(mm.isMatch('a/j/z/x.md', 'a/**/j/**/z/*.md'));
+      assert(mm.isMatch('bar/baz/foo', '**/foo'));
+      assert(mm.isMatch('deep/foo/bar/', '**/bar/**'));
+      assert(mm.isMatch('deep/foo/bar/baz', '**/bar/*'));
+      assert(mm.isMatch('deep/foo/bar/baz/', '**/bar/*'));
+      assert(mm.isMatch('deep/foo/bar/baz/', '**/bar/**'));
+      assert(mm.isMatch('deep/foo/bar/baz/x', '**/bar/*/*'));
+      assert(mm.isMatch('foo/b/a/z/bar', 'foo/**/**/bar'));
+      assert(mm.isMatch('foo/b/a/z/bar', 'foo/**/bar'));
+      assert(mm.isMatch('foo/bar', 'foo/**/**/bar'));
+      assert(mm.isMatch('foo/bar', 'foo/**/bar'));
+      assert(mm.isMatch('foo/bar', 'foo[/]bar'));
+      assert(mm.isMatch('foo/bar/baz/x', '*/bar/**'));
+      assert(mm.isMatch('foo/baz/bar', 'foo/**/**/bar'));
+      assert(mm.isMatch('foo/baz/bar', 'foo/**/bar'));
+      assert(mm.isMatch('foobazbar', 'foo**bar'));
+      assert(mm.isMatch('XXX/foo', '**/foo'));
     });
 
     it('question marks should not match slashes', function() {
@@ -296,25 +291,27 @@ describe('.isMatch():', function() {
     });
 
     it('should match paths with leading `./`', function() {
+      assert(!mm.isMatch('./.a', '*.a'));
+      assert(!mm.isMatch('./.a', './*.a'));
       assert(!mm.isMatch('./.a', 'a/**/z/*.md'));
-      assert(mm.isMatch('./a/b/c/d/e/z/c.md', 'a/**/z/*.md'));
+      assert(!mm.isMatch('./a/b/c/d/e/z/c.md', './a/**/j/**/z/*.md'));
+      assert(!mm.isMatch('./a/b/c/j/e/z/c.txt', './a/**/j/**/z/*.md'));
+      assert(!mm.isMatch('a/b/c/d/e/z/c.md', './a/**/j/**/z/*.md'));
+      assert(mm.isMatch('./.a', './.a'));
+      assert(mm.isMatch('./a/b/c.md', 'a/**/*.md'));
+      assert(mm.isMatch('./a/b/c/d/e/j/n/p/o/z/c.md', './a/**/j/**/z/*.md'));
       assert(mm.isMatch('./a/b/c/d/e/z/c.md', '**/*.md'));
+      assert(mm.isMatch('./a/b/c/d/e/z/c.md', './a/**/z/*.md'));
+      assert(mm.isMatch('./a/b/c/d/e/z/c.md', 'a/**/z/*.md'));
+      assert(mm.isMatch('./a/b/c/j/e/z/c.md', './a/**/j/**/z/*.md'));
+      assert(mm.isMatch('./a/b/c/j/e/z/c.md', 'a/**/j/**/z/*.md'));
+      assert(mm.isMatch('./a/b/z/.a', './a/**/z/.a'));
+      assert(mm.isMatch('./a/b/z/.a', 'a/**/z/.a'));
+      assert(mm.isMatch('.a', './.a'));
+      assert(mm.isMatch('a/b/c.md', './a/**/*.md'));
+      assert(mm.isMatch('a/b/c.md', 'a/**/*.md'));
       assert(mm.isMatch('a/b/c/d/e/z/c.md', 'a/**/z/*.md'));
       assert(mm.isMatch('a/b/c/j/e/z/c.md', 'a/**/j/**/z/*.md'));
-      assert(mm.isMatch('./a/b/z/.a', 'a/**/z/.a'));
-    });
-
-    it('should not match paths with leading `./` when `opts.strictOpen` is true', function() {
-      assert(!mm.isMatch('./.a', 'a/**/z/*.md', {strictOpen: true}));
-      assert(!mm.isMatch('./a/b/c/d/e/z/c.md', './a/**/j/**/z/*.md', {strictOpen: true}));
-      assert(!mm.isMatch('./a/b/c/d/e/z/c.md', 'a/**/z/*.md', {strictOpen: true}));
-      assert(!mm.isMatch('./a/b/c/j/e/z/c.md', 'a/**/j/**/z/*.md', {strictOpen: true}));
-      assert(!mm.isMatch('./a/b/c/j/e/z/c.txt', './a/**/j/**/z/*.md', {strictOpen: true}));
-      assert(!mm.isMatch('./a/b/z/.a', 'a/**/z/.a', {strictOpen: true}));
-      assert(mm.isMatch('./a/b/c/d/e/j/n/p/o/z/c.md', './a/**/j/**/z/*.md', {strictOpen: true}));
-      assert(mm.isMatch('./a/b/c/d/e/z/c.md', './a/**/z/*.md', {strictOpen: true}));
-      assert(mm.isMatch('./a/b/c/j/e/z/c.md', './a/**/j/**/z/*.md', {strictOpen: true}));
-      assert(mm.isMatch('./a/b/z/.a', './a/**/z/.a', {strictOpen: true}));
     });
   });
 });
