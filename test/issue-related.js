@@ -1,7 +1,6 @@
 'use strict';
 
 var assert = require('assert');
-var argv = require('yargs-parser')(process.argv.slice(2));
 var nm = require('./support/match');
 
 describe('issue-related tests', function() {

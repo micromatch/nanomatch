@@ -4,7 +4,6 @@
  * Module dependencies
  */
 
-var path = require('path');
 var toRegex = require('to-regex');
 var Snapdragon = require('snapdragon');
 var debug = require('debug')('nanomatch');

@@ -28,10 +28,6 @@ describe('basic tests', function() {
   });
 });
 
-function inspect(val) {
-  return util.inspect(val, {depth: null});
-}
-
 function compare(a, b) {
   return a === b ? 0 : a > b ? 1 : -1;
 }

@@ -1,6 +1,5 @@
 'use strict';
 
-var assert = require('assert');
 var match = require('./support/match');
 
 describe('.match method', function() {
@@ -18,7 +17,7 @@ describe('.match method', function() {
     });
 
     it('should support regex ranges', function() {
-      var fixtures = ['a/a', 'a/b', 'a/c', 'a/x/y', 'a/x']
+      var fixtures = ['a/a', 'a/b', 'a/c', 'a/x/y', 'a/x'];
       match(fixtures, 'a/[b-c]', ['a/b', 'a/c']);
       match(fixtures, 'a/[a-z]', ['a/a', 'a/b', 'a/c', 'a/x']);
     });
@@ -50,7 +49,7 @@ describe('.match method', function() {
     });
 
     it('should support regex ranges', function() {
-      var fixtures = ['a\\a', 'a\\b', 'a\\c', 'a\\x\\y', 'a\\x']
+      var fixtures = ['a\\a', 'a\\b', 'a\\c', 'a\\x\\y', 'a\\x'];
       match(fixtures, 'a/[b-c]', ['a/b', 'a/c']);
       match(fixtures, 'a/[a-z]', ['a/a', 'a/b', 'a/c', 'a/x']);
     });

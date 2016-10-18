@@ -2,7 +2,6 @@
 
 var path = require('path');
 var sep = path.sep;
-var bash = require('bash-match');
 var mm = require('./support/match');
 
 describe('nanomatch', function() {
