@@ -40,3 +40,7 @@ module.exports.isMatch = function() {
 module.exports.makeRe = function() {
   return matcher.makeRe.apply(null, arguments);
 };
+
+module.exports.not = function() {
+  return matcher.not.apply(null, arguments);
+};
