@@ -256,8 +256,8 @@ nanomatch.any = function(str, patterns, options) {
  */
 
 nanomatch.contains = function(str, pattern, options) {
-  if (pattern === '' || pattern === ' ') {
-    return pattern === str;
+  if (pattern === '' || pattern === ' ' || pattern === '.') {
+    return str === pattern;
   }
 
   var opts = extend({}, options, {contains: true});
