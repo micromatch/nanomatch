@@ -73,6 +73,14 @@ describe('nanomatch', function() {
       nm(fixtures, ['a*.txt'], ['a.txt']);
       nm(fixtures, ['*.txt'], ['a.txt']);
     });
+
+    it('should match literal brackets', function() {
+      nm(['a [b]'], 'a \\[b\\]', ['a [b]']);
+      nm(['a [b] c'], 'a [b] c', ['a [b] c']);
+      nm(['a [b]'], 'a \\[b\\]*', ['a [b]']);
+      nm(['a [bc]'], 'a \\[bc\\]*', ['a [bc]']);
+      nm(['a [b]', 'a [b].js'], 'a \\[b\\].*', ['a [b].js']);
+    });
   });
 
   describe('windows paths', function() {
