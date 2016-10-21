@@ -1,6 +1,5 @@
 'use strict';
 
-var assert = require('assert');
 var nm = require('./support/match');
 
 describe('stars', function() {

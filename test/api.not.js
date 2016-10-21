@@ -1,7 +1,6 @@
 'use strict';
 
 var path = require('path');
-var assert = require('assert');
 var match = require('./support/match');
 var sep = path.sep;
 

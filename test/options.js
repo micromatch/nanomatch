@@ -31,6 +31,17 @@ describe('options', function() {
       nm(negations, '**', [], {ignore: ['**']});
     });
 
+    it.skip('should work with dotfiles', function() {
+      nm(globs, '*', ['a', 'b'], {ignore: 'a/**', dot: true});
+      nm(globs, '*', ['b'], {ignore: '**/a', dot: true});
+      nm(globs, '*/*', ['.a/a', 'x/y', 'z/z'], {ignore: 'a/**', dot: true});
+      nm(globs, '*/*/*', ['.a/a/a', 'b/b/b', 'b/b/c', 'c/c/c', 'e/f/g', 'h/i/a', 'x/x/x', 'z/z/z'], {ignore: 'a/**', dot: true});
+      nm(globs, '*/*/*/*', ['.a/a/a/a'], {ignore: 'a/**', dot: true});
+      nm(globs, '*/*/*/*/*', [], {ignore: 'a/**', dot: true});
+      nm(globs, 'a/*', [], {ignore: 'a/**', dot: true});
+      nm(globs, '**/*/x', ['x/x/x'], {ignore: 'a/**', dot: true});
+    });
+
     it('should "un-ignore" values when a negation pattern is passed', function() {
       nm(negations, '**', ['a/d'], {ignore: ['**', '!*/d']});
       nm(negations, '**', ['a/a', 'b/a'], {ignore: ['**', '!*/a']});
