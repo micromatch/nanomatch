@@ -25,7 +25,9 @@ function run(type, pattern) {
         last = args.pop();
       }
       var expected = util.inspect(last, {depth: null});
-      console.log(util.inspect(code.run.apply(null, args), {depth: null}));
+      var res = code.run.apply(null, args);
+      console.log(util.inspect(res, {depth: null}));
+      console.log('results:', res.length);
       console.log();
     });
   } else {
