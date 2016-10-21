@@ -69,116 +69,128 @@ Additional detail provided in the [API documentation](#api).
 
 ## API
 
-### [nanomatch](index.js#L37)
+### [nanomatch](index.js#L39)
 
 The main function takes a list of strings and one or more glob patterns to use for matching.
 
 **Example**
 
 ```js
-var nanomatch = require('nanomatch');
-console.log(nanomatch(['a.js', 'a.txt'], ['*.js']));
+var mm = require('nanomatch');
+mm(list, patterns[, options]);
+
+console.log(mm(['a.js', 'a.txt'], ['*.js']));
 //=> [ 'a.js' ]
 ```
 
 **Params**
 
-* `list` **{Array}**
-* `patterns` **{String|Array}**: Glob patterns
-* `options` **{Object}**
+* `list` **{Array}**: A list of strings to match
+* `patterns` **{String|Array}**: One or more glob patterns to use for matching.
+* `options` **{Object}**: Any [options](#options) to change how matches are performed
 * `returns` **{Array}**: Returns an array of matches
 
-### [.match](index.js#L103)
+### [.match](index.js#L107)
 
 Similar to the main function, but `pattern` must be a string.
 
 **Example**
 
 ```js
-var nanomatch = require('nanomatch');
-console.log(nanomatch.match(['a.a', 'a.aa', 'a.b', 'a.c'], '*.a'));
+var mm = require('nanomatch');
+mm.match(list, pattern[, options]);
+
+console.log(mm.match(['a.a', 'a.aa', 'a.b', 'a.c'], '*.a'));
 //=> ['a.a', 'a.aa']
 ```
 
 **Params**
 
 * `list` **{Array}**: Array of strings to match
-* `pattern` **{String}**: Glob pattern
-* `options` **{Object}**
+* `pattern` **{String}**: Glob pattern to use for matching.
+* `options` **{Object}**: Any [options](#options) to change how matches are performed
 * `returns` **{Array}**: Returns an array of matches
 
-### [.isMatch](index.js#L165)
+### [.isMatch](index.js#L171)
 
 Returns true if the specified `string` matches the given glob `pattern`.
 
 **Example**
 
 ```js
-var nanomatch = require('nanomatch');
-console.log(nanomatch.isMatch('a.a', '*.a'));
+var mm = require('nanomatch');
+mm.isMatch(string, pattern[, options]);
+
+console.log(mm.isMatch('a.a', '*.a'));
 //=> true
-console.log(nanomatch.isMatch('a.b', '*.a'));
+console.log(mm.isMatch('a.b', '*.a'));
 //=> false
 ```
 
 **Params**
 
 * `string` **{String}**: String to match
-* `pattern` **{String}**: Glob pattern
-* `options` **{String}**
+* `pattern` **{String}**: Glob pattern to use for matching.
+* `options` **{Object}**: Any [options](#options) to change how matches are performed
 * `returns` **{Boolean}**: Returns true if the string matches the glob pattern.
 
-### [.not](index.js#L192)
+### [.not](index.js#L200)
 
-Returns a list of strings that do _not_ match any of the given `patterns`.
+Returns a list of strings that _DO NOT MATCH_ any of the given `patterns`.
 
 **Example**
 
 ```js
-var nanomatch = require('nanomatch');
-console.log(nanomatch.not(['a.a', 'b.b', 'c.c'], '*.a'));
+var mm = require('nanomatch');
+mm.not(list, patterns[, options]);
+
+console.log(mm.not(['a.a', 'b.b', 'c.c'], '*.a'));
 //=> ['b.b', 'c.c']
 ```
 
 **Params**
 
 * `list` **{Array}**: Array of strings to match.
-* `pattern` **{String}**: One or more glob patterns.
-* `options` **{Object}**
-* `returns` **{Array}**: Returns an array of strings that do not match the given patterns.
+* `patterns` **{String|Array}**: One or more glob pattern to use for matching.
+* `options` **{Object}**: Any [options](#options) to change how matches are performed
+* `returns` **{Array}**: Returns an array of strings that **do not match** the given patterns.
 
-### [.any](index.js#L227)
+### [.any](index.js#L237)
 
 Returns true if the given `string` matches any of the given glob `patterns`.
 
 **Example**
 
 ```js
-var nanomatch = require('nanomatch');
-console.log(nanomatch.any('a.a', ['b.*', '*.a']));
+var mm = require('nanomatch');
+mm.any(string, patterns[, options]);
+
+console.log(mm.any('a.a', ['b.*', '*.a']));
 //=> true
-console.log(nanomatch.any('a.a', 'b.*'));
+console.log(mm.any('a.a', 'b.*'));
 //=> false
 ```
 
 **Params**
 
 * `str` **{String}**: The string to test.
-* `patterns` **{String|Array}**: Glob patterns to use.
-* `options` **{Object}**: Options to pass to the `matcher()` function.
+* `patterns` **{String|Array}**: One or more glob patterns to use for matching.
+* `options` **{Object}**: Any [options](#options) to change how matches are performed
 * `returns` **{Boolean}**: Returns true if any patterns match `str`
 
-### [.contains](index.js#L255)
+### [.contains](index.js#L267)
 
-Returns true if the given `string` contains the given pattern. Similar to `.isMatch` but the pattern can match any part of the string.
+Returns true if the given `string` contains the given pattern. Similar to [.isMatch](#isMatch) but the pattern can match any part of the string.
 
 **Example**
 
 ```js
-var nanomatch = require('nanomatch');
-console.log(nanomatch.contains('aa/bb/cc', '*b'));
+var mm = require('nanomatch');
+mm.contains(string, pattern[, options]);
+
+console.log(mm.contains('aa/bb/cc', '*b'));
 //=> true
-console.log(nanomatch.contains('aa/bb/cc', '*d'));
+console.log(mm.contains('aa/bb/cc', '*d'));
 //=> false
 ```
 
@@ -186,38 +198,42 @@ console.log(nanomatch.contains('aa/bb/cc', '*d'));
 
 * `str` **{String}**: The string to match.
 * `pattern` **{String}**: Glob pattern to use for matching.
-* `options` **{Object}**
+* `options` **{Object}**: Any [options](#options) to change how matches are performed
 * `returns` **{Boolean}**: Returns true if the patter matches any part of `str`.
 
-### [.matchKeys](index.js#L295)
+### [.matchKeys](index.js#L316)
 
 Filter the keys of the given object with the given `glob` pattern and `options`. Does not attempt to match nested keys. If you need this feature, use [glob-object](https://github.com/jonschlinkert/glob-object) instead.
 
 **Example**
 
 ```js
-var nanomatch = require('nanomatch');
+var mm = require('nanomatch');
+mm.matchKeys(object, patterns[, options]);
+
 var obj = { aa: 'a', ab: 'b', ac: 'c' };
-console.log(nanomatch.matchKeys(obj, '*b'));
+console.log(mm.matchKeys(obj, '*b'));
 //=> { ab: 'b' }
 ```
 
 **Params**
 
-* `object` **{Object}**
-* `patterns` **{Array|String}**: One or more glob patterns.
+* `object` **{Object}**: The object with keys to filter.
+* `patterns` **{String|Array}**: One or more glob patterns to use for matching.
+* `options` **{Object}**: Any [options](#options) to change how matches are performed
 * `returns` **{Object}**: Returns an object with only keys that match the given patterns.
 
-### [.matcher](index.js#L322)
+### [.matcher](index.js#L345)
 
-Creates a matcher function from the given glob `pattern` and `options`. The returned function takes a string to match as its only argument.
+Returns a memoized matcher function from the given glob `pattern` and `options`. The returned function takes a string to match as its only argument and returns true if the string is a match.
 
 **Example**
 
 ```js
-var nanomatch = require('nanomatch');
-var isMatch = nanomatch.matcher('*.!(*a)');
+var mm = require('nanomatch');
+mm.matcher(pattern[, options]);
 
+var isMatch = mm.matcher('*.!(*a)');
 console.log(isMatch('a.a'));
 //=> false
 console.log(isMatch('a.b'));
@@ -227,36 +243,40 @@ console.log(isMatch('a.b'));
 **Params**
 
 * `pattern` **{String}**: Glob pattern
-* `options` **{String}**
+* `options` **{Object}**: Any [options](#options) to change how matches are performed.
 * `returns` **{Function}**: Returns a matcher function.
 
-### [.makeRe](index.js#L377)
+### [.makeRe](index.js#L402)
 
 Create a regular expression from the given glob `pattern`.
 
 **Example**
 
 ```js
-var nanomatch = require('nanomatch');
-console.log(nanomatch.makeRe('*.js'));
+var mm = require('nanomatch');
+mm.makeRe(pattern[, options]);
+
+console.log(mm.makeRe('*.js'));
 //=> /^(?:(\.[\\\/])?(?!\.)(?=.)[^\/]*?\.js)$/
 ```
 
 **Params**
 
-* `pattern` **{String}**: The pattern to convert to regex.
-* `options` **{Object}**
+* `pattern` **{String}**: A glob pattern to convert to regex.
+* `options` **{Object}**: Any [options](#options) to change how matches are performed.
 * `returns` **{RegExp}**: Returns a regex created from the given pattern.
 
-### [.create](index.js#L435)
+### [.create](index.js#L462)
 
 Parses the given glob `pattern` and returns an object with the compiled `output` and optional source `map`.
 
 **Example**
 
 ```js
-var nanomatch = require('nanomatch');
-console.log(nanomatch.create('abc/*.js'));
+var mm = require('nanomatch');
+mm.create(pattern[, options]);
+
+console.log(mm.create('abc/*.js'));
 // { options: { source: 'string', sourcemap: true },
 //   state: {},
 //   compilers:
@@ -284,19 +304,21 @@ console.log(nanomatch.create('abc/*.js'));
 
 **Params**
 
-* `pattern` **{String}**: Glob pattern
-* `options` **{Object}**
+* `pattern` **{String}**: Glob pattern to parse and compile.
+* `options` **{Object}**: Any [options](#options) to change how parsing and compiling is performed.
 * `returns` **{Object}**: Returns an object with the parsed AST, compiled string and optional source map.
 
-### [.parse](index.js#L472)
+### [.parse](index.js#L501)
 
 Parse the given `str` with the given `options`.
 
 **Example**
 
 ```js
-var nanomatch = require('nanomatch');
-var ast = nanomatch.parse('a/{b,c}/d');
+var mm = require('nanomatch');
+mm.parse(pattern[, options]);
+
+var ast = mm.parse('a/{b,c}/d');
 console.log(ast);
 // { type: 'root',
 //   errors: [],
@@ -319,7 +341,7 @@ console.log(ast);
 * `options` **{Object}**
 * `returns` **{Object}**: Returns an AST
 
-### [.compile](index.js#L523)
+### [.compile](index.js#L554)
 
 Compile the given `ast` or string with the given `options`.
 
@@ -327,6 +349,8 @@ Compile the given `ast` or string with the given `options`.
 
 ```js
 var nanomatch = require('nanomatch');
+mm.compile(ast[, options]);
+
 var ast = nanomatch.parse('a/{b,c}/d');
 console.log(nanomatch.compile(ast));
 // { options: { source: 'string' },
@@ -409,37 +433,53 @@ npm i -d && npm benchmark
 ### Latest results
 
 ```bash
-Benchmarking: (4 of 4)
+Benchmarking: (6 of 6)
  · globstar-basic
+ · large-list-globstar
+ · long-list-globstar
  · negation-basic
  · not-glob-basic
  · star-basic
 
 # benchmark/fixtures/match/globstar-basic.js (182 bytes)
-  minimatch x 35,521 ops/sec ±0.99% (82 runs sampled)
-  multimatch x 29,662 ops/sec ±1.90% (82 runs sampled)
-  nanomatch x 719,866 ops/sec ±1.53% (84 runs sampled)
+  minimatch x 32,012 ops/sec ±0.86% (83 runs sampled)
+  multimatch x 29,055 ops/sec ±1.41% (83 runs sampled)
+  nanomatch x 479,001 ops/sec ±1.32% (86 runs sampled)
+
+  fastest is nanomatch
+
+# benchmark/fixtures/match/large-list-globstar.js (485686 bytes)
+  minimatch x 24.10 ops/sec ±1.28% (42 runs sampled)
+  multimatch x 24.33 ops/sec ±0.78% (44 runs sampled)
+  nanomatch x 407 ops/sec ±0.86% (83 runs sampled)
+
+  fastest is nanomatch
+
+# benchmark/fixtures/match/long-list-globstar.js (194085 bytes)
+  minimatch x 264 ops/sec ±1.13% (82 runs sampled)
+  multimatch x 251 ops/sec ±0.96% (82 runs sampled)
+  nanomatch x 999 ops/sec ±0.51% (87 runs sampled)
 
   fastest is nanomatch
 
 # benchmark/fixtures/match/negation-basic.js (132 bytes)
-  minimatch x 65,810 ops/sec ±1.11% (85 runs sampled)
-  multimatch x 24,267 ops/sec ±1.40% (85 runs sampled)
-  nanomatch x 698,260 ops/sec ±1.42% (84 runs sampled)
+  minimatch x 77,301 ops/sec ±1.68% (85 runs sampled)
+  multimatch x 25,492 ops/sec ±1.24% (86 runs sampled)
+  nanomatch x 565,552 ops/sec ±1.16% (88 runs sampled)
 
   fastest is nanomatch
 
 # benchmark/fixtures/match/not-glob-basic.js (93 bytes)
-  minimatch x 91,445 ops/sec ±1.69% (83 runs sampled)
-  multimatch x 62,945 ops/sec ±1.20% (84 runs sampled)
-  nanomatch x 3,077,100 ops/sec ±1.45% (84 runs sampled)
+  minimatch x 90,972 ops/sec ±1.02% (86 runs sampled)
+  multimatch x 71,725 ops/sec ±1.42% (86 runs sampled)
+  nanomatch x 1,446,237 ops/sec ±0.99% (87 runs sampled)
 
   fastest is nanomatch
 
 # benchmark/fixtures/match/star-basic.js (93 bytes)
-  minimatch x 62,144 ops/sec ±1.67% (85 runs sampled)
-  multimatch x 46,133 ops/sec ±1.66% (83 runs sampled)
-  nanomatch x 1,039,345 ops/sec ±1.23% (86 runs sampled)
+  minimatch x 70,011 ops/sec ±1.23% (87 runs sampled)
+  multimatch x 53,431 ops/sec ±1.07% (89 runs sampled)
+  nanomatch x 650,425 ops/sec ±0.85% (90 runs sampled)
 
   fastest is nanomatch
 ```
@@ -497,4 +537,4 @@ Released under the [MIT license](https://github.com/jonschlinkert/nanomatch/blob
 
 ***
 
-_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.2.0, on October 20, 2016._
+_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.2.0, on October 21, 2016._
