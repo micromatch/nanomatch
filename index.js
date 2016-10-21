@@ -6,7 +6,6 @@
 
 var toRegex = require('to-regex');
 var Snapdragon = require('snapdragon');
-var debug = require('debug')('nanomatch');
 var extend = require('extend-shallow');
 
 /**
@@ -36,8 +35,6 @@ var MAX_LENGTH = 1024 * 64;
  */
 
 function nanomatch(list, patterns, options) {
-  debug('nanomatch <%s>', patterns);
-
   patterns = utils.arrayify(patterns);
   list = utils.arrayify(list);
   var len = patterns.length;
@@ -391,18 +388,11 @@ nanomatch.makeRe = function(pattern, options) {
   }
 
   function makeRe() {
-    var opts = extend({strictErrors: false}, options);
-    if (opts.strictErrors === true) opts.strict = true;
-    var res = nanomatch.create(pattern, opts);
-    return toRegex(res.output, opts);
+    var res = nanomatch.create(pattern, options);
+    return toRegex(res.output, options);
   }
 
-  var regex = memoize('makeRe', pattern, options, makeRe);
-  if (regex.source.length > MAX_LENGTH) {
-    throw new SyntaxError('potentially malicious regex detected');
-  }
-
-  return regex;
+  return memoize('makeRe', pattern, options, makeRe);
 };
 
 /**
@@ -446,11 +436,47 @@ nanomatch.create = function(pattern, options) {
   if (typeof pattern !== 'string') {
     throw new TypeError('expected a string');
   }
-
   function create() {
-    var snapdragon = (options && options.snapdragon) || new Snapdragon(options);
-    compilers(snapdragon);
-    parsers(snapdragon);
+    return nanomatch.compile(nanomatch.parse(pattern, options), options);
+  }
+  return memoize('create', pattern, options, create);
+};
+
+/**
+ * Parse the given `str` with the given `options`.
+ *
+ * ```js
+ * var nanomatch = require('nanomatch');
+ * var ast = nanomatch.parse('a/{b,c}/d');
+ * console.log(ast);
+ * // { type: 'root',
+ * //   errors: [],
+ * //   input: 'a/{b,c}/d',
+ * //   nodes:
+ * //    [ { type: 'bos', val: '' },
+ * //      { type: 'text', val: 'a/' },
+ * //      { type: 'brace',
+ * //        nodes:
+ * //         [ { type: 'brace.open', val: '{' },
+ * //           { type: 'text', val: 'b,c' },
+ * //           { type: 'brace.close', val: '}' } ] },
+ * //      { type: 'text', val: '/d' },
+ * //      { type: 'eos', val: '' } ] }
+ * ```
+ * @param {String} `str`
+ * @param {Object} `options`
+ * @return {Object} Returns an AST
+ * @api public
+ */
+
+nanomatch.parse = function(pattern, options) {
+  if (typeof pattern !== 'string') {
+    throw new TypeError('expected a string');
+  }
+
+  function parse() {
+    var snapdragon = instantiate(null, options);
+    parsers(snapdragon, options);
 
     if (pattern.slice(0, 2) === './') {
       pattern = pattern.slice(2);
@@ -458,29 +484,91 @@ nanomatch.create = function(pattern, options) {
 
     pattern = utils.combineDuplicates(pattern, '\\*\\*\\/|\\/\\*\\*');
     var ast = snapdragon.parse(pattern, options);
+    utils.define(ast, 'snapdragon', snapdragon);
     ast.input = pattern;
-    return snapdragon.compile(ast, options);
+    return ast;
   }
 
-  return memoize('create', pattern, options, create);
+  return memoize('parse', pattern, options, parse);
 };
 
 /**
- * Memoize a generated regex or function
+ * Compile the given `ast` or string with the given `options`.
+ *
+ * ```js
+ * var nanomatch = require('nanomatch');
+ * var ast = nanomatch.parse('a/{b,c}/d');
+ * console.log(nanomatch.compile(ast));
+ * // { options: { source: 'string' },
+ * //   state: {},
+ * //   compilers:
+ * //    { eos: [Function],
+ * //      noop: [Function],
+ * //      bos: [Function],
+ * //      brace: [Function],
+ * //      'brace.open': [Function],
+ * //      text: [Function],
+ * //      'brace.close': [Function] },
+ * //   output: [ 'a/(b|c)/d' ],
+ * //   ast:
+ * //    { ... },
+ * //   parsingErrors: [] }
+ * ```
+ * @param {Object|String} `ast`
+ * @param {Object} `options`
+ * @return {Object} Returns an object that has an `output` property with the compiled string.
+ * @api public
+ */
+
+nanomatch.compile = function(ast, options) {
+  if (typeof ast === 'string') {
+    ast = nanomatch.parse(ast, options);
+  }
+
+  function compile() {
+    var snapdragon = instantiate(ast, options);
+    compilers(snapdragon, options);
+    return snapdragon.compile(ast, options);
+  }
+
+  return memoize('compile', ast.input, options, compile);
+};
+
+/**
+ * Get the `Snapdragon` instance to use
+ */
+
+function instantiate(ast, options) {
+  // if an instance was created by `.parse`, use that instance
+  if (utils.typeOf(ast) === 'object' && ast.snapdragon) {
+    return ast.snapdragon;
+  }
+  // if the user supplies an instance on options, use that instance
+  if (utils.typeOf(options) === 'object' && options.snapdragon) {
+    return options.snapdragon;
+  }
+  // create a new instance
+  return new Snapdragon(options);
+}
+
+/**
+ * Memoize a generated regex or function. A unique key
+ * from the `type` (usually method name), the `pattern`, and
+ * user-defined options.
  */
 
 function memoize(type, pattern, options, fn) {
-  var key = utils.createKey(type + pattern, options);
+  var key = utils.createKey(type + '=' + pattern, options);
+
+  if (options && options.cache === false) {
+    return fn(pattern, options);
+  }
 
   if (cache.has(type, key)) {
     return cache.get(type, key);
   }
 
   var val = fn(pattern, options);
-  if (options && options.cache === false) {
-    return val;
-  }
-
   cache.set(type, key, val);
   return val;
 }
