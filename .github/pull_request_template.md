@@ -1,4 +1,4 @@
-Hello, and thanks for contributing to <%= name %>!
+Hello, and thanks for contributing to nanomatch!
 
 ## tldr
 
@@ -94,7 +94,7 @@ full name <email@address.com> (https://website.com)
 ```json
 // -- package.json --
 {
-  "name": "<%= name %>",
+  "name": "nanomatch",
   "contributors": [
     "Brian Woodward <jon.schlinkert@sellside.com> (https://github.com/jonschlinkert)",
     "Jon Schlinkert <brian.woodward@sellside.com> (https://github.com/doowb)",
