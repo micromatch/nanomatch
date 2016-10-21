@@ -69,7 +69,7 @@ Additional detail provided in the [API documentation](#api).
 
 ## API
 
-### [nanomatch](index.js#L38)
+### [nanomatch](index.js#L37)
 
 The main function takes a list of strings and one or more glob patterns to use for matching.
 
@@ -88,7 +88,7 @@ console.log(nanomatch(['a.js', 'a.txt'], ['*.js']));
 * `options` **{Object}**
 * `returns` **{Array}**: Returns an array of matches
 
-### [.match](index.js#L106)
+### [.match](index.js#L103)
 
 Similar to the main function, but `pattern` must be a string.
 
@@ -107,7 +107,7 @@ console.log(nanomatch.match(['a.a', 'a.aa', 'a.b', 'a.c'], '*.a'));
 * `options` **{Object}**
 * `returns` **{Array}**: Returns an array of matches
 
-### [.isMatch](index.js#L168)
+### [.isMatch](index.js#L165)
 
 Returns true if the specified `string` matches the given glob `pattern`.
 
@@ -128,7 +128,7 @@ console.log(nanomatch.isMatch('a.b', '*.a'));
 * `options` **{String}**
 * `returns` **{Boolean}**: Returns true if the string matches the glob pattern.
 
-### [.not](index.js#L195)
+### [.not](index.js#L192)
 
 Returns a list of strings that do _not_ match any of the given `patterns`.
 
@@ -147,7 +147,7 @@ console.log(nanomatch.not(['a.a', 'b.b', 'c.c'], '*.a'));
 * `options` **{Object}**
 * `returns` **{Array}**: Returns an array of strings that do not match the given patterns.
 
-### [.any](index.js#L230)
+### [.any](index.js#L227)
 
 Returns true if the given `string` matches any of the given glob `patterns`.
 
@@ -168,7 +168,7 @@ console.log(nanomatch.any('a.a', 'b.*'));
 * `options` **{Object}**: Options to pass to the `matcher()` function.
 * `returns` **{Boolean}**: Returns true if any patterns match `str`
 
-### [.contains](index.js#L258)
+### [.contains](index.js#L255)
 
 Returns true if the given `string` contains the given pattern. Similar to `.isMatch` but the pattern can match any part of the string.
 
@@ -189,7 +189,7 @@ console.log(nanomatch.contains('aa/bb/cc', '*d'));
 * `options` **{Object}**
 * `returns` **{Boolean}**: Returns true if the patter matches any part of `str`.
 
-### [.matchKeys](index.js#L298)
+### [.matchKeys](index.js#L295)
 
 Filter the keys of the given object with the given `glob` pattern and `options`. Does not attempt to match nested keys. If you need this feature, use [glob-object](https://github.com/jonschlinkert/glob-object) instead.
 
@@ -208,7 +208,7 @@ console.log(nanomatch.matchKeys(obj, '*b'));
 * `patterns` **{Array|String}**: One or more glob patterns.
 * `returns` **{Object}**: Returns an object with only keys that match the given patterns.
 
-### [.matcher](index.js#L325)
+### [.matcher](index.js#L322)
 
 Creates a matcher function from the given glob `pattern` and `options`. The returned function takes a string to match as its only argument.
 
@@ -230,7 +230,7 @@ console.log(isMatch('a.b'));
 * `options` **{String}**
 * `returns` **{Function}**: Returns a matcher function.
 
-### [.makeRe](index.js#L380)
+### [.makeRe](index.js#L377)
 
 Create a regular expression from the given glob `pattern`.
 
@@ -248,7 +248,7 @@ console.log(nanomatch.makeRe('*.js'));
 * `options` **{Object}**
 * `returns` **{RegExp}**: Returns a regex created from the given pattern.
 
-### [.create](index.js#L445)
+### [.create](index.js#L435)
 
 Parses the given glob `pattern` and returns an object with the compiled `output` and optional source `map`.
 
@@ -287,6 +287,69 @@ console.log(nanomatch.create('abc/*.js'));
 * `pattern` **{String}**: Glob pattern
 * `options` **{Object}**
 * `returns` **{Object}**: Returns an object with the parsed AST, compiled string and optional source map.
+
+### [.parse](index.js#L472)
+
+Parse the given `str` with the given `options`.
+
+**Example**
+
+```js
+var nanomatch = require('nanomatch');
+var ast = nanomatch.parse('a/{b,c}/d');
+console.log(ast);
+// { type: 'root',
+//   errors: [],
+//   input: 'a/{b,c}/d',
+//   nodes:
+//    [ { type: 'bos', val: '' },
+//      { type: 'text', val: 'a/' },
+//      { type: 'brace',
+//        nodes:
+//         [ { type: 'brace.open', val: '{' },
+//           { type: 'text', val: 'b,c' },
+//           { type: 'brace.close', val: '}' } ] },
+//      { type: 'text', val: '/d' },
+//      { type: 'eos', val: '' } ] }
+```
+
+**Params**
+
+* `str` **{String}**
+* `options` **{Object}**
+* `returns` **{Object}**: Returns an AST
+
+### [.compile](index.js#L523)
+
+Compile the given `ast` or string with the given `options`.
+
+**Example**
+
+```js
+var nanomatch = require('nanomatch');
+var ast = nanomatch.parse('a/{b,c}/d');
+console.log(nanomatch.compile(ast));
+// { options: { source: 'string' },
+//   state: {},
+//   compilers:
+//    { eos: [Function],
+//      noop: [Function],
+//      bos: [Function],
+//      brace: [Function],
+//      'brace.open': [Function],
+//      text: [Function],
+//      'brace.close': [Function] },
+//   output: [ 'a/(b|c)/d' ],
+//   ast:
+//    { ... },
+//   parsingErrors: [] }
+```
+
+**Params**
+
+* `ast` **{Object|String}**
+* `options` **{Object}**
+* `returns` **{Object}**: Returns an object that has an `output` property with the compiled string.
 
 ## Features
 
@@ -434,4 +497,4 @@ Released under the [MIT license](https://github.com/jonschlinkert/nanomatch/blob
 
 ***
 
-_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.2.0, on October 19, 2016._
+_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.2.0, on October 20, 2016._
