@@ -106,7 +106,7 @@ nanomatch.clearCache = function() {
 
 nanomatch.match = function(list, pattern, options) {
   var unixify = utils.unixify(options);
-  var isMatch = nanomatch.matcher(pattern, options);
+  var isMatch = memoize('match', pattern, options, nanomatch.matcher);
 
   list = utils.arrayify(list);
   var len = list.length;
