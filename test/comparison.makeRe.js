@@ -1,7 +1,8 @@
 'use strict';
 
-var assert = require('assert');
+var isTravis = process.env.CI || process.env.TRAVIS;
 var isWindows = require('is-windows');
+var assert = require('assert');
 var bash = require('bash-match');
 var mm = require('minimatch');
 var nm = require('..');
@@ -87,8 +88,8 @@ var patterns = [
 ];
 
 describe('.makeRe', function() {
-  if (isWindows()) {
-    console.log('comparisons are done using bash, these tests cannot run on windows');
+  if (isWindows() || isTravis) {
+    console.log('comparisons are done using bash, these tests are skipped on windows and travis. (most of these generated patterns are tested elsewhere for windows, these tests are for bash parity)');
     return;
   }
 
