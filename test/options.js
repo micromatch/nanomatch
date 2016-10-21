@@ -138,7 +138,7 @@ describe('options', function() {
   describe('options.nonegate', function() {
     it('should support the `nonegate` option:', function() {
       nm(['a/a/a', 'a/b/a', 'b/b/a', 'c/c/a', 'c/c/b'], '!**/a', ['c/c/b']);
-      nm(['.dotfile.txt', 'a/b/.dotfile'], '!*.md', [], {nonegate: true});
+      nm(['a.md', '!a.md', 'a.txt'], '!*.md', ['!a.md'], {nonegate: true});
       nm(['!a/a/a', 'a/b/a', 'b/b/a', '!c/c/a'], '!**/a', ['!a/a/a', '!c/c/a'], {nonegate: true});
       nm(['!*.md', '.dotfile.txt', 'a/b/.dotfile'], '!*.md', ['!*.md'], {nonegate: true});
     });
