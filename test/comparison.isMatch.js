@@ -89,7 +89,7 @@ var patterns = [
 
 describe('.isMatch', function() {
   if (isWindows() || isTravis) {
-    console.log('comparisons are done using bash, these tests are skipped on windows and travis. (most of these generated patterns are tested elsewhere for windows, these tests are for bash parity)');
+    console.log('these tests use bash to test for bash parity. since bash does not work on most versions of windows, these tests are skipped on windows');
     return;
   }
 
