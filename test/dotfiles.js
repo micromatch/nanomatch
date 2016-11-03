@@ -7,7 +7,13 @@ describe('dotfiles', function() {
   describe('file name matching', function() {
     it('should not match a dot when the dot is not explicitly defined', function() {
       assert(!nm.isMatch('.dot', '*dot'));
+      assert(!nm.isMatch('a/.dot', 'a/*dot'));
+    });
+
+    it('should not match leading dots with question marks', function() {
       assert(!nm.isMatch('.dot', '?dot'));
+      assert(!nm.isMatch('/.dot', '/?dot'));
+      assert(!nm.isMatch('a/.dot', 'a/?dot'));
     });
 
     it('should match with double dots', function() {
