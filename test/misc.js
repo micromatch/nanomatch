@@ -25,8 +25,16 @@ forOwn(fixtures, function(lines, filename) {
 
       it(title, function() {
         var msg = fixture + (expected ? ' === ' : ' !== ') + pattern;
-        // assert.equal(nm.isMatch(fixture, pattern), nm.mm.isMatch(fixture, pattern), msg);
-        assert.equal(nm.isMatch(fixture, pattern), expected, msg);
+        var nmRes = nm.isMatch(fixture, pattern);
+        var mmRes = nm.mm.isMatch(fixture, pattern);
+        var actual = nmRes === mmRes;
+
+        // tie-breaker
+        if (actual === false) {
+          actual = nmRes === nm.bash.isMatch(fixture, pattern);
+        }
+
+        assert(actual, msg);
       });
     });
   });
