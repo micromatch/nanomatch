@@ -5,6 +5,10 @@ var path = require('path');
 var extend = require('extend-shallow');
 var nm = require('../..');
 
+/**
+ * Parse bash test files
+ */
+
 function parseFiles(pattern, options) {
   var opts = extend({cwd: process.cwd()}, options);
   var cwd = opts.cwd;

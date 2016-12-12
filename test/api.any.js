@@ -23,41 +23,44 @@ describe('.any()', function() {
   describe('non-globs', function() {
     it('should match literal paths', function() {
       assert(!nm.any('aaa', 'aa'));
-      assert(nm.any('aaa', ['aa', 'aaa']));
       assert(nm.any('aaa', 'aaa'));
       assert(nm.any('aaa', ['aa', 'aaa']));
       assert(nm.any('aaa/bbb', 'aaa/bbb'));
-      assert(nm.any('aaa\\bbb', ['aaa\\bbb', 'aaa/bbb']));
-      assert(nm.any('aaa/bbb', ['aaa\\bbb', 'aaa/bbb']));
       assert(nm.any('aaa/bbb', 'aaa[/]bbb'));
+      assert(nm.any('aaa/bbb', ['aaa\\bbb', 'aaa/bbb']));
+      assert(nm.any('aaa\\bbb', ['aaa\\bbb', 'aaa/bbb']));
     });
   });
 
   describe('stars (single pattern)', function() {
     it('should return true when one of the given patterns matches the string', function() {
-      assert(nm.any('aaa', ['foo', '*']));
-      assert(nm.any('a/b/c/xyz.md', ['foo', 'a/b/c/*.md']));
-      assert(nm.any('a/b/c/xyz.md', 'a/b/c/*.md'));
-      assert(nm.any('a/bb/c/xyz.md', 'a/*/c/*.md'));
-      assert(nm.any('a/bbbb/c/xyz.md', 'a/*/c/*.md'));
-      assert(nm.any('a/bb.bb/c/xyz.md', 'a/*/c/*.md'));
-      assert(nm.any('a/bb.bb/aa/bb/aa/c/xyz.md', 'a/**/c/*.md'));
-      assert(nm.any('a/bb.bb/aa/b.b/aa/c/xyz.md', 'a/**/c/*.md'));
-      assert(nm.any('a/.b', 'a/.*'));
-      assert(nm.any('a/b/c/d/e/j/n/p/o/z/c.md', 'a/**/j/**/z/*.md'));
-      assert(nm.any('a/b/c/d/e/z/c.md', 'a/**/z/*.md'));
-      assert(nm.any('a/b/z/.a', 'a/*/z/.a'));
+      assert(!nm.any('/ab', '*/*'));
+      assert(!nm.any('a/.b', 'a/'));
+      assert(!nm.any('a/b/c/d/e/z/c.md', 'b/c/d/e'));
+      assert(!nm.any('a/b/z/.a', 'b/z'));
       assert(nm.any('.', '.'));
       assert(nm.any('/ab', '/*'));
       assert(nm.any('/ab', '/??'));
       assert(nm.any('/ab', '/?b'));
       assert(nm.any('/cd', '/*'));
       assert(nm.any('a', 'a'));
-      assert(nm.any('ab', './*'));
-      assert(nm.any('ab/', './*/'));
+      assert(nm.any('a/.b', 'a/.*'));
       assert(nm.any('a/b', '?/?'));
+      assert(nm.any('a/b/c/d/e/j/n/p/o/z/c.md', 'a/**/j/**/z/*.md'));
+      assert(nm.any('a/b/c/d/e/z/c.md', 'a/**/z/*.md'));
+      assert(nm.any('a/b/c/xyz.md', 'a/b/c/*.md'));
+      assert(nm.any('a/b/c/xyz.md', ['foo', 'a/b/c/*.md']));
+      assert(nm.any('a/b/z/.a', 'a/*/z/.a'));
+      assert(nm.any('a/bb.bb/aa/b.b/aa/c/xyz.md', 'a/**/c/*.md'));
+      assert(nm.any('a/bb.bb/aa/bb/aa/c/xyz.md', 'a/**/c/*.md'));
+      assert(nm.any('a/bb.bb/c/xyz.md', 'a/*/c/*.md'));
+      assert(nm.any('a/bb/c/xyz.md', 'a/*/c/*.md'));
+      assert(nm.any('a/bbbb/c/xyz.md', 'a/*/c/*.md'));
+      assert(nm.any('aaa', ['foo', '*']));
       assert(nm.any('ab', '*'));
+      assert(nm.any('ab', './*'));
       assert(nm.any('ab', 'ab'));
+      assert(nm.any('ab/', './*/'));
     });
 
     it('should return false when the path does not match the pattern', function() {
@@ -112,13 +115,13 @@ describe('.any()', function() {
     });
 
     it('should return false when full file paths are not matched:', function() {
-      assert(!nm.any('a/b/z/.a', 'b/a'));
       assert(!nm.any('a/.b', 'a/**/z/*.md'));
+      assert(!nm.any('a/b/c/j/e/z/c.txt', 'a/**/j/**/z/*.md'));
+      assert(!nm.any('a/b/c/xyz.md', 'a/b/**/c{d,e}/**/xyz.md'));
+      assert(!nm.any('a/b/d/xyz.md', 'a/b/**/c{d,e}/**/xyz.md'));
       assert(!nm.any('a/b/z/.a', 'a/**/z/*.a'));
       assert(!nm.any('a/b/z/.a', 'a/*/z/*.a'));
-      assert(!nm.any('a/b/c/j/e/z/c.txt', 'a/**/j/**/z/*.md'));
-      assert(!nm.any('a/b/d/xyz.md', 'a/b/**/c{d,e}/**/xyz.md'));
-      assert(!nm.any('a/b/c/xyz.md', 'a/b/**/c{d,e}/**/xyz.md'));
+      assert(!nm.any('a/b/z/.a', 'b/a'));
     });
   });
 
@@ -126,11 +129,11 @@ describe('.any()', function() {
     it('should return true when any of the patterns match', function() {
       assert(nm.any('.', ['.', 'foo']));
       assert(nm.any('a', ['a', 'foo']));
-      assert(nm.any('ab', ['ab', 'foo']));
-      assert(nm.any('ab', ['./*', 'foo', 'bar']));
       assert(nm.any('ab', ['*', 'foo', 'bar']));
       assert(nm.any('ab', ['*b', 'foo', 'bar']));
+      assert(nm.any('ab', ['./*', 'foo', 'bar']));
       assert(nm.any('ab', ['a*', 'foo', 'bar']));
+      assert(nm.any('ab', ['ab', 'foo']));
     });
 
     it('should return false when none of the patterns match', function() {

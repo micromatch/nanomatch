@@ -1,6 +1,7 @@
 'use strict';
 
 var assert = require('assert');
+var extend = require('extend-shallow');
 var utils = require('../../lib/utils');
 var matcher = require('./matcher');
 var compare = require('./compare');
@@ -18,8 +19,9 @@ module.exports = function(fixtures, patterns, expected, options) {
 
   assert.deepEqual(actual, expected, patterns);
 };
+extend(module.exports, matcher);
 
-module.exports.match = function(fixtures, pattern, expected, options) {
+module.exports.match = function fn(fixtures, pattern, expected, options) {
   if (!Array.isArray(expected)) {
     var tmp = expected;
     expected = options;
@@ -33,12 +35,38 @@ module.exports.match = function(fixtures, pattern, expected, options) {
   assert.deepEqual(actual, expected, pattern);
 };
 
+module.exports.matcher = function(fixtures, patterns, expected, options) {
+  if (!Array.isArray(expected)) {
+    var tmp = expected;
+    expected = options;
+    options = tmp;
+  }
+
+  var fn = matcher.matcher(patterns, options);
+  fixtures = utils.arrayify(fixtures);
+  var actual = [];
+  fixtures.forEach(function(file) {
+    if (fn(file)) {
+      actual.push(file);
+    }
+  });
+
+  expected.sort(compare);
+  actual.sort(compare);
+
+  assert.deepEqual(actual, expected, patterns);
+};
+
 module.exports.isMatch = function() {
   return matcher.isMatch.apply(null, arguments);
 };
 
 module.exports.makeRe = function() {
   return matcher.makeRe.apply(null, arguments);
+};
+
+module.exports.create = function() {
+  return matcher.create.apply(null, arguments);
 };
 
 module.exports.not = function() {
