@@ -9,6 +9,7 @@
 
 require('mocha');
 var assert = require('assert');
+var mm = require('minimatch');
 var nm = require('./support/match');
 
 /**
@@ -41,6 +42,8 @@ describe('bash options and features:', function() {
 
     it('should use quoted characters as literals:', function() {
       nm(fixtures, '\\*', {nonull: true}, ['*', '\\*']);
+      nm(fixtures, '\\*', {nonull: true, unescape: true}, ['*']);
+
       nm(fixtures, '\\^', {nonull: true}, ['\\^']);
       nm(fixtures, '\\^', []);
 
@@ -82,7 +85,7 @@ describe('bash options and features:', function() {
       nm(f, '[a-y]*[^c]', ['abd', 'abe', 'baz', 'beware', 'bzz', 'bb', 'bcd', 'ca', 'cb', 'dd', 'de', 'bdir/']);
       nm(f, 'a*[^c]', ['abd', 'abe']);
       nm(['a-b', 'aXb'], 'a[X-]b', ['a-b', 'aXb']);
-      nm(f, '[^a-c]*', ['d', 'dd', 'de', 'BewAre', 'BZZ', '*', '\\*']);
+      nm(f, '[^a-c]*', ['d', 'dd', 'de', 'Beware', 'BewAre', 'BZZ', '*', '\\*']);
       nm(['a*b/ooo'], 'a\\*b/*', ['a*b/ooo']);
       nm(['a*b/ooo'], 'a\\*?/*', ['a*b/ooo']);
       nm(f, 'a[b]c', ['abc']);

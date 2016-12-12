@@ -1,24 +1,45 @@
 module.exports = [
-  // common file patterns
-  'abc',
-  'abd',
-  'abbbz',
   'a',
   'a.md',
-  'a/b/c.md',
-
-  'z.js',
-  'za.js',
-  'a/b/c/z.js',
-  'a/b/c/d/e/f/z.js',
-
-  // directories
+  'a.js',
   'a/',
   'a/b',
-  'a/cb',
-  'a/bb',
+  'a/b/.c.md',
+  'a/b/c',
+  'a/b/c.md',
+  'a/b/c/',
   'a/b/c/d',
   'a/b/c/d/',
+  'a/b/c/d/e/f/z.js',
+  'a/b/c/z.js',
+  'a/bb',
+  'a/cb',
+  'abbbz',
+  'abc',
+  'abd',
+  'z.js',
+  'za.js',
+
+  // literal "!"
+  '!a.js',
+  '!a/b',
+  '!a/b/',
+  '!a/b/c',
+  '!a/b/c/',
+  '!a/!b',
+  '!a/!b/c',
+  '!a/!b/c/d',
+  '!a/b/.c.md',
+
+  // root
+  '/a/',
+  '/a/b',
+  '/a/cb',
+  '/a/bb',
+  '/a/b/c',
+  '/a/b/c/',
+  '/a/b/c/d',
+  '/a/b/c/d/',
 
   // cwd
   '.',
@@ -29,29 +50,34 @@ module.exports = [
   '../c',
   '../c',
   './../c',
+  './a/../c',
   '/..',
   '/../c',
-
-  // bad paths
-  './a/../c',
+  '/../.c',
+  '/../.c/',
   '/a/../c',
   'a/../c',
 
   // dot files
-  './.b/.c',
-  './b/.c',
   '../.b/.c',
   '../b/.c',
-  '.b',
-  '.b/',
+  './.b/.c',
+  './b/.c',
   '.b',
   '.b.c',
   '.b.c/',
   '.b/',
+  '.b/.c',
   '.b/c',
   'b/.c',
-
-  // dot directories
   'b/.c/',
-  '.b/.c',
+
+  // wildcards in filepaths
+  'a/+b/c',
+  '+a/+b/c',
+  'a (foo)',
+  'a (foo)/(bar)',
+  'a/b/c (1)',
+  'a/b (2)/c (1)',
+  'a/b/c [def]',
 ];

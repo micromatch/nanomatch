@@ -41,6 +41,10 @@ describe('dotfiles', function() {
       nm('.dot', '.d?t', ['.dot']);
 
       assert(!nm.isMatch('.bar.baz', '.*.*/'));
+      assert(!nm.isMatch('/.dot', '*/[.]dot'));
+      assert(nm.isMatch('/.dot', '**/.[d]ot'));
+      assert(nm.isMatch('/.dot', '**/.dot*'));
+      assert(nm.isMatch('/.dot', '**/[.]dot'));
       assert(nm.isMatch('.bar.baz/', '.*.*'));
       assert(nm.isMatch('.bar.baz', '.*.*'));
       assert(nm.isMatch('.bar.baz', '.*.baz'));
@@ -49,10 +53,8 @@ describe('dotfiles', function() {
       assert(nm.isMatch('.dot', '.[d]ot'));
       assert(nm.isMatch('.dot.foo.bar', '.*ot.*.*'));
       assert(nm.isMatch('.dotfile.js', '.*.js'));
-      assert(nm.isMatch('/.dot', '**/.[d]ot'));
-      assert(nm.isMatch('/.dot', '**/.dot*'));
-      assert(nm.isMatch('/.dot', '**/[.]dot'));
-      assert(nm.isMatch('/.dot', '*/[.]dot'));
+      assert(nm.isMatch('/.dot', '/.[d]ot'));
+      assert(nm.isMatch('/.dot', '/.dot*'));
       assert(nm.isMatch('/.dot', '/[.]dot'));
       assert(nm.isMatch('a/.dot', '**/.[d]ot'));
       assert(nm.isMatch('a/.dot', '*/.[d]ot'));
@@ -94,15 +96,20 @@ describe('dotfiles', function() {
 
   describe('options.dot', function() {
     it('should match dotfiles when `options.dot` is true', function() {
-      assert(nm.isMatch('.dotfile.js', '.*.js', {dot: true}));
-      assert(nm.isMatch('.dot', '*dot', {dot: true}));
-      assert(nm.isMatch('.dot', '?dot', {dot: true}));
-      assert(nm.isMatch('.dot', '[.]dot', {dot: true}));
       assert(nm.isMatch('/a/b/.dot', '**/*dot', {dot: true}));
       assert(nm.isMatch('/a/b/.dot', '**/.[d]ot', {dot: true}));
       assert(nm.isMatch('/a/b/.dot', '**/?dot', {dot: true}));
       assert(nm.isMatch('/a/b/.dot', '**/[.]dot', {dot: false}));
       assert(nm.isMatch('/a/b/.dot', '**/[.]dot', {dot: true}));
+      assert(nm.isMatch('.dotfile.js', '.*.js', {dot: true}));
+      assert(nm.isMatch('.dot', '*dot', {dot: true}));
+      assert(nm.isMatch('.dot', '?dot', {dot: true}));
+      assert(nm.isMatch('.dot', '[.]dot', {dot: true}));
+      assert(nm.isMatch('/a/b/.dot', '/**/*dot', {dot: true}));
+      assert(nm.isMatch('/a/b/.dot', '/**/.[d]ot', {dot: true}));
+      assert(nm.isMatch('/a/b/.dot', '/**/?dot', {dot: true}));
+      assert(nm.isMatch('/a/b/.dot', '/**/[.]dot', {dot: false}));
+      assert(nm.isMatch('/a/b/.dot', '/**/[.]dot', {dot: true}));
       assert(nm.isMatch('a/b/.dot', '**/*dot', {dot: true}));
       assert(nm.isMatch('a/b/.dot', '**/.[d]ot', {dot: true}));
       assert(nm.isMatch('a/b/.dot', '**/?dot', {dot: true}));

@@ -2,12 +2,21 @@
 
 var path = require('path');
 var sep = path.sep;
+var mm = require('minimatch');
 var nm = require('./support/match');
 
 describe('options', function() {
+  beforeEach(function() {
+    path.sep = '\\';
+  });
+
+  afterEach(function() {
+    path.sep = sep;
+  });
+
   describe('options.ignore', function() {
     var negations = ['a/a', 'a/b', 'a/c', 'b/a', 'b/b', 'b/c', 'a/d', 'a/e'];
-    var globs = ['a', 'a/a', 'a/a/a', 'a/a/a/a', 'a/a/a/a/a', 'a/a/b', 'a/b', 'a/b/c', 'a/c', 'a/x', 'b', 'b/b/b', 'b/b/c', 'c/c/c', 'e/f/g', 'h/i/a', 'x/x/x', 'x/y', 'z/z', 'z/z/z'];
+    var globs = ['a', '.a/a', 'a/a', 'a/a/a', '.a/a/a', 'a/a/a/a', '.a/a/a/a', 'a/a/a/a/a', 'a/a/b', 'a/b', 'a/b/c', 'a/c', 'a/x', 'b', 'b/b/b', 'b/b/c', 'c/c/c', 'e/f/g', 'h/i/a', 'x/x/x', 'x/y', 'z/z', 'z/z/z'];
 
     it('should filter out ignored patterns', function() {
       var opts = {ignore: ['a/**']};
@@ -31,7 +40,7 @@ describe('options', function() {
       nm(negations, '**', [], {ignore: ['**']});
     });
 
-    it.skip('should work with dotfiles', function() {
+    it('should work with dotfiles', function() {
       nm(globs, '*', ['a', 'b'], {ignore: 'a/**', dot: true});
       nm(globs, '*', ['b'], {ignore: '**/a', dot: true});
       nm(globs, '*/*', ['.a/a', 'x/y', 'z/z'], {ignore: 'a/**', dot: true});
@@ -175,8 +184,12 @@ describe('options', function() {
       });
 
       it('should use negation patterns on dotfiles:', function() {
+        nm(['.b.c/'], '!*.*', ['.b.c/']);
+        nm(['.b.c/'], '!*.*', [], {dot: true});
         nm(['.a', '.b', 'c', 'c.md'], '!.*', ['c', 'c.md']);
+        nm(['.a', '.b', 'c', 'c.md'], '!.*', {dot: true}, ['c', 'c.md']);
         nm(['.a', '.b', 'c', 'c.md'], '!.b', ['.a', 'c', 'c.md']);
+        nm(['.a', '.b', 'c', 'c.md'], '!.b', {dot: true}, ['.a', 'c', 'c.md']);
       });
     });
 
@@ -207,7 +220,7 @@ describe('options', function() {
         nm(['.a', '.b', 'c', 'c.md'], '!.*', ['c', 'c.md']);
         nm(['.a', '.b', 'c', 'c.md'], '!(.*)', ['c', 'c.md']);
         nm(['.a', '.b', 'c', 'c.md'], '!(.*)*', ['c', 'c.md']);
-        nm(['.a', '.b', 'c', 'c.md'], '!*.*', ['c']);
+        nm(['.a', '.b', 'c', 'c.md'], '!*.*', ['.a', '.b', 'c']);
       });
 
       it('should match dotfiles when `options.dot` is true:', function() {

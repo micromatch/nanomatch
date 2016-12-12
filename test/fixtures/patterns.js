@@ -10,6 +10,7 @@
 
 var fixtures = ['a', 'b', 'c', 'd', 'abc', 'abd', 'abe', 'bb', 'bcd', 'ca', 'cb', 'dd', 'de', 'bdir/', 'bdir/cfile'];
 
+// pattern | expected | options | fixtures
 module.exports = [
   'http://www.bashcookbook.com/bashinfo/source/bash-1.14.7/tests/glob-test',
   ['a*', ['a', 'abc', 'abd', 'abe']],

@@ -3,10 +3,12 @@
 var match = require('./support/match');
 var patterns = require('./fixtures/patterns');
 
+/**
+ * Minimatch comparison tests
+ */
+
 describe('basic tests', function() {
   patterns.forEach(function(unit, i) {
-    // if (unit[0] !== '[\\\\]') return;
-
     it(i + ': ' + unit[0], function() {
       if (typeof unit === 'string') {
         console.log();
@@ -16,7 +18,8 @@ describe('basic tests', function() {
 
       // update fixtures list
       if (typeof unit === 'function') {
-        return unit();
+        unit();
+        return;
       }
 
       var pattern = unit[0];

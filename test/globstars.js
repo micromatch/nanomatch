@@ -1,23 +1,27 @@
 'use strict';
 
 var assert = require('assert');
+var mm = require('minimatch');
 var nm = require('./support/match');
 
 describe('globstars', function() {
   it('should support globstars (**)', function() {
-    var fixtures = ['.a/a', 'a/a', 'aa/a', 'aaa/a', 'aab/a', 'a/.a', 'a/b', 'a/c', 'a/x', 'a/x/y', 'a/x/y/z', 'a/../a', 'ab/../ac', '../a', 'a', '../../b', '../c', '../c/d'];
+    var fixtures = ['../../b', '../a', '../c', '../c/d', '.a/a', '/a', '/a/', 'a', 'a/', 'a/../a', 'a/.a', 'a/a', 'a/b', 'a/c', 'a/x', 'a/x/y', 'a/x/y/z', 'aa/a', 'aaa/a', 'aab/a', 'ab/../ac'];
 
-    nm(fixtures, '**', ['a', 'a/a', 'aa/a', 'aaa/a', 'aab/a', 'a/b', 'a/c', 'a/x', 'a/x/y', 'a/x/y/z']);
-    nm(fixtures, '**/**', ['a', 'a/a', 'aa/a', 'aaa/a', 'aab/a', 'a/b', 'a/c', 'a/x', 'a/x/y', 'a/x/y/z']);
-    nm(fixtures, '**/', []);
-    nm(fixtures, '**/**/*', ['a', 'a/a', 'aa/a', 'aaa/a', 'aab/a', 'a/b', 'a/c', 'a/x', 'a/x/y', 'a/x/y/z']);
+    nm(fixtures, '/**/*', ['/a', '/a/']);
+    nm(fixtures, '**', ['/a', 'a', 'a/', '/a/', 'a/a', 'aa/a', 'aaa/a', 'aab/a', 'a/b', 'a/c', 'a/x', 'a/x/y', 'a/x/y/z']);
+    nm(fixtures, '**/**', ['/a', 'a', 'a/', '/a/', 'a/a', 'aa/a', 'aaa/a', 'aab/a', 'a/b', 'a/c', 'a/x', 'a/x/y', 'a/x/y/z']);
+    nm(fixtures, '**/', ['a/', '/a/']);
+    nm(fixtures, '**/*', ['/a', 'a', 'a/', '/a/', 'a/a', 'aa/a', 'aaa/a', 'aab/a', 'a/b', 'a/c', 'a/x', 'a/x/y', 'a/x/y/z']);
+    nm(fixtures, '**/**/*', ['/a', 'a', 'a/', '/a/', 'a/a', 'aa/a', 'aaa/a', 'aab/a', 'a/b', 'a/c', 'a/x', 'a/x/y', 'a/x/y/z']);
+
     nm(fixtures, '**/**/x', ['a/x']);
     nm(fixtures, '**/x', ['a/x']);
     nm(fixtures, '**/x/*', ['a/x/y']);
     nm(fixtures, '*/x/**', ['a/x/y', 'a/x/y/z']);
     nm(fixtures, '**/x/**', ['a/x/y', 'a/x/y/z']);
     nm(fixtures, '**/x/*/*', ['a/x/y/z']);
-    nm(fixtures, 'a/**', ['a/a', 'a/b', 'a/c', 'a/x', 'a/x/y', 'a/x/y/z']);
+    nm(fixtures, 'a/**', ['a/', 'a/a', 'a/b', 'a/c', 'a/x', 'a/x/y', 'a/x/y/z']);
     nm(fixtures, 'a/**/*', ['a/a', 'a/b', 'a/c', 'a/x', 'a/x/y', 'a/x/y/z']);
     nm(fixtures, 'a/**/**/*', ['a/a', 'a/b', 'a/c', 'a/x', 'a/x/y', 'a/x/y/z']);
     nm(fixtures, 'b/**', []);
@@ -27,6 +31,7 @@ describe('globstars', function() {
     assert(!nm.isMatch('a/b/c/d', 'a/**/'));
     assert(!nm.isMatch('a/bb', 'a/**/'));
     assert(!nm.isMatch('a/cb', 'a/**/'));
+    assert(nm.isMatch('/a/b', '/**'));
     assert(nm.isMatch('a.b', '**/*'));
     assert(nm.isMatch('a.js', '**/*'));
     assert(nm.isMatch('a.js', '**/*.js'));
@@ -72,8 +77,10 @@ describe('globstars', function() {
     nm(['.md', 'a/b/.md'], '**/.md', ['.md', 'a/b/.md']);
   });
 
+
   it('should respect trailing slashes on paterns', function() {
     var fixtures = ['a', 'a/', 'b', 'b/', 'a/a', 'a/a/', 'a/b', 'a/b/', 'a/c', 'a/c/', 'a/x', 'a/x/', 'a/a/a', 'a/a/b', 'a/a/b/', 'a/a/a/', 'a/a/a/a', 'a/a/a/a/', 'a/a/a/a/a', 'a/a/a/a/a/', 'x/y', 'z/z', 'x/y/', 'z/z/', 'a/b/c/.d/e/'];
+
     nm(fixtures, '**/*/a/', ['a/a/', 'a/a/a/', 'a/a/a/a/', 'a/a/a/a/a/']);
     nm(fixtures, '**/*/a/*/', ['a/a/a/', 'a/a/a/a/', 'a/a/a/a/a/', 'a/a/b/']);
     nm(fixtures, '**/*/x/', ['a/x/']);
@@ -86,6 +93,12 @@ describe('globstars', function() {
     nm(fixtures, '**/a/*/*/*/*/', ['a/a/a/a/a/']);
     nm(fixtures, '**/a/*/a/', ['a/a/a/', 'a/a/a/a/', 'a/a/a/a/a/']);
     nm(fixtures, '**/a/*/b/', ['a/a/b/']);
+  });
+
+  it('should match slashes', function() {
+    nm(['/../c'], '/**/*', []);
+    nm(['/', '.'], '**', ['/']);
+    nm(['/', '.'], '**/', ['/']);
   });
 
   it('should match literal globstars when escaped', function() {

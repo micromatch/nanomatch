@@ -7,41 +7,47 @@ var nm = require('..');
 describe('.any()', function() {
   describe('empty patterns', function() {
     it('should correctly handle empty patterns', function() {
-      assert(!nm.any('ab', ''));
-      assert(!nm.any('a', ''));
+      assert(!nm.any('', ''));
+      assert(!nm.any('', ['']));
       assert(!nm.any('.', ''));
-      assert(!nm.any('ab', ['']));
-      assert(!nm.any('a', ['']));
       assert(!nm.any('.', ['']));
+      assert(!nm.any('./', ''));
+      assert(!nm.any('./', ['']));
+      assert(!nm.any('a', ''));
+      assert(!nm.any('a', ['']));
+      assert(!nm.any('ab', ''));
+      assert(!nm.any('ab', ['']));
     });
   });
 
   describe('non-globs', function() {
     it('should match literal paths', function() {
       assert(!nm.any('aaa', 'aa'));
+      assert(nm.any('aaa', ['aa', 'aaa']));
       assert(nm.any('aaa', 'aaa'));
+      assert(nm.any('aaa', ['aa', 'aaa']));
       assert(nm.any('aaa/bbb', 'aaa/bbb'));
+      assert(nm.any('aaa\\bbb', ['aaa\\bbb', 'aaa/bbb']));
+      assert(nm.any('aaa/bbb', ['aaa\\bbb', 'aaa/bbb']));
       assert(nm.any('aaa/bbb', 'aaa[/]bbb'));
     });
   });
 
   describe('stars (single pattern)', function() {
-    it('should return true when full file paths are matched:', function() {
+    it('should return true when one of the given patterns matches the string', function() {
+      assert(nm.any('aaa', ['foo', '*']));
+      assert(nm.any('a/b/c/xyz.md', ['foo', 'a/b/c/*.md']));
       assert(nm.any('a/b/c/xyz.md', 'a/b/c/*.md'));
       assert(nm.any('a/bb/c/xyz.md', 'a/*/c/*.md'));
       assert(nm.any('a/bbbb/c/xyz.md', 'a/*/c/*.md'));
       assert(nm.any('a/bb.bb/c/xyz.md', 'a/*/c/*.md'));
       assert(nm.any('a/bb.bb/aa/bb/aa/c/xyz.md', 'a/**/c/*.md'));
       assert(nm.any('a/bb.bb/aa/b.b/aa/c/xyz.md', 'a/**/c/*.md'));
-      assert(!nm.any('a/.b', 'a/'));
-      assert(!nm.any('a/b/c/d/e/z/c.md', 'b/c/d/e'));
-      assert(!nm.any('a/b/z/.a', 'b/z'));
       assert(nm.any('a/.b', 'a/.*'));
       assert(nm.any('a/b/c/d/e/j/n/p/o/z/c.md', 'a/**/j/**/z/*.md'));
       assert(nm.any('a/b/c/d/e/z/c.md', 'a/**/z/*.md'));
       assert(nm.any('a/b/z/.a', 'a/*/z/.a'));
       assert(nm.any('.', '.'));
-      assert(nm.any('/ab', '*/*'));
       assert(nm.any('/ab', '/*'));
       assert(nm.any('/ab', '/??'));
       assert(nm.any('/ab', '/?b'));
@@ -56,20 +62,24 @@ describe('.any()', function() {
 
     it('should return false when the path does not match the pattern', function() {
       assert(!nm.any('/ab', '*/'));
+      assert(!nm.any('/ab', '*/*'));
       assert(!nm.any('/ab', '*/a'));
       assert(!nm.any('/ab', '/'));
       assert(!nm.any('/ab', '/?'));
       assert(!nm.any('/ab', '/a'));
       assert(!nm.any('/ab', '?/?'));
       assert(!nm.any('/ab', 'a/*'));
+      assert(!nm.any('a/.b', 'a/'));
       assert(!nm.any('a/b/c', 'a/*'));
       assert(!nm.any('a/b/c', 'a/b'));
+      assert(!nm.any('a/b/c/d/e/z/c.md', 'b/c/d/e'));
+      assert(!nm.any('a/b/z/.a', 'b/z'));
       assert(!nm.any('ab', '*/*'));
-      assert(!nm.any('ab/', '*/*'));
       assert(!nm.any('ab', '/a'));
       assert(!nm.any('ab', 'a'));
       assert(!nm.any('ab', 'b'));
       assert(!nm.any('ab', 'c'));
+      assert(!nm.any('ab/', '*/*'));
       assert(!nm.any('abcd', 'ab'));
       assert(!nm.any('abcd', 'bc'));
       assert(!nm.any('abcd', 'c'));

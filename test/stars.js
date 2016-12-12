@@ -4,8 +4,11 @@ var nm = require('./support/match');
 
 describe('stars', function() {
   it('should match one directory level with a single star (*)', function() {
-    var fixtures = ['a', 'b', 'a/a', 'a/b', 'a/c', 'a/x', 'a/a/a', 'a/a/b', 'a/a/a/a', 'a/a/a/a/a', 'x/y', 'z/z'];
-    nm(fixtures, '*', ['a', 'b']);
+    var fixtures = ['/a', '/a/', '/b', 'a', 'a/', 'b', 'a/a', 'a/b', 'a/c', 'a/x', 'a/a/a', 'a/a/b', 'a/a/a/a', 'a/a/a/a/a', 'x/y', 'z/z'];
+    nm(fixtures, '*', ['a', 'b', 'a/']);
+    nm(fixtures, '/*', ['/a', '/b', '/a/']);
+    nm(fixtures, '*/', ['a/']);
+    nm(fixtures, '/*/', ['/a/']);
     nm(fixtures, '*/*', ['a/a', 'a/b', 'a/c', 'a/x', 'x/y', 'z/z']);
     nm(fixtures, '*/*/*', ['a/a/a', 'a/a/b']);
     nm(fixtures, '*/*/*/*', ['a/a/a/a']);

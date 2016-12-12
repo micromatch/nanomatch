@@ -80,6 +80,10 @@ describe('special characters', function() {
       nm(['a/b.md', 'b/b.md', 'c/b.md', 'b/c.md', 'a/d.md'], '[bc]/[bd].md', ['b/b.md', 'c/b.md']);
     });
 
+    it('should handle brackets', function() {
+      nm(['ab', 'ac', 'ad', 'a*', '*'], '[a*]*', ['*', 'a*', 'ab', 'ac', 'ad']);
+    });
+
     it('should handle unclosed brackets', function() {
       nm(['[!ab', '[ab'], '[!a*', ['[!ab']);
     });

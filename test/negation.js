@@ -1,5 +1,6 @@
 'use strict';
 
+var mm = require('minimatch');
 var nm = require('./support/match');
 
 describe('negation', function() {
@@ -55,6 +56,7 @@ describe('negation', function() {
   });
 
   it('should negate dotfiles:', function() {
+    nm(['.dotfile.md'], '!*.md', {dot: true}, []);
     nm(['.dotfile.md'], '!*.md', ['.dotfile.md']);
     nm(['.dotfile.txt'], '!*.md', ['.dotfile.txt']);
     nm(['.dotfile.txt', 'a/b/.dotfile'], '!*.md', ['.dotfile.txt', 'a/b/.dotfile']);

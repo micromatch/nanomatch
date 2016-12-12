@@ -1,5 +1,6 @@
 'use strict';
 
+var path = require('path');
 var nm = require('./support/match');
 
 describe('.match method', function() {
@@ -35,7 +36,16 @@ describe('.match method', function() {
     });
   });
 
-  describe('unix paths', function() {
+  describe('windows paths', function() {
+    var sep = path.sep;
+    beforeEach(function() {
+      path.sep = '\\';
+    });
+
+    afterEach(function() {
+      path.sep = sep;
+    });
+
     it('should return an array of matches for a literal string', function() {
       var fixtures = ['a\\a', 'a\\b', 'a\\c', 'b\\a', 'b\\b', 'b\\c'];
       nm(fixtures, '(a/b)', ['a/b']);

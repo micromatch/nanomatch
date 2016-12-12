@@ -5,14 +5,20 @@ var nm = require('./support/match');
 
 describe('qmarks and stars', function() {
   it('should correctly handle question marks in globs', function() {
-    nm(['?'], '?', ['?']);
+    nm(['?', '??', '???'], '?', ['?']);
+    nm(['?', '??', '???'], '??', ['??']);
+    nm(['?', '??', '???'], '???', ['???']);
+    nm(['/a/', '/a/b/', '/a/b/c/', '/a/b/c/d/'], '??', []);
+    nm(['/a/', '/a/b/', '/a/b/c/', '/a/b/c/d/'], '??', {dot: true}, []);
+    nm(['x/y/acb', 'acb', 'acb/', 'acb/d/e'], 'a?b', ['acb', 'acb/']);
     nm(['aaa', 'aac', 'abc'], 'a?c', ['abc', 'aac']);
     nm(['aaa', 'aac', 'abc'], 'a*?c', ['aac', 'abc']);
     nm(['a', 'aa', 'ab', 'ab?', 'ac', 'ac?', 'abcd', 'abbb'], 'ab?', ['ab?']);
     nm(['abc', 'abb', 'acc'], 'a**?c', ['abc', 'acc']);
     nm(['abc'], 'a*****?c', ['abc']);
-    nm(['abc', 'zzz', 'bbb'], '?*****??', ['abc', 'zzz', 'bbb']);
-    nm(['abc', 'zzz', 'bbb'], '*****??', ['abc', 'zzz', 'bbb']);
+    nm(['a', 'aa', 'abc', 'zzz', 'bbb', 'aaaa'], '*****?', ['a', 'aa', 'abc', 'zzz', 'bbb', 'aaaa']);
+    nm(['a', 'aa', 'abc', 'zzz', 'bbb', 'aaaa'], '*****??', ['aa', 'abc', 'zzz', 'bbb', 'aaaa']);
+    nm(['a', 'aa', 'abc', 'zzz', 'bbb', 'aaaa'], '?*****??', ['abc', 'zzz', 'bbb', 'aaaa']);
     nm(['abc', 'abb', 'zzz'], '?*****?c', ['abc']);
     nm(['abc', 'bbb', 'zzz'], '?***?****c', ['abc']);
     nm(['abc', 'bbb', 'zzz'], '?***?****?', ['abc', 'bbb', 'zzz']);
@@ -43,6 +49,11 @@ describe('qmarks and stars', function() {
     nm(['a/b/c/zzz/e.md'], 'a/?/c/???/e.md', ['a/b/c/zzz/e.md']);
   });
 
+  it('should support regex capture groups', function() {
+    nm(['a/bb/c/dd/e.md'], 'a/**/(?:dd)/e.md', ['a/bb/c/dd/e.md']);
+    nm(['a/b/c/d/e.md', 'a/b/c/d/f.md'], 'a/?/c/?/(?:e|f).md', ['a/b/c/d/e.md', 'a/b/c/d/f.md']);
+  });
+
   it('should use qmarks with other special characters', function() {
     nm(['a/b/c/d/e.md'], 'a/?/c/?/*/e.md', []);
     nm(['a/b/c/d/e/e.md'], 'a/?/c/?/*/e.md', ['a/b/c/d/e/e.md']);
@@ -63,9 +74,18 @@ describe('qmarks and stars', function() {
     assert(!nm.isMatch('aaa\\\\bbb', 'aaa?bbb'));
   });
 
-  it('question marks should not match dots', function() {
-    assert(!nm.isMatch('aaa.bbb', 'aaa?bbb'));
+  it('question marks should match arbitrary dots', function() {
+    assert(nm.isMatch('aaa.bbb', 'aaa?bbb'));
+  });
+
+  it('question marks should not match leading dots', function() {
+    assert(!nm.isMatch('.aaa/bbb', '?aaa/bbb'));
     assert(!nm.isMatch('aaa/.bbb', 'aaa/?bbb'));
+  });
+
+  it('question marks should match leading dots when options.dot is true', function() {
+    assert(nm.isMatch('aaa/.bbb', 'aaa/?bbb', {dot: true}));
+    assert(nm.isMatch('.aaa/bbb', '?aaa/bbb', {dot: true}));
   });
 
   it('question marks should match characters preceding a dot', function() {
