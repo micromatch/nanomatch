@@ -9,10 +9,10 @@
   "devDependencies": {
     "ansi-cyan": "^0.1.1",
     "benchmarked": "^0.2.2",
-    "is-object": "^1.0.1",
     "is-primitive": "^2.0.0",
+    "isobject": "^3.0.0",
     "minimatch": "^3.0.0",
-    "minimist": "^1.2.0",
-    "multimatch": "^2.1.0"
+    "multimatch": "^2.1.0",
+    "yargs-parser": "^4.2.0"
   }
 }

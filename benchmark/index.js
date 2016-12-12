@@ -5,7 +5,7 @@ var util = require('util');
 var cyan = require('ansi-cyan');
 var argv = require('yargs-parser')(process.argv.slice(2));
 var isPrimitive = require('is-primitive');
-var isObject = require('is-object');
+var isObject = require('isobject');
 var Suite = require('benchmarked');
 
 function run(type, pattern) {
