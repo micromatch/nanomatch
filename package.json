@@ -22,15 +22,14 @@
   },
   "dependencies": {
     "arr-diff": "^3.0.0",
-    "arr-union": "^3.1.0",
     "array-unique": "^0.3.2",
     "define-property": "^0.2.5",
     "extend-shallow": "^2.0.1",
     "fragment-cache": "^0.2.0",
-    "is-glob": "^3.1.0",
+    "is-extglob": "^2.1.0",
     "is-odd": "^0.1.0",
     "kind-of": "^3.0.4",
-    "object.pick": "^1.1.2",
+    "object.pick": "^1.2.0",
     "regex-not": "^1.0.0",
     "snapdragon": "^0.8.1",
     "to-regex": "^3.0.1"
@@ -81,6 +80,14 @@
     "shell",
     "wildcard"
   ],
+  "lintDeps": {
+    "files": {
+      "merge": true,
+      "devDependencies": [
+        "benchmark/**/*.js"
+      ]
+    }
+  },
   "verb": {
     "toc": true,
     "layout": "common-minimal",
@@ -95,9 +102,8 @@
     ],
     "related": {
       "list": [
-        "expand-brackets",
-        "extglob",
-        "micromatch"
+        "is-extglob",
+        "is-glob"
       ]
     },
     "reflinks": [
@@ -105,8 +111,8 @@
       "expand-tilde",
       "glob-object",
       "micromatch",
-      "verb",
-      "verb-generate-readme"
+      "minimatch",
+      "snapdragon"
     ],
     "lint": {
       "reflinks": true
