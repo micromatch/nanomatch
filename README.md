@@ -4,6 +4,7 @@
 
 <details>
 <summary><strong>Table of Contents</strong></summary>
+
 - [What is nanomatch?](#what-is-nanomatch)
 - [Getting started](#getting-started)
 - [API](#api)
@@ -34,6 +35,7 @@
   * [Running tests](#running-tests)
   * [Author](#author)
   * [License](#license)
+
 </details>
 
 ## What is nanomatch?
