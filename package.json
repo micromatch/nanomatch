@@ -25,7 +25,7 @@
     "array-unique": "^0.3.2",
     "define-property": "^0.2.5",
     "extend-shallow": "^2.0.1",
-    "fragment-cache": "^0.2.0",
+    "fragment-cache": "^0.2.1",
     "is-extglob": "^2.1.1",
     "is-odd": "^0.1.1",
     "kind-of": "^3.1.0",
