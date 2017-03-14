@@ -1,5 +1,6 @@
 'use strict';
 
+var path = require('path');
 var assert = require('assert');
 var nm = require('./support/match');
 
@@ -53,12 +54,22 @@ describe('special characters', function() {
     });
 
     it('should match backslashes', function() {
-      assert(nm.isMatch('\\', '[\\\\]'));
-      assert(nm.isMatch('\\', '[\\\\]+'));
-      assert(nm.isMatch('\\\\', '[\\\\]+'));
-      assert(nm.isMatch('\\\\\\', '[\\\\]+'));
-      nm(['\\'], '[\\\\]', ['\\']);
-      nm(['\\', '\\\\', '\\\\\\'], '[\\\\]+', ['\\', '\\\\', '\\\\\\']);
+      assert(nm.isMatch('\\', '[\\\\/]'));
+      assert(nm.isMatch('\\', '[\\\\/]+'));
+      assert(nm.isMatch('\\\\', '[\\\\/]+'));
+      assert(nm.isMatch('\\\\\\', '[\\\\/]+'));
+      nm(['\\'], '[\\\\/]', ['/']);
+      nm(['\\', '\\\\', '\\\\\\'], '[\\\\/]+', ['/', '//', '///']);
+
+      var sep = path.sep;
+      path.sep = '\\';
+      assert(nm.isMatch('\\', '[\\\\/]'));
+      assert(nm.isMatch('\\', '[\\\\/]+'));
+      assert(nm.isMatch('\\\\', '[\\\\/]+'));
+      assert(nm.isMatch('\\\\\\', '[\\\\/]+'));
+      nm(['\\'], '[\\\\/]', ['/']);
+      nm(['\\', '\\\\', '\\\\\\'], '[\\\\/]+', ['/', '//', '///']);
+      path.sep = sep;
     });
   });
 
@@ -67,8 +78,7 @@ describe('special characters', function() {
       assert(nm.isMatch(':', ':'));
       assert(nm.isMatch(':/foo', ':/*'));
       assert(nm.isMatch('D://foo', 'D://*'));
-      assert(nm.isMatch('D://foo', 'D:\\/\\/*'));
-      assert(nm.isMatch('D:\\/\\/foo', 'D:\\\\/\\\\/*'));
+      assert(nm.isMatch('D:\\\\foo', 'D:[\\\\/]+*'));
     });
   });
 

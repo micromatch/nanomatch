@@ -389,8 +389,12 @@ nanomatch.matcher = function matcher(pattern, options) {
     var unixify = utils.unixify(options);
 
     return function(str) {
+      // don't unixify unless necessary
+      if (str === pattern) {
+        return true;
+      }
       var ele = unixify(str);
-      if (str === pattern || ele === pattern || regex.test(ele)) {
+      if (ele === pattern || regex.test(ele)) {
         return true;
       }
       return false;

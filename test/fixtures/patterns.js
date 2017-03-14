@@ -99,8 +99,8 @@ module.exports = [
   ['a****c**?**??*****', ['abcdecdhjk'], null, ['abcdecdhjk']],
   ['[-abc]', ['-'], null, ['-']],
   ['[abc-]', ['-'], null, ['-']],
-  ['\\', ['\\'], null, ['\\']],
-  ['[\\\\]', ['\\'], null, ['\\']],
+  // ['\\', ['\\'], null, ['\\']], // <= moved to test/minimatch.js
+  // ['[\\\\]', ['\\'], null, ['\\']], // <= moved to test/minimatch.js
   ['[[]', ['['], null, ['[']],
   ['[', ['['], null, ['[']],
   ['[*', ['[abc'], null, ['[abc']],
@@ -161,6 +161,10 @@ module.exports = [
     [ '.a/.d', 'a/.d', 'a/b']
   ],
 
+  /**
+   * nanomatch doesn't support braces or extglobs, so we skip these tests
+   */
+  
   // // 'paren sets cannot contain slashes',
   // // ['*(a/b)', ['*(a/b)'], {nonull: true}, ['a/b']],
 

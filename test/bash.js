@@ -125,9 +125,9 @@ describe('bash options and features:', function() {
 
     it('should match escaped characters', function() {
       assert(!nm.isMatch('', '\\'));
-      assert(!nm.isMatch('XXX/\\', '[A-Z]+/\\'));
+      assert(!nm.isMatch('XXX/\\', '[A-Z]+/\\'), 'backslashes are invalid glob path separators');
       assert(nm.isMatch('\\', '\\'));
-      assert(nm.isMatch('XXX/\\', '[A-Z]+/\\\\'));
+      assert(nm.isMatch('XXX/\\', '[A-Z]+//'));
       assert(nm.isMatch('[ab]', '\\[ab]'));
       assert(nm.isMatch('[ab]', '[\\[:]ab]'));
     });

@@ -1,7 +1,9 @@
 'use strict';
 
-var match = require('./support/match');
+var path = require('path');
+var assert = require('assert');
 var patterns = require('./fixtures/patterns');
+var mm = require('./support/match');
 
 /**
  * Minimatch comparison tests
@@ -26,7 +28,59 @@ describe('basic tests', function() {
       var expected = (unit[1] || []).sort(compare);
       var options = unit[2] || {};
       var fixtures = unit[3] || patterns.fixtures;
-      match(fixtures, pattern, expected, options);
+      mm.match(fixtures, pattern, expected, options);
+    });
+  });
+});
+
+describe('minimatch', function() {
+  describe('backslashes', function() {
+    it('should match literal backslashes and normalize to forward slashes', function() {
+      mm.match(['\\'], '\\', ['/']);
+    });
+
+    it('should match regex backslashes and normalize to forward slashes', function() {
+      mm.match(['\\'], '[\\\\]', ['/']);
+    });
+  });
+
+  describe('minimatch issues (as of 12/7/2016)', function() {
+    it('https://github.com/isaacs/minimatch/issues/29', function() {
+      assert(mm.isMatch('foo/bar.txt', 'foo/**/*.txt'));
+      assert(mm.makeRe('foo/**/*.txt' ).test( 'foo/bar.txt'));
+    });
+
+    it('https://github.com/isaacs/minimatch/issues/30', function() {
+      assert(mm.isMatch('foo/bar.js', '**/foo/**'));
+      assert(mm.isMatch('./foo/bar.js', './**/foo/**'));
+      assert(mm.isMatch('./foo/bar.js', '**/foo/**'));
+      assert(mm.isMatch('./foo/bar.txt', 'foo/**/*.txt'));
+      assert(mm.makeRe('./foo/**/*.txt' ).test( 'foo/bar.txt'));
+    });
+
+    it('https://github.com/isaacs/minimatch/issues/50', function() {
+      assert(mm.isMatch('foo/bar-[ABC].txt', 'foo/**/*-\\[ABC\\].txt'));
+      assert(!mm.isMatch('foo/bar-[ABC].txt', 'foo/**/*-\\[abc\\].txt'));
+      assert(mm.isMatch('foo/bar-[ABC].txt', 'foo/**/*-\\[abc\\].txt', {nocase: true}));
+    });
+
+    it('https://github.com/isaacs/minimatch/issues/67 (should work consistently with `makeRe` and matcher functions)', function() {
+      var re = mm.makeRe('node_modules/foobar/**/*.bar');
+      assert(re.test('node_modules/foobar/foo.bar'));
+      assert(mm.isMatch('node_modules/foobar/foo.bar', 'node_modules/foobar/**/*.bar'));
+      mm(['node_modules/foobar/foo.bar'], 'node_modules/foobar/**/*.bar', ['node_modules/foobar/foo.bar']);
+    });
+
+    it('https://github.com/isaacs/minimatch/issues/78', function() {
+      var sep = path.sep;
+      path.sep = '\\';
+      assert(mm.isMatch('a\\b\\c.txt', 'a/**/*.txt'));
+      path.sep = sep;
+    });
+
+    it('https://github.com/isaacs/minimatch/issues/82', function() {
+      assert(mm.isMatch('./src/test/a.js', '**/test/**'));
+      assert(mm.isMatch('src/test/a.js', '**/test/**'));
     });
   });
 });
