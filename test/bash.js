@@ -10,7 +10,7 @@ var nm = require('./support/match');
  */
 
 // from the Bash 4.3 specification/unit tests
-var fixtures = ['*', '\\*', 'a', 'abc', 'abd', 'abe', 'b', 'bb', 'bcd', 'bdir/', 'Beware', 'c', 'ca', 'cb', 'd', 'dd', 'de'];
+var fixtures = ['*', '\\*', '**', '*a', 'a', 'abc', 'abd', 'abe', 'b', 'bb', 'bcd', 'bdir/', 'Beware', 'c', 'ca', 'cb', 'd', 'dd', 'de'];
 
 describe('bash options and features:', function() {
   describe('failglob:', function() {
@@ -57,10 +57,10 @@ describe('bash options and features:', function() {
       nm(fixtures, ['c*', 'a\\*', '*q*'], {nonull: true}, ['c', 'ca', 'cb', 'a\\*', '*q*']);
       nm(fixtures, ['c*', 'a\\*', '*q*'], ['c', 'ca', 'cb']);
 
-      nm(fixtures, '"*"*', {nonull: true}, ['"*"*']);
-      nm(fixtures, '"*"*', []);
+      nm(fixtures, '"*"*', {nonull: true}, ['*', '**', '*a']);
+      nm(fixtures, '"*"*', ['*', '**', '*a']);
 
-      nm(fixtures, '\\**', ['*']); // `*` is in the fixtures array
+      nm(fixtures, '\\**', ['*', '**', '*a']); // `*` is in the fixtures array
     });
 
     it('should work for escaped paths/dots:', function() {
@@ -82,7 +82,7 @@ describe('bash options and features:', function() {
       nm(['a-b', 'aXb'], 'a[X-]b', ['a-b', 'aXb']);
       nm(f, '[a-y]*[^c]', ['abd', 'abe', 'baz', 'beware', 'bb', 'bcd', 'bzz', 'ca', 'cb', 'dd', 'de', 'bdir/']);
       nm(f, '[a-y]*[^c]', {bash: true}, ['abd', 'abe', 'baz', 'beware', 'bzz', 'bb', 'bcd', 'ca', 'cb', 'dd', 'de', 'bdir/']);
-      nm(f, '[^a-c]*', ['d', 'dd', 'de', 'Beware', 'BewAre', 'BZZ', '*', '\\*']);
+      nm(f, '[^a-c]*', ['d', 'dd', 'de', 'Beware', 'BewAre', 'BZZ', '*', '**', '\\*', '*a']);
       nm(['a*b/ooo'], 'a\\*b/*', ['a*b/ooo']);
       nm(['a*b/ooo'], 'a\\*?/*', ['a*b/ooo']);
       nm(f, 'a[b]c', ['abc']);
