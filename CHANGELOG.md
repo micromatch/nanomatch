@@ -25,10 +25,7 @@ Stable release.
 
 First release.
 
-
-[Unreleased]: https://github.com/generate/generate/compare/0.1.0...HEAD
-[0.2.0]: https://github.com/generate/generate/compare/0.1.0...0.2.0
+[Unreleased]: https://github.com/jonschlinkert/nanomatch/compare/0.1.0...HEAD
+[0.2.0]: https://github.com/jonschlinkert/nanomatch/compare/0.1.0...0.2.0
 
 [keep-a-changelog]: https://github.com/olivierlacan/keep-a-changelog
-[common-config]: https://github.com/jonschlinkert/common-config
-
