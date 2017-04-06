@@ -100,8 +100,6 @@ module.exports = [
   ['a****c**?**??*****', ['abcdecdhjk'], null, ['abcdecdhjk']],
   ['[-abc]', ['-'], null, ['-']],
   ['[abc-]', ['-'], null, ['-']],
-  ['\\', ['\\'], null, ['\\']],
-  ['[\\\\]', ['\\'], null, ['\\']],
   ['[[]', ['['], null, ['[']],
   ['[', ['['], null, ['[']],
   ['[*', ['[abc'], null, ['[abc']],
@@ -165,7 +163,7 @@ module.exports = [
   /**
    * nanomatch doesn't support braces or extglobs, so we skip these tests
    */
-  
+
   // // 'paren sets cannot contain slashes',
   // // ['*(a/b)', ['*(a/b)'], {nonull: true}, ['a/b']],
 
@@ -217,11 +215,11 @@ module.exports = [
   // begin channelling Boole and deMorgan...
   'negation tests',
   function() {
-    fixtures = ['d', 'e', '!ab', '!abc', 'a!b', '\\!a'];
+    fixtures = ['d', 'e', '!ab', '!abc', 'a!b'];
   },
 
   // anything that is NOT a* matches.
-  ['!a*', ['\\!a', 'd', 'e', '!ab', '!abc']],
+  ['!a*', ['d', 'e', '!ab', '!abc']],
 
   // anything that IS !a* matches.
   ['!a*', ['!ab', '!abc'], {nonegate: true}],
@@ -230,7 +228,7 @@ module.exports = [
   ['a*', ['a!b']],
 
   // anything that is NOT !a* matches
-  ['!\\!a*', ['a!b', 'd', 'e', '\\!a']],
+  ['!\\!a*', ['a!b', 'd', 'e']],
 
   // negation nestled within a pattern
   function() {
