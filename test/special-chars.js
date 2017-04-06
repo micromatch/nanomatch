@@ -2,11 +2,12 @@
 
 var path = require('path');
 var assert = require('assert');
+var isWindows = require('is-windows');
 var nm = require('./support/match');
 
 describe('special characters', function() {
   describe('regex', function() {
-    it('should match conmon regex characters', function() {
+    it('should match common regex characters', function() {
       var fixtures = ['a c', 'a1c', 'a123c', 'a.c', 'a.xy.zc', 'a.zc', 'abbbbc', 'abbbc', 'abbc', 'abc', 'abq', 'axy zc', 'axy', 'axy.zc', 'axyzc', '^abc$'];
 
       nm(fixtures, 'ab?bc', ['abbbc']);
@@ -58,8 +59,14 @@ describe('special characters', function() {
       assert(nm.isMatch('\\', '[\\\\/]+'));
       assert(nm.isMatch('\\\\', '[\\\\/]+'));
       assert(nm.isMatch('\\\\\\', '[\\\\/]+'));
-      nm(['\\'], '[\\\\/]', ['/']);
-      nm(['\\', '\\\\', '\\\\\\'], '[\\\\/]+', ['/', '//', '///']);
+
+      if (isWindows()) {
+        nm(['\\'], '[\\\\/]', ['/']);
+        nm(['\\', '\\\\', '\\\\\\'], '[\\\\/]+', ['/']);
+      } else {
+        nm(['\\'], '[\\\\/]', ['\\']);
+        nm(['\\', '\\\\', '\\\\\\'], '[\\\\/]+', ['\\', '\\\\', '\\\\\\']);
+      }
 
       var sep = path.sep;
       path.sep = '\\';
@@ -68,17 +75,17 @@ describe('special characters', function() {
       assert(nm.isMatch('\\\\', '[\\\\/]+'));
       assert(nm.isMatch('\\\\\\', '[\\\\/]+'));
       nm(['\\'], '[\\\\/]', ['/']);
-      nm(['\\', '\\\\', '\\\\\\'], '[\\\\/]+', ['/', '//', '///']);
+      nm(['\\', '\\\\', '\\\\\\'], '[\\\\/]+', ['/']);
       path.sep = sep;
     });
   });
 
   describe('colons and drive letters', function() {
-    it('should treat conmon URL characters as literals', function() {
+    it('should treat common URL characters as literals', function() {
       assert(nm.isMatch(':', ':'));
       assert(nm.isMatch(':/foo', ':/*'));
       assert(nm.isMatch('D://foo', 'D://*'));
-      assert(nm.isMatch('D:\\\\foo', 'D:[\\\\/]+*'));
+      assert(nm.isMatch('D://foo', 'D:\\/\\/*'));
     });
   });
 
@@ -91,6 +98,7 @@ describe('special characters', function() {
     });
 
     it('should handle brackets', function() {
+      nm(['ab', 'ac', 'ad', 'a*', '*'], '[a*]*', ['*', 'a*'], {bash: false});
       nm(['ab', 'ac', 'ad', 'a*', '*'], '[a*]*', ['*', 'a*', 'ab', 'ac', 'ad']);
     });
 

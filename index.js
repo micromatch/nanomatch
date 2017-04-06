@@ -113,11 +113,11 @@ nanomatch.match = function(list, pattern, options) {
   var matches = [];
 
   while (++idx < len) {
-    var ele = list[idx];
-    var unix = unixify(ele);
+    var origPath = list[idx];
 
-    if (ele === pattern || unix === pattern || isMatch(unix)) {
-      matches.push((options && options.unixify === false) ? ele : unix);
+    if (origPath === pattern || isMatch(origPath)) {
+      var unixPath = unixify(origPath);
+      matches.push(utils.value(origPath, unixPath, options, pattern));
     }
   }
 
@@ -167,12 +167,9 @@ nanomatch.isMatch = function(str, pattern, options) {
     throw new TypeError('expected a string: "' + util.inspect(str) + '"');
   }
 
-  if (pattern === str) {
+  var equals = utils.equalsPattern(options);
+  if (equals(str)) {
     return true;
-  }
-
-  if (utils.isSimpleChar(pattern) || utils.isSlash(pattern)) {
-    return str === pattern;
   }
 
   var isMatch = memoize('isMatch', pattern, options, nanomatch.matcher);
@@ -201,14 +198,11 @@ nanomatch.not = function(list, patterns, options) {
   var ignore = opts.ignore;
   delete opts.ignore;
 
-  var unixify = utils.unixify(opts);
-  var unixified = utils.arrayify(list).map(function(fp) {
-    return unixify(fp, opts);
-  });
+  list = utils.arrayify(list);
 
-  var matches = utils.diff(unixified, nanomatch(unixified, patterns, opts));
+  var matches = utils.diff(list, nanomatch(list, patterns, opts));
   if (ignore) {
-    matches = utils.diff(matches, nanomatch(unixified, ignore));
+    matches = utils.diff(matches, nanomatch(list, ignore));
   }
 
   return opts.nodupes !== false ? utils.unique(matches) : matches;
@@ -234,7 +228,6 @@ nanomatch.not = function(list, patterns, options) {
  */
 
 nanomatch.any = function(list, patterns, options) {
-  var unixify = utils.unixify(options);
   var isMatch = memoize('any', patterns, options, nanomatch.matcher);
 
   list = utils.arrayify(list);
@@ -244,9 +237,8 @@ nanomatch.any = function(list, patterns, options) {
   while (++idx < len) {
     var ele = list[idx];
     if (ele === './' || ele === '') continue;
-    var unix = unixify(ele);
 
-    if (isMatch(unix)) {
+    if (isMatch(ele)) {
       if (options && options.ignore && nanomatch.not(ele, options.ignored)) {
         continue;
       }
@@ -270,27 +262,33 @@ nanomatch.any = function(list, patterns, options) {
  * //=> false
  * ```
  * @param {String} `str` The string to match.
- * @param {String} `pattern` Glob pattern to use for matching.
+ * @param {String|Array} `patterns` Glob pattern to use for matching.
  * @param {Object} `options` Any [options](#options) to change how matches are performed
  * @return {Boolean} Returns true if the patter matches any part of `str`.
  * @api public
  */
 
-nanomatch.contains = function(str, pattern, options) {
-  if (pattern === str) {
-    return true;
-  }
+nanomatch.contains = function(str, patterns, options) {
+  if (typeof patterns === 'string') {
+    if (patterns === '') {
+      return false;
+    }
 
-  if (utils.isSimpleChar(pattern)) {
-    return str === pattern;
+    var equals = utils.equalsPattern(patterns, options);
+    if (equals(str)) {
+      return true;
+    }
+    var contains = utils.containsPattern(patterns, options);
+    if (contains(str)) {
+      return true;
+    }
   }
 
   var opts = extend({}, options);
   opts.strictClose = false;
   opts.strictOpen = false;
   opts.contains = true;
-
-  return nanomatch(str, pattern, opts).length > 0;
+  return nanomatch(str, patterns, opts).length > 0;
 };
 
 /**
@@ -386,15 +384,15 @@ nanomatch.matcher = function matcher(pattern, options) {
   }
 
   function test(regex) {
+    var equals = utils.equalsPattern(options);
     var unixify = utils.unixify(options);
 
     return function(str) {
-      // don't unixify unless necessary
-      if (str === pattern) {
+      if (equals(str)) {
         return true;
       }
-      var ele = unixify(str);
-      if (ele === pattern || regex.test(ele)) {
+
+      if (regex.test(unixify(str))) {
         return true;
       }
       return false;

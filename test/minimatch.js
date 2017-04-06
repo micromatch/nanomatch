@@ -2,6 +2,7 @@
 
 var path = require('path');
 var assert = require('assert');
+var isWindows = require('is-windows');
 var patterns = require('./fixtures/patterns');
 var mm = require('./support/match');
 
@@ -33,16 +34,20 @@ describe('basic tests', function() {
   });
 });
 
-describe('minimatch', function() {
+describe('minimatch parity:', function() {
   describe('backslashes', function() {
-    it('should match literal backslashes and normalize to forward slashes', function() {
-      mm.match(['\\'], '\\', ['/']);
-    });
-
-    it('should match regex backslashes and normalize to forward slashes', function() {
-      mm.match(['\\'], '[\\\\]', ['/']);
+    it('should match literal backslashes', function() {
+      if (isWindows()) {
+        mm.match(['\\'], '\\', ['/']);
+      } else {
+        mm.match(['\\'], '\\', ['\\']);
+      }
     });
   });
+
+  /**
+   * Issues that minimatch fails on but micromatch passes
+   */
 
   describe('minimatch issues (as of 12/7/2016)', function() {
     it('https://github.com/isaacs/minimatch/issues/29', function() {
@@ -75,6 +80,7 @@ describe('minimatch', function() {
       var sep = path.sep;
       path.sep = '\\';
       assert(mm.isMatch('a\\b\\c.txt', 'a/**/*.txt'));
+      assert(mm.isMatch('a/b/c.txt', 'a/**/*.txt'));
       path.sep = sep;
     });
 

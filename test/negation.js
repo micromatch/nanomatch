@@ -1,6 +1,7 @@
 'use strict';
 
 var mm = require('minimatch');
+var isWindows = require('is-windows');
 var nm = require('./support/match');
 
 describe('negation', function() {
@@ -68,12 +69,18 @@ describe('negation', function() {
   });
 
   it('should support any number of leading exclamations', function() {
-    nm(['d', 'e', '!ab', '!abc', 'a!b', '\\!a'], '!a*', ['d', 'e', '!ab', '!abc', '\\!a']);
     nm(['d', 'e', '!ab', '!abc', 'a!b', '\\!a'], '!!a*', ['a!b']);
-    nm(['d', 'e', '!ab', '!abc', 'a!b', '\\!a'], '!!!a*', ['d', 'e', '!ab', '!abc', '\\!a']);
     nm(['d', 'e', '!ab', '!abc', 'a!b', '\\!a'], '!!!!a*', ['a!b']);
-    nm(['d', 'e', '!ab', '!abc', 'a!b', '\\!a'], '!!!!!a*', ['d', 'e', '!ab', '!abc', '\\!a']);
     nm(['d', 'e', '!ab', '!abc', 'a!b', '\\!a'], '!!!!!!a*', ['a!b']);
+    if (!isWindows()) {
+      nm(['d', 'e', '!ab', '!abc', 'a!b', '\\!a'], '!!!!!a*', ['d', 'e', '!ab', '!abc', '\\!a']);
+      nm(['d', 'e', '!ab', '!abc', 'a!b', '\\!a'], '!a*', ['d', 'e', '!ab', '!abc', '\\!a']);
+      nm(['d', 'e', '!ab', '!abc', 'a!b', '\\!a'], '!!!a*', ['d', 'e', '!ab', '!abc', '\\!a']);
+    } else {
+      nm(['d', 'e', '!ab', '!abc', 'a!b', '\\!a'], '!!!!!a*', ['d', 'e', '!ab', '!abc', '/!a']);
+      nm(['d', 'e', '!ab', '!abc', 'a!b', '\\!a'], '!a*', ['d', 'e', '!ab', '!abc', '/!a']);
+      nm(['d', 'e', '!ab', '!abc', 'a!b', '\\!a'], '!!!a*', ['d', 'e', '!ab', '!abc', '/!a']);
+    }
   });
 
   it('should not give special meaning to non-leading exclamations', function() {

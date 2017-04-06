@@ -43,7 +43,7 @@ module.exports = [
 
   'character classes',
   ['[a-c]b*', ['abc', 'abd', 'abe', 'bb', 'cb']],
-  ['[a-y]*[^c]', ['abd', 'abe', 'bb', 'bcd', 'bdir/', 'ca', 'cb', 'dd', 'de']],
+  ['[a-y]*[^c]', ['abd', 'abe', 'bb', 'bcd', 'bdir/', 'ca', 'cb', 'dd', 'de'], {bash: true}],
   ['a*[^c]', ['abd', 'abe']],
   function() {
     fixtures.push('a-b', 'aXb');
@@ -66,7 +66,8 @@ module.exports = [
   ['*\\!*', ['echo !7'], null, ['echo !7']],
   ['*.\\*', ['r.*'], null, ['r.*']],
   ['a[b]c', ['abc']],
-  ['a[\\b]c', ['abc']],
+  ['a[\\b]c', []],
+  ['a[\\\\b]c', ['abc']],
   ['a?c', ['abc']],
   ['a\\*c', [], {null: true}, ['abc']],
   ['', [''], { null: true }, ['']],
@@ -99,8 +100,8 @@ module.exports = [
   ['a****c**?**??*****', ['abcdecdhjk'], null, ['abcdecdhjk']],
   ['[-abc]', ['-'], null, ['-']],
   ['[abc-]', ['-'], null, ['-']],
-  // ['\\', ['\\'], null, ['\\']], // <= moved to test/minimatch.js
-  // ['[\\\\]', ['\\'], null, ['\\']], // <= moved to test/minimatch.js
+  ['\\', ['\\'], null, ['\\']],
+  ['[\\\\]', ['\\'], null, ['\\']],
   ['[[]', ['['], null, ['[']],
   ['[', ['['], null, ['[']],
   ['[*', ['[abc'], null, ['[abc']],
@@ -136,7 +137,7 @@ module.exports = [
 
   'braces: onestar/twostar',
   ['{/*,*}', [], {null: true}, ['/asdf/asdf/asdf']],
-  // ['{/?,*}', ['/a', 'bb'], {null: true}, ['/a', '/b/b', '/a/b/c', 'bb']],
+  // ['{/?,*}', ['/a', 'bb'], {null: true}, ['/a', '/b/b', '/a/b/c', 'bb']], // braces aren't suppored in nanomatch
 
   'dots should not match unless requested',
   ['**', ['a/b'], {}, ['a/b', 'a/.d', '.a/.d']],
