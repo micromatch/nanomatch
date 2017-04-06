@@ -8,8 +8,9 @@
 - [What is nanomatch?](#what-is-nanomatch)
 - [Getting started](#getting-started)
 - [API](#api)
-  * [options](#options)
+- [Options](#options)
   * [options.basename](#optionsbasename)
+  * [options.bash](#optionsbash)
   * [options.cache](#optionscache)
   * [options.dot](#optionsdot)
   * [options.failglob](#optionsfailglob)
@@ -86,6 +87,9 @@ Additional detail provided in the [API documentation](#api).
 
 ## API
 
+<details>
+<summary><strong>nanomatch</strong></summary>
+
 ### [nanomatch](index.js#L39)
 
 The main function takes a list of strings and one or more glob patterns to use for matching.
@@ -107,6 +111,11 @@ console.log(nm(['a.js', 'a.txt'], ['*.js']));
 //=> [ 'a.js' ]
 ```
 
+</details>
+
+<details>
+<summary><strong>.match</strong></summary>
+
 ### [.match](index.js#L102)
 
 Similar to the main function, but `pattern` must be a string.
@@ -127,6 +136,11 @@ nm.match(list, pattern[, options]);
 console.log(nm.match(['a.a', 'a.aa', 'a.b', 'a.c'], '*.a'));
 //=> ['a.a', 'a.aa']
 ```
+
+</details>
+
+<details>
+<summary><strong>.isMatch</strong></summary>
 
 ### [.isMatch](index.js#L165)
 
@@ -151,7 +165,12 @@ console.log(nm.isMatch('a.b', '*.a'));
 //=> false
 ```
 
-### [.not](index.js#L199)
+</details>
+
+<details>
+<summary><strong>.not</strong></summary>
+
+### [.not](index.js#L196)
 
 Returns a list of strings that _DO NOT MATCH_ any of the given `patterns`.
 
@@ -172,7 +191,12 @@ console.log(nm.not(['a.a', 'b.b', 'c.c'], '*.a'));
 //=> ['b.b', 'c.c']
 ```
 
-### [.any](index.js#L236)
+</details>
+
+<details>
+<summary><strong>.any</strong></summary>
+
+### [.any](index.js#L230)
 
 Returns true if the given `string` matches any of the given glob `patterns`.
 
@@ -195,14 +219,19 @@ console.log(nm.any('a.a', 'b.*'));
 //=> false
 ```
 
-### [.contains](index.js#L279)
+</details>
+
+<details>
+<summary><strong>.contains</strong></summary>
+
+### [.contains](index.js#L271)
 
 Returns true if the given `string` contains the given pattern. Similar to [.isMatch](#isMatch) but the pattern can match any part of the string.
 
 **Params**
 
 * `str` **{String}**: The string to match.
-* `pattern` **{String}**: Glob pattern to use for matching.
+* `patterns` **{String|Array}**: Glob pattern to use for matching.
 * `options` **{Object}**: Any [options](#options) to change how matches are performed
 * `returns` **{Boolean}**: Returns true if the patter matches any part of `str`.
 
@@ -218,7 +247,12 @@ console.log(nm.contains('aa/bb/cc', '*d'));
 //=> false
 ```
 
-### [.matchKeys](index.js#L328)
+</details>
+
+<details>
+<summary><strong>.matchKeys</strong></summary>
+
+### [.matchKeys](index.js#L326)
 
 Filter the keys of the given object with the given `glob` pattern and `options`. Does not attempt to match nested keys. If you need this feature, use [glob-object](https://github.com/jonschlinkert/glob-object) instead.
 
@@ -240,7 +274,12 @@ console.log(nm.matchKeys(obj, '*b'));
 //=> { ab: 'b' }
 ```
 
-### [.matcher](index.js#L357)
+</details>
+
+<details>
+<summary><strong>.matcher</strong></summary>
+
+### [.matcher](index.js#L355)
 
 Returns a memoized matcher function from the given glob `pattern` and `options`. The returned function takes a string to match as its only argument and returns true if the string is a match.
 
@@ -263,7 +302,12 @@ console.log(isMatch('a.b'));
 //=> true
 ```
 
-### [.makeRe](index.js#L423)
+</details>
+
+<details>
+<summary><strong>.makeRe</strong></summary>
+
+### [.makeRe](index.js#L421)
 
 Create a regular expression from the given glob `pattern`.
 
@@ -283,7 +327,12 @@ console.log(nm.makeRe('*.js'));
 //=> /^(?:(\.[\\\/])?(?!\.)(?=.)[^\/]*?\.js)$/
 ```
 
-### [.create](index.js#L484)
+</details>
+
+<details>
+<summary><strong>.create</strong></summary>
+
+### [.create](index.js#L482)
 
 Parses the given glob `pattern` and returns an object with the compiled `output` and optional source `map`.
 
@@ -325,7 +374,12 @@ console.log(nm.create('abc/*.js'));
 //   idx: 6 }
 ```
 
-### [.parse](index.js#L523)
+</details>
+
+<details>
+<summary><strong>.parse</strong></summary>
+
+### [.parse](index.js#L521)
 
 Parse the given `str` with the given `options`.
 
@@ -358,7 +412,12 @@ console.log(ast);
 //      { type: 'eos', val: '' } ] }
 ```
 
-### [.compile](index.js#L576)
+</details>
+
+<details>
+<summary><strong>.compile</strong></summary>
+
+### [.compile](index.js#L574)
 
 Compile the given `ast` or string with the given `options`.
 
@@ -392,7 +451,12 @@ console.log(nm.compile(ast));
 //   parsingErrors: [] }
 ```
 
-### [.clearCache](index.js#L599)
+</details>
+
+<details>
+<summary><strong>.clearCache</strong></summary>
+
+### [.clearCache](index.js#L597)
 
 Clear the regex cache.
 
@@ -401,6 +465,13 @@ Clear the regex cache.
 ```js
 nm.clearCache();
 ```
+
+</details>
+
+## Options
+
+<details>
+<summary><strong>basename</strong></summary>
 
 ### options.basename
 
@@ -420,6 +491,34 @@ nm(['a/b.js', 'a/c.md'], '*.js', {matchBase: true});
 //=> ['a/b.js']
 ```
 
+</details>
+
+<details>
+<summary><strong>bash</strong></summary>
+
+### options.bash
+
+Enabled by default, this option enforces bash-like behavior with stars immediately following a bracket expression. Bash bracket expressions are similar to regex character classes, but unlike regex, a star following a bracket expression **does not repeat the bracketed characters**. Instead, the star is treated the same as an other star.
+
+Type: `Boolean`
+
+Default: `true`
+
+**Example**
+
+```js
+var files = ['abc', 'ajz'];
+console.log(nm(files, '[a-c]*'));
+//=> ['abc', 'ajz']
+
+console.log(nm(files, '[a-c]*', {bash: false}));
+```
+
+</details>
+
+<details>
+<summary><strong>cache</strong></summary>
+
 ### options.cache
 
 Disable regex and function memoization.
@@ -427,6 +526,11 @@ Disable regex and function memoization.
 Type: `Boolean`
 
 Default: `undefined`
+
+</details>
+
+<details>
+<summary><strong>dot</strong></summary>
 
 ### options.dot
 
@@ -436,6 +540,11 @@ Type: `Boolean`
 
 Default: `false`
 
+</details>
+
+<details>
+<summary><strong>failglob</strong></summary>
+
 ### options.failglob
 
 Similar to the `--failglob` behavior in Bash, throws an error when no matches are found.
@@ -443,6 +552,11 @@ Similar to the `--failglob` behavior in Bash, throws an error when no matches ar
 Type: `Boolean`
 
 Default: `undefined`
+
+</details>
+
+<details>
+<summary><strong>ignore</strong></summary>
 
 ### options.ignore
 
@@ -452,9 +566,19 @@ Type: `String|Array`
 
 Default: `undefined`
 
+</details>
+
+<details>
+<summary><strong>matchBase</strong></summary>
+
 ### options.matchBase
 
 Alias for [options.basename](#options-basename).
+
+</details>
+
+<details>
+<summary><strong>nocase</strong></summary>
 
 ### options.nocase
 
@@ -463,6 +587,11 @@ Use a case-insensitive regex for matching files. Same behavior as [minimatch](ht
 Type: `Boolean`
 
 Default: `undefined`
+
+</details>
+
+<details>
+<summary><strong>nodupes</strong></summary>
 
 ### options.nodupes
 
@@ -484,6 +613,11 @@ nm.match(['a/b/c', 'a/b/c'], 'a/b/c', {nodupes: true});
 //=> ['abc']
 ```
 
+</details>
+
+<details>
+<summary><strong>nonegate</strong></summary>
+
 ### options.nonegate
 
 Disallow negation (`!`) patterns, and treat leading `!` as a literal character to match.
@@ -492,9 +626,19 @@ Type: `Boolean`
 
 Default: `undefined`
 
+</details>
+
+<details>
+<summary><strong>nonull</strong></summary>
+
 ### options.nonull
 
 Alias for [options.nullglob](#options-nullglob).
+
+</details>
+
+<details>
+<summary><strong>nullglob</strong></summary>
 
 ### options.nullglob
 
@@ -504,6 +648,11 @@ Type: `Boolean`
 
 Default: `undefined`
 
+</details>
+
+<details>
+<summary><strong>snapdragon</strong></summary>
+
 ### options.snapdragon
 
 Pass your own instance of [snapdragon](https://github.com/jonschlinkert/snapdragon) to customize parsers or compilers.
@@ -511,6 +660,11 @@ Pass your own instance of [snapdragon](https://github.com/jonschlinkert/snapdrag
 Type: `Object`
 
 Default: `undefined`
+
+</details>
+
+<details>
+<summary><strong>unescape</strong></summary>
 
 ### options.unescape
 
@@ -532,6 +686,11 @@ nm.match(['abc', 'a\\*c'], 'a\\*c', {unescape: true});
 //=> ['a*c']
 ```
 
+</details>
+
+<details>
+<summary><strong>unixify</strong></summary>
+
 ### options.unixify
 
 Convert path separators on returned files to posix/unix-style forward slashes.
@@ -549,6 +708,8 @@ nm.match(['a\\b\\c'], 'a/**');
 nm.match(['a\\b\\c'], {unixify: false});
 //=> ['a\\b\\c']
 ```
+
+</details>
 
 ## Features
 
@@ -583,7 +744,7 @@ If you need any of these features consider using [micromatch](https://github.com
 Nanomatch is part of a suite of libraries aimed at bringing the power and expressiveness of [Bash's](https://www.gnu.org/software/bash/) matching and expansion capabilities to JavaScript, _and - as you can see by the [benchmarks](#benchmarks) - without sacrificing speed_.
 
 | **Related library** | **Matching Type** | **Example** | **Description** | 
-| --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- |
 | `nanomatch` (you are here) | Wildcards | `*` | [Filename expansion](https://www.gnu.org/software/bash/manual/html_node/Filename-Expansion.html#Filename-Expansion), also referred to as globbing and pathname expansion, allows the use of [wildcards](#features) for matching. |
 | [expand-tilde](https://github.com/jonschlinkert/expand-tilde) | Tildes | `~` | [Tilde expansion](https://www.gnu.org/software/bash/manual/html_node/Tilde-Expansion.html#Tilde-Expansion) converts the leading tilde in a file path to the user home directory. |
 | [braces](https://github.com/jonschlinkert/braces) | Braces | `{a,b,c}` | [Brace expansion](https://www.gnu.org/software/bash/manual/html_node/Brace-Expansion.html) |
@@ -720,4 +881,4 @@ Released under the [MIT License](LICENSE).
 
 ***
 
-_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.4.3, on March 14, 2017._
+_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.5.0, on April 06, 2017._
