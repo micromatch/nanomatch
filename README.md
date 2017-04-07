@@ -7,6 +7,8 @@
 
 - [What is nanomatch?](#what-is-nanomatch)
 - [Getting started](#getting-started)
+  * [Installing nanomatch](#installing-nanomatch)
+  * [Usage](#usage)
 - [API](#api)
 - [Options](#options)
   * [options.basename](#optionsbasename)
@@ -45,31 +47,65 @@ Nanomatch is a fast and accurate glob matcher with full support for standard Bas
 
 **Learn more**
 
+* [Getting started](#getting-started): learn how to install and begin using nanomatch
 * [Features](#features): jump to info about supported patterns, and a glob matching reference
 * [API documentation](#api): jump to available options and methods
 * [Unit tests](test): visit unit tests. there is no better way to learn a code library than spending time the unit tests. Nanomatch has 36,000 unit tests - go become a glob matching ninja!
 
-**How is this different from [micromatch](https://github.com/jonschlinkert/micromatch)?**
+<details>
+<summary><strong>How is this different from [minimatch](https://github.com/isaacs/minimatch)?</strong></summary>
 
-Micromatch supports 4 additional [bash "expansion" types](#bash-expansion-libs) beyond the wildcard matching provided by nanomatch. _(micromatch v3.0.0 will begin using the nanomatch parser and compiler for glob matching)_
+**Speed and accuracy**
+
+Nanomatch uses [snapdragon](https://github.com/jonschlinkert/snapdragon) for parsing and compiling globs, which results in:
+
+* Granular control over the entire conversion process in a way that is easy to understand, reason about, and customize.
+* Much greater accuracy than minimatch. In fact, nanomatch passes _all of the spec tests_ from bash, including some that bash still fails. However, since there is no real specification for globs, if you encounter a pattern that yields unexpected match results [after researching previous issues](../../issues), [please let us know](../../issues/new).
+* Faster matching, from a combination of optimized glob patterns and (optional) caching.
+
+**Basic globbing only**
+
+Nanomatch supports [basic globbing only](#features), which is limited to `*`, `**`, `?` and regex-like brackets.
+
+If you need support for the other [bash "expansion" types](#bash-expansion-libs) (in addition to the wildcard matching provided by nanomatch), consider using [micromatch](https://github.com/jonschlinkert/micromatch) instead. _(micromatch >=3.0.0  uses the nanomatch parser and compiler for basic glob matching)_
+
+</details>
 
 ## Getting started
+
+### Installing nanomatch
+
+**Install with [yarn](https://yarnpkg.com/)**
+
+```sh
+$ yarn add nanomatch
+```
+
+**Install with [npm](https://npmjs.com)**
+
+```sh
+$ npm install nanomatch
+```
+
+### Usage
+
+Add nanomatch to your project using node's `require()` system:
 
 ```js
 var nanomatch = require('nanomatch');
 
 // the main export is a function that takes an array of strings to match
-// and one or more patterns to use for matching
+// and a string or array of patterns to use for matching
 nanomatch(list, patterns[, options]);
 ```
 
 **Params**
 
-* `list` **{String|Array}**: One or more strings to match against. This is often a list of files.
+* `list` **{String|Array}**: List of strings to perform matches against. This is often a list of file paths.
 * `patterns` **{String|Array}**: One or more [glob paterns](#features) to use for matching.
-* `options` **{Object}**: Visit the API to learn about available options.
+* `options` **{Object}**: Any [supported options](#options) may be passed
 
-**Example**
+**Examples**
 
 ```js
 var nm = require('nanomatch');
@@ -83,7 +119,7 @@ console.log(nm(['a', 'b/b', 'c/c/c'], '**'));
 //=> ['a', 'b/b', 'c/c/c']
 ```
 
-Additional detail provided in the [API documentation](#api).
+See the [API documentation](#api) for available methods and [options](https://github.com/einaros/options.js).
 
 ## API
 
@@ -749,7 +785,7 @@ Nanomatch is part of a suite of libraries aimed at bringing the power and expres
 | [expand-tilde](https://github.com/jonschlinkert/expand-tilde) | Tildes | `~` | [Tilde expansion](https://www.gnu.org/software/bash/manual/html_node/Tilde-Expansion.html#Tilde-Expansion) converts the leading tilde in a file path to the user home directory. |
 | [braces](https://github.com/jonschlinkert/braces) | Braces | `{a,b,c}` | [Brace expansion](https://www.gnu.org/software/bash/manual/html_node/Brace-Expansion.html) |
 | [expand-brackets](https://github.com/jonschlinkert/expand-brackets) | Brackets | `[[:alpha:]]` | [POSIX character classes](https://www.gnu.org/software/grep/manual/html_node/Character-Classes-and-Bracket-Expressions.html) (also referred to as POSIX brackets, or POSIX character classes) |
-| [extglob](https://github.com/jonschlinkert/extglob) | Parens | `!(a\|b)` | [Extglobs](https://www.gnu.org/software/bash/manual/html_node/Pattern-Matching.html#Pattern-Matching) |
+| [extglob](https://github.com/jonschlinkert/extglob) | Parens | `!(a | b)` | [Extglobs](https://www.gnu.org/software/bash/manual/html_node/Pattern-Matching.html#Pattern-Matching) |
 | [micromatch](https://github.com/jonschlinkert/micromatch) | All | all | Micromatch is built on top of the other libraries. |
 
 There are many resources available on the web if you want to dive deeper into how these features work in Bash.
