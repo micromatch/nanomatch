@@ -33,10 +33,10 @@ describe('bash options and features:', function() {
       mm(fixtures, 'b*/', ['bdir/']);
     });
 
-    it('should use quoted characters as literals:', function() {
+    it('should use escaped characters as literals:', function() {
       if (isWindows()) {
         mm(fixtures, '\\*', {nonull: true}, ['*', '/*']);
-        mm(fixtures, '\\*', {nonull: true, unescape: true}, ['*', '/*']);
+        mm(fixtures, '\\*', {nonull: true, unescape: true}, ['*']);
 
         mm(fixtures, '\\^', {nonull: true}, ['\\^']);
         mm(fixtures, '\\^', []);
@@ -46,8 +46,8 @@ describe('bash options and features:', function() {
         mm(fixtures, 'a\\*', []);
 
         mm(fixtures, ['a\\*', '\\*'], {nonull: true}, ['*', '/*', 'a\\*']);
-        mm(fixtures, ['a\\*', '\\*'], {nonull: true, unescape: true}, ['a*', '*', '/*']);
-        mm(fixtures, ['a\\*', '\\*'], {unescape: true}, ['*', '/*']);
+        mm(fixtures, ['a\\*', '\\*'], {nonull: true, unescape: true}, ['a*', '*']);
+        mm(fixtures, ['a\\*', '\\*'], {unescape: true}, ['*']);
         mm(fixtures, ['a\\*', '\\*'], ['*', '/*']);
 
         mm(fixtures, ['a\\*'], {nonull: true}, ['a\\*']);
