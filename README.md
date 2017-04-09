@@ -9,6 +9,7 @@
 - [Getting started](#getting-started)
   * [Installing nanomatch](#installing-nanomatch)
   * [Usage](#usage)
+  * [Documentation](#documentation)
 - [API](#api)
 - [Options](#options)
   * [options.basename](#optionsbasename)
@@ -31,13 +32,60 @@
 - [Benchmarks](#benchmarks)
   * [Running benchmarks](#running-benchmarks)
   * [Latest results](#latest-results)
-- [History](#history)
 - [About](#about)
   * [Related projects](#related-projects)
   * [Contributing](#contributing)
   * [Running tests](#running-tests)
   * [Author](#author)
   * [License](#license)
+
+</details>
+
+<details>
+<summary><strong>Release history</strong></summary>
+
+## History
+
+### key
+
+Changelog entries are classified using the following labels _(from [keep-a-changelog](https://github.com/olivierlacan/keep-a-changelog)_):
+
+* `added`: for new features
+* `changed`: for changes in existing functionality
+* `deprecated`: for once-stable features removed in upcoming releases
+* `removed`: for deprecated features removed in this release
+* `fixed`: for any bug fixes
+* `bumped`: updated dependencies, only minor or higher will be listed.
+
+### [1.0.4](https://github.com/jonschlinkert/nanomatch/compare/1.0.3...1.0.4) - 2017-04-06
+
+Housekeeping updates. Adds documentation section about escaping, cleans up utils.
+
+### [1.0.3](https://github.com/jonschlinkert/nanomatch/compare/1.0.1...1.0.3) - 2017-04-06
+
+This release includes fixes for windows path edge cases and other improvements for stricter adherence to bash spec.
+
+**Fixed**
+
+* More windows path edge cases
+
+**Added**
+
+* Support for bash-like quoted strings for escaping sequences of characters, such as `foo/"**"/bar` where `**` should be matched literally and not evaluated as special characters.
+
+### [1.0.1](https://github.com/jonschlinkert/nanomatch/compare/1.0.0...1.0.1) - 2016-12-12
+
+**Added**
+
+* Support for windows path edge cases where backslashes are used in brackets or other unusual combinations.
+
+### [1.0.0](https://github.com/jonschlinkert/nanomatch/compare/0.1.0...1.0.0) - 2016-12-12
+
+Stable release.
+
+### [0.1.0] - 2016-10-08
+
+First release.
 
 </details>
 
@@ -121,12 +169,38 @@ console.log(nm(['a', 'b/b', 'c/c/c'], '**'));
 
 See the [API documentation](#api) for available methods and [options](https://github.com/einaros/options.js).
 
+### Documentation
+
+<details>
+<summary><strong>Escaping</strong></summary>
+
+Backslashes and quotes can be used to escape characters, forcing nanomatch to regard those characters as a literal characters.
+
+**Backslashes**
+
+Use backslashes to escape single characters. For example, the following pattern would match `foo/` folled by a literal `*`, followed by zero or more of any characters besides `/`, followed by `/bar`.
+
+```js
+'foo/\**/bar'
+```
+
+**Quoted strings**
+
+Use single or double quotes to escape sequences of characters. For example, the following patterns would match `foo/**/bar` exactly:
+
+```js
+'foo/"**"/bar'
+"foo/'**'/bar"
+```
+
+</details>
+
 ## API
 
 <details>
 <summary><strong>nanomatch</strong></summary>
 
-### [nanomatch](index.js#L39)
+### [nanomatch](index.js#L31)
 
 The main function takes a list of strings and one or more glob patterns to use for matching.
 
@@ -152,7 +226,7 @@ console.log(nm(['a.js', 'a.txt'], ['*.js']));
 <details>
 <summary><strong>.match</strong></summary>
 
-### [.match](index.js#L102)
+### [.match](index.js#L99)
 
 Similar to the main function, but `pattern` must be a string.
 
@@ -178,7 +252,7 @@ console.log(nm.match(['a.a', 'a.aa', 'a.b', 'a.c'], '*.a'));
 <details>
 <summary><strong>.isMatch</strong></summary>
 
-### [.isMatch](index.js#L165)
+### [.isMatch](index.js#L162)
 
 Returns true if the specified `string` matches the given glob `pattern`.
 
@@ -206,7 +280,7 @@ console.log(nm.isMatch('a.b', '*.a'));
 <details>
 <summary><strong>.not</strong></summary>
 
-### [.not](index.js#L196)
+### [.not](index.js#L193)
 
 Returns a list of strings that _DO NOT MATCH_ any of the given `patterns`.
 
@@ -232,7 +306,7 @@ console.log(nm.not(['a.a', 'b.b', 'c.c'], '*.a'));
 <details>
 <summary><strong>.any</strong></summary>
 
-### [.any](index.js#L230)
+### [.any](index.js#L227)
 
 Returns true if the given `string` matches any of the given glob `patterns`.
 
@@ -260,7 +334,7 @@ console.log(nm.any('a.a', 'b.*'));
 <details>
 <summary><strong>.contains</strong></summary>
 
-### [.contains](index.js#L271)
+### [.contains](index.js#L268)
 
 Returns true if the given `string` contains the given pattern. Similar to [.isMatch](#isMatch) but the pattern can match any part of the string.
 
@@ -288,7 +362,7 @@ console.log(nm.contains('aa/bb/cc', '*d'));
 <details>
 <summary><strong>.matchKeys</strong></summary>
 
-### [.matchKeys](index.js#L326)
+### [.matchKeys](index.js#L323)
 
 Filter the keys of the given object with the given `glob` pattern and `options`. Does not attempt to match nested keys. If you need this feature, use [glob-object](https://github.com/jonschlinkert/glob-object) instead.
 
@@ -315,7 +389,7 @@ console.log(nm.matchKeys(obj, '*b'));
 <details>
 <summary><strong>.matcher</strong></summary>
 
-### [.matcher](index.js#L355)
+### [.matcher](index.js#L352)
 
 Returns a memoized matcher function from the given glob `pattern` and `options`. The returned function takes a string to match as its only argument and returns true if the string is a match.
 
@@ -343,7 +417,7 @@ console.log(isMatch('a.b'));
 <details>
 <summary><strong>.makeRe</strong></summary>
 
-### [.makeRe](index.js#L421)
+### [.makeRe](index.js#L418)
 
 Create a regular expression from the given glob `pattern`.
 
@@ -368,7 +442,7 @@ console.log(nm.makeRe('*.js'));
 <details>
 <summary><strong>.create</strong></summary>
 
-### [.create](index.js#L482)
+### [.create](index.js#L479)
 
 Parses the given glob `pattern` and returns an object with the compiled `output` and optional source `map`.
 
@@ -415,7 +489,7 @@ console.log(nm.create('abc/*.js'));
 <details>
 <summary><strong>.parse</strong></summary>
 
-### [.parse](index.js#L521)
+### [.parse](index.js#L518)
 
 Parse the given `str` with the given `options`.
 
@@ -453,7 +527,7 @@ console.log(ast);
 <details>
 <summary><strong>.compile</strong></summary>
 
-### [.compile](index.js#L574)
+### [.compile](index.js#L571)
 
 Compile the given `ast` or string with the given `options`.
 
@@ -492,7 +566,7 @@ console.log(nm.compile(ast));
 <details>
 <summary><strong>.clearCache</strong></summary>
 
-### [.clearCache](index.js#L597)
+### [.clearCache](index.js#L594)
 
 Clear the regex cache.
 
@@ -855,33 +929,6 @@ Benchmarking: (6 of 6)
 
 ```
 
-## History
-
-### key
-
-Changelog entries are classified using the following labels _(from [keep-a-changelog](https://github.com/olivierlacan/keep-a-changelog)_):
-
-* `added`: for new features
-* `changed`: for changes in existing functionality
-* `deprecated`: for once-stable features removed in upcoming releases
-* `removed`: for deprecated features removed in this release
-* `fixed`: for any bug fixes
-* `bumped`: updated dependencies, only minor or higher will be listed.
-
-### [1.0.1](https://github.com/jonschlinkert/nanomatch/compare/1.0.0...1.0.1) - 2016-12-12
-
-**Added**
-
-* Support for windows path edge cases where backslashes are used in brackets or other unusual combinations.
-
-### [1.0.0](https://github.com/jonschlinkert/nanomatch/compare/0.1.0...1.0.0) - 2016-12-12
-
-Stable release.
-
-### [0.1.0] - 2016-10-08
-
-First release.
-
 ## About
 
 ### Related projects
@@ -917,4 +964,4 @@ Released under the [MIT License](LICENSE).
 
 ***
 
-_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.5.0, on April 06, 2017._
+_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.5.0, on April 09, 2017._
