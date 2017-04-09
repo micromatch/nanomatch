@@ -33,9 +33,9 @@ module.exports = [
 
   'legendary larry crashes bashes',
   ['/^root:/{s/^[^:]*:[^:]*:\([^:]*\).*$/\\1/',
-    ['/^root:/{s/^[^:]*:[^:]*:\([^:]*\).*$/\\1/'], {nonull: true, bash: {skip: true}}],
+    ['/^root:/{s/^[^:]*:[^:]*:\([^:]*\).*$/\\1/'], {nonull: true}],
   ['/^root:/{s/^[^:]*:[^:]*:\([^:]*\).*$/\u0001/',
-    ['/^root:/{s/^[^:]*:[^:]*:\([^:]*\).*$/\u0001/'], {nonull: true, bash: {skip: true}}],
+    ['/^root:/{s/^[^:]*:[^:]*:\([^:]*\).*$/\u0001/'], {nonull: true}],
 
   /**
    * Character classes
@@ -43,7 +43,7 @@ module.exports = [
 
   'character classes',
   ['[a-c]b*', ['abc', 'abd', 'abe', 'bb', 'cb']],
-  ['[a-y]*[^c]', ['abd', 'abe', 'bb', 'bcd', 'bdir/', 'ca', 'cb', 'dd', 'de'], {bash: true}],
+  ['[a-y]*[^c]', ['abd', 'abe', 'bb', 'bcd', 'bdir/', 'ca', 'cb', 'dd', 'de']],
   ['a*[^c]', ['abd', 'abe']],
   function() {
     fixtures.push('a-b', 'aXb');
@@ -118,14 +118,8 @@ module.exports = [
   ['[abc', [], { null: true }, ['[']],
 
   'nocase tests',
-  ['XYZ', ['xYz'], { nocase: true, null: true },
-    ['xYz', 'ABC', 'IjK']],
-  [
-    'ab*',
-    ['ABC'],
-    { nocase: true, null: true },
-    ['xYz', 'ABC', 'IjK']
-  ],
+  ['XYZ', ['xYz'], { nocase: true, null: true }, ['xYz', 'ABC', 'IjK']],
+  ['ab*', ['ABC'], { nocase: true, null: true }, ['xYz', 'ABC', 'IjK']],
   [
     '[ia]?[ck]',
     ['ABC', 'IjK'],

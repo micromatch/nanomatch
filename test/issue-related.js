@@ -49,14 +49,14 @@ describe('issue-related tests', function() {
     assert(nm.isMatch('/aaa/bbb/foo', '/aaa/bbb/**'));
     assert(nm.isMatch('/aaa/bbb/', '/aaa/bbb/**'));
     assert(nm.isMatch('/aaa/bbb/foo.git', '/aaa/bbb/**'));
-    assert(!nm.isMatch('/aaa/bbb/.git', '/aaa/bbb/**'));
-    assert(!nm.isMatch('aaa/bbb/.git', 'aaa/bbb/**'));
-    assert(!nm.isMatch('/aaa/bbb/ccc/.git', '/aaa/bbb/**'));
-    assert(!nm.isMatch('/aaa/.git/foo', '/aaa/**/*'));
     assert(nm.isMatch('/aaa/.git/foo', '/aaa/**/*', {dot: true}));
     assert(nm.isMatch('/aaa/bbb/.git', '/aaa/bbb/*', {dot: true}));
     assert(nm.isMatch('aaa/bbb/.git', 'aaa/bbb/**', {dot: true}));
     assert(nm.isMatch('/aaa/bbb/.git', '/aaa/bbb/**', {dot: true}));
     assert(nm.isMatch('/aaa/bbb/ccc/.git', '/aaa/bbb/**', {dot: true}));
+    assert(!nm.isMatch('/aaa/bbb/.git', '/aaa/bbb/**'));
+    assert(!nm.isMatch('aaa/bbb/.git', 'aaa/bbb/**'));
+    assert(!nm.isMatch('/aaa/bbb/ccc/.git', '/aaa/bbb/**'));
+    assert(!nm.isMatch('/aaa/.git/foo', '/aaa/**/*'));
   });
 });

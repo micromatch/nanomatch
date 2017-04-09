@@ -1,14 +1,6 @@
 'use strict';
 
 /**
- * Module dependencies
- */
-
-var util = require('util');
-var toRegex = require('to-regex');
-var extend = require('extend-shallow');
-
-/**
  * Local dependencies
  */
 
@@ -70,7 +62,12 @@ function nanomatch(list, patterns, options) {
     if (options && options.unixify === false) {
       keep = list.slice();
     } else {
-      keep = list.map(utils.unixify(options));
+      var unixify = utils.unixify(options);
+      keep = [];
+
+      for (var i = 0; i < list.length; i++) {
+        keep.push(unixify(list[i]));
+      }
     }
   }
 
@@ -164,7 +161,7 @@ nanomatch.match = function(list, pattern, options) {
 
 nanomatch.isMatch = function(str, pattern, options) {
   if (typeof str !== 'string') {
-    throw new TypeError('expected a string: "' + util.inspect(str) + '"');
+    throw new TypeError('expected a string');
   }
 
   var equals = utils.equalsPattern(options);
@@ -194,7 +191,7 @@ nanomatch.isMatch = function(str, pattern, options) {
  */
 
 nanomatch.not = function(list, patterns, options) {
-  var opts = extend({}, options);
+  var opts = utils.extend({}, options);
   var ignore = opts.ignore;
   delete opts.ignore;
 
@@ -284,7 +281,7 @@ nanomatch.contains = function(str, patterns, options) {
     }
   }
 
-  var opts = extend({}, options);
+  var opts = utils.extend({}, options);
   opts.strictClose = false;
   opts.strictOpen = false;
   opts.contains = true;
@@ -433,8 +430,8 @@ nanomatch.makeRe = function(pattern, options) {
 
   function makeRe() {
     var res = nanomatch.create(pattern, options);
-    var opts = extend({wrap: false}, options);
-    return toRegex(res.output, opts);
+    var opts = utils.extend({wrap: false}, options);
+    return utils.toRegex(res.output, opts);
   }
 
   return memoize('makeRe', pattern, options, makeRe);
@@ -621,7 +618,7 @@ function memoize(type, pattern, options, fn) {
 }
 
 /**
- * Expose parser, compiler and constructor on `nanomatch`
+ * Expose compiler, parser and cache on `nanomatch`
  */
 
 nanomatch.compilers = compilers;

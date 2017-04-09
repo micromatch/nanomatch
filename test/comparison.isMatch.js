@@ -28,7 +28,7 @@ describe('.isMatch', function() {
 
         // minimatch is wrong on these
         if (actual === false) {
-          // tie-breaker
+          // test minimatch.makeRe, since minimatch.match is inconsistent
           if (nmRes === nm.mm.makeRe(pattern).test(fixture)) {
             actual = true;
           } else if (/^\?/.test(pattern)) {
@@ -51,7 +51,7 @@ describe('.isMatch', function() {
 
         // minimatch is wrong on these
         if (actual === false) {
-          // tie-breaker (minimatch is inconsistent with regex and methods)
+          // tie-breaker (minimatch is inconsistent with regex vs methods)
           if (nmRes === nm.mm.makeRe(pattern, {dot: true}).test(fixture)) {
             actual = true;
           } else if (/^\?/.test(pattern) || /^\.\//.test(fixture)) {
