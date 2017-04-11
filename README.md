@@ -114,7 +114,7 @@ Nanomatch is a fast and accurate glob matcher with full support for standard Bas
 * [Unit tests](test): visit unit tests. there is no better way to learn a code library than spending time the unit tests. Nanomatch has 36,000 unit tests - go become a glob matching ninja!
 
 <details>
-<summary><strong>How is this different from [minimatch](https://github.com/isaacs/minimatch)?</strong></summary>
+<summary><strong>How is this different?</strong></summary>
 
 **Speed and accuracy**
 
