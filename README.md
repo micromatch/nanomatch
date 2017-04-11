@@ -212,6 +212,20 @@ Use single or double quotes to escape sequences of characters. For example, the 
 "foo/'**'/bar"
 ```
 
+**Matching literal quotes**
+
+If you need to match quotes literally, you can escape them as well. For example, the following will match `foo/"*"/bar`, `foo/"a"/bar`, `foo/"b"/bar`, or `foo/"c"/bar`:
+
+```js
+'foo/\\"*\\"/bar'
+```
+
+And the following will match `foo/'*'/bar`, `foo/'a'/bar`, `foo/'b'/bar`, or `foo/'c'/bar`:
+
+```js
+'foo/\\\'*\\\'/bar'
+```
+
 ## API
 
 ### [nanomatch](index.js#L31)

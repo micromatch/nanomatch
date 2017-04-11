@@ -85,6 +85,7 @@ describe('bash options and features:', function() {
 
     it('should work for quoted characters', function() {
       mm(fixtures.concat(['"', '"a']), '"**', ['"', '"a']);
+      mm(fixtures.concat(['"', '"a']), '\"**', ['"', '"a']);
       mm(fixtures.concat('"'), '\"***', ['"']);
       mm(fixtures.concat(['\'', '"', '"a']), '\'***', ['\'']);
       mm(fixtures.concat('***'), '"***"', ['***']);
@@ -97,6 +98,8 @@ describe('bash options and features:', function() {
     it('should match escaped quotes', function() {
       mm(fixtures.concat(['"**"', '**']), '\\"**\\"', ['"**"']);
       mm(fixtures.concat(['foo/"**"/bar', '**']), 'foo/\\"**\\"/bar', ['foo/"**"/bar']);
+      mm(fixtures.concat(['foo/"*"/bar', 'foo/"a"/bar', 'foo/"b"/bar', 'foo/"c"/bar', 'foo/\'*\'/bar', 'foo/\'a\'/bar', 'foo/\'b\'/bar', 'foo/\'c\'/bar']), 'foo/\\"*\\"/bar', ['foo/"*"/bar', 'foo/"a"/bar', 'foo/"b"/bar', 'foo/"c"/bar']);
+      mm(fixtures.concat(['foo/*/bar', 'foo/"*"/bar', 'foo/"a"/bar', 'foo/"b"/bar', 'foo/"c"/bar', 'foo/\'*\'/bar', 'foo/\'a\'/bar', 'foo/\'b\'/bar', 'foo/\'c\'/bar']), 'foo/"*"/bar', ['foo/*/bar', 'foo/"*"/bar']);
       mm(fixtures.concat(['\'**\'', '**']), '\\\'**\\\'', ['\'**\'']);
     });
 
