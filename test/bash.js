@@ -79,6 +79,7 @@ describe('bash options and features:', function() {
 
         mm(fixtures, ['c*', 'a\\*', '*q*'], {nonull: true}, ['c', 'ca', 'cb', 'a\\*', '*q*']);
         mm(fixtures, ['c*', 'a\\*', '*q*'], ['c', 'ca', 'cb']);
+        mm(fixtures, '\\**', ['*', '**']);
       }
     });
 
@@ -93,8 +94,10 @@ describe('bash options and features:', function() {
       mm(fixtures, '"*"*', ['*', '**']);
     });
 
-    it('should work for escaped characters', function() {
-      mm(fixtures, '\\**', ['*', '**']);
+    it('should match escaped quotes', function() {
+      mm(fixtures.concat(['"**"', '**']), '\\"**\\"', ['"**"']);
+      mm(fixtures.concat(['foo/"**"/bar', '**']), 'foo/\\"**\\"/bar', ['foo/"**"/bar']);
+      mm(fixtures.concat(['\'**\'', '**']), '\\\'**\\\'', ['\'**\'']);
     });
 
     it('should work for escaped paths/dots:', function() {
