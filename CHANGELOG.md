@@ -11,6 +11,16 @@ Changelog entries are classified using the following labels _(from [keep-a-chang
 - `fixed`: for any bug fixes
 - `bumped`: updated dependencies, only minor or higher will be listed.
 
+### [1.1.0] - 2017-04-11
+
+**Fixed**
+
+- adds support for unclosed quotes
+
+**Added**
+
+- adds support for `options.noglobstar`
+
 ### [1.0.4] - 2017-04-06
 
 Housekeeping updates. Adds documentation section about escaping, cleans up utils.

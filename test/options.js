@@ -128,6 +128,16 @@ describe('options', function() {
     });
   });
 
+  describe('options.noglobstar', function() {
+    it('should regard double stars as single stars', function() {
+      var fixtures = ['a', 'a/b', 'a/b/c', 'a/b/c/d'];
+      nm(fixtures, 'a/**', ['a/b', 'a/b/c', 'a/b/c/d']);
+      nm(fixtures, 'a/**', ['a/b'], {noglobstar: true});
+      nm(fixtures, 'a/*', ['a/b'], {noglobstar: true});
+      nm(fixtures, 'a/*', ['a/b']);
+    });
+  });
+
   describe('options.unescape', function() {
     it('should remove backslashes in glob patterns:', function() {
       var fixtures = ['abc', '/a/b/c', '\\a\\b\\c'];
