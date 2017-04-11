@@ -83,6 +83,11 @@ describe('bash options and features:', function() {
     });
 
     it('should work for quoted characters', function() {
+      mm(fixtures.concat(['"', '"a']), '"**', ['"', '"a']);
+      mm(fixtures.concat('"'), '\"***', ['"']);
+      mm(fixtures.concat(['\'', '"', '"a']), '\'***', ['\'']);
+      mm(fixtures.concat('***'), '"***"', ['***']);
+      mm(fixtures.concat('***'), '\'***\'', ['***']);
       mm(fixtures, '"***"', []);
       mm(fixtures, '"***"', {nonull: true}, ['"***"']);
       mm(fixtures, '"*"*', ['*', '**']);
