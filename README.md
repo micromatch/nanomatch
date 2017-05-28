@@ -1,4 +1,4 @@
-# nanomatch [![NPM version](https://img.shields.io/npm/v/nanomatch.svg?style=flat)](https://www.npmjs.com/package/nanomatch) [![NPM monthly downloads](https://img.shields.io/npm/dm/nanomatch.svg?style=flat)](https://npmjs.org/package/nanomatch)  [![NPM total downloads](https://img.shields.io/npm/dt/nanomatch.svg?style=flat)](https://npmjs.org/package/nanomatch) [![Linux Build Status](https://img.shields.io/travis/jonschlinkert/nanomatch.svg?style=flat&label=Travis)](https://travis-ci.org/jonschlinkert/nanomatch) [![Windows Build Status](https://img.shields.io/appveyor/ci/jonschlinkert/nanomatch.svg?style=flat&label=AppVeyor)](https://ci.appveyor.com/project/jonschlinkert/nanomatch)
+# nanomatch [![NPM version](https://img.shields.io/npm/v/nanomatch.svg?style=flat)](https://www.npmjs.com/package/nanomatch) [![NPM monthly downloads](https://img.shields.io/npm/dm/nanomatch.svg?style=flat)](https://npmjs.org/package/nanomatch) [![NPM total downloads](https://img.shields.io/npm/dt/nanomatch.svg?style=flat)](https://npmjs.org/package/nanomatch) [![Linux Build Status](https://img.shields.io/travis/micromatch/nanomatch.svg?style=flat&label=Travis)](https://travis-ci.org/micromatch/nanomatch) [![Windows Build Status](https://img.shields.io/appveyor/ci/micromatch/nanomatch.svg?style=flat&label=AppVeyor)](https://ci.appveyor.com/project/micromatch/nanomatch)
 
 > Fast, minimal glob matcher for node.js. Similar to micromatch, minimatch and multimatch, but complete Bash 4.3 wildcard support only (no support for exglobs, posix brackets or braces)
 
@@ -60,7 +60,7 @@ Changelog entries are classified using the following labels _(from [keep-a-chang
 * `fixed`: for any bug fixes
 * `bumped`: updated dependencies, only minor or higher will be listed.
 
-### [1.1.0](https://github.com/jonschlinkert/nanomatch/compare/1.0.4...1.1.0) - 2017-04-11
+### [1.1.0](https://github.com/micromatch/nanomatch/compare/1.0.4...1.1.0) - 2017-04-11
 
 **Fixed**
 
@@ -70,11 +70,11 @@ Changelog entries are classified using the following labels _(from [keep-a-chang
 
 * adds support for `options.noglobstar`
 
-### [1.0.4](https://github.com/jonschlinkert/nanomatch/compare/1.0.3...1.0.4) - 2017-04-06
+### [1.0.4](https://github.com/micromatch/nanomatch/compare/1.0.3...1.0.4) - 2017-04-06
 
 Housekeeping updates. Adds documentation section about escaping, cleans up utils.
 
-### [1.0.3](https://github.com/jonschlinkert/nanomatch/compare/1.0.1...1.0.3) - 2017-04-06
+### [1.0.3](https://github.com/micromatch/nanomatch/compare/1.0.1...1.0.3) - 2017-04-06
 
 This release includes fixes for windows path edge cases and other improvements for stricter adherence to bash spec.
 
@@ -86,13 +86,13 @@ This release includes fixes for windows path edge cases and other improvements f
 
 * Support for bash-like quoted strings for escaping sequences of characters, such as `foo/"**"/bar` where `**` should be matched literally and not evaluated as special characters.
 
-### [1.0.1](https://github.com/jonschlinkert/nanomatch/compare/1.0.0...1.0.1) - 2016-12-12
+### [1.0.1](https://github.com/micromatch/nanomatch/compare/1.0.0...1.0.1) - 2016-12-12
 
 **Added**
 
 * Support for windows path edge cases where backslashes are used in brackets or other unusual combinations.
 
-### [1.0.0](https://github.com/jonschlinkert/nanomatch/compare/0.1.0...1.0.0) - 2016-12-12
+### [1.0.0](https://github.com/micromatch/nanomatch/compare/0.1.0...1.0.0) - 2016-12-12
 
 Stable release.
 
@@ -121,8 +121,8 @@ Nanomatch is a fast and accurate glob matcher with full support for standard Bas
 Nanomatch uses [snapdragon](https://github.com/jonschlinkert/snapdragon) for parsing and compiling globs, which results in:
 
 * Granular control over the entire conversion process in a way that is easy to understand, reason about, and customize.
-* Much greater accuracy than minimatch. In fact, nanomatch passes _all of the spec tests_ from bash, including some that bash still fails. However, since there is no real specification for globs, if you encounter a pattern that yields unexpected match results [after researching previous issues](../../issues), [please let us know](../../issues/new).
 * Faster matching, from a combination of optimized glob patterns and (optional) caching.
+* Much greater accuracy than minimatch. In fact, nanomatch passes _all of the spec tests_ from bash, including some that bash still fails. However, since there is no real specification for globs, if you encounter a pattern that yields unexpected match results [after researching previous issues](../../issues), [please let us know](../../issues/new).
 
 **Basic globbing only**
 
@@ -228,7 +228,7 @@ And the following will match `foo/'*'/bar`, `foo/'a'/bar`, `foo/'b'/bar`, or `fo
 
 ## API
 
-### [nanomatch](index.js#L31)
+### [nanomatch](index.js#L40)
 
 The main function takes a list of strings and one or more glob patterns to use for matching.
 
@@ -236,7 +236,7 @@ The main function takes a list of strings and one or more glob patterns to use f
 
 * `list` **{Array}**: A list of strings to match
 * `patterns` **{String|Array}**: One or more glob patterns to use for matching.
-* `options` **{Object}**: Any [options](#options) to change how matches are performed
+* `options` **{Object}**: See available [options](#options) for changing how matches are performed
 * `returns` **{Array}**: Returns an array of matches
 
 **Example**
@@ -249,10 +249,7 @@ console.log(nm(['a.js', 'a.txt'], ['*.js']));
 //=> [ 'a.js' ]
 ```
 
-<details>
-<summary><strong>.match</strong></summary>
-
-### [.match](index.js#L99)
+### [.match](index.js#L106)
 
 Similar to the main function, but `pattern` must be a string.
 
@@ -260,7 +257,7 @@ Similar to the main function, but `pattern` must be a string.
 
 * `list` **{Array}**: Array of strings to match
 * `pattern` **{String}**: Glob pattern to use for matching.
-* `options` **{Object}**: Any [options](#options) to change how matches are performed
+* `options` **{Object}**: See available [options](#options) for changing how matches are performed
 * `returns` **{Array}**: Returns an array of matches
 
 **Example**
@@ -273,12 +270,7 @@ console.log(nm.match(['a.a', 'a.aa', 'a.b', 'a.c'], '*.a'));
 //=> ['a.a', 'a.aa']
 ```
 
-</details>
-
-<details>
-<summary><strong>.isMatch</strong></summary>
-
-### [.isMatch](index.js#L162)
+### [.isMatch](index.js#L167)
 
 Returns true if the specified `string` matches the given glob `pattern`.
 
@@ -286,7 +278,7 @@ Returns true if the specified `string` matches the given glob `pattern`.
 
 * `string` **{String}**: String to match
 * `pattern` **{String}**: Glob pattern to use for matching.
-* `options` **{Object}**: Any [options](#options) to change how matches are performed
+* `options` **{Object}**: See available [options](#options) for changing how matches are performed
 * `returns` **{Boolean}**: Returns true if the string matches the glob pattern.
 
 **Example**
@@ -301,46 +293,65 @@ console.log(nm.isMatch('a.b', '*.a'));
 //=> false
 ```
 
-</details>
+### [.some](index.js#L205)
 
-<details>
-<summary><strong>.not</strong></summary>
-
-### [.not](index.js#L193)
-
-Returns a list of strings that _DO NOT MATCH_ any of the given `patterns`.
-
-**Params**
-
-* `list` **{Array}**: Array of strings to match.
-* `patterns` **{String|Array}**: One or more glob pattern to use for matching.
-* `options` **{Object}**: Any [options](#options) to change how matches are performed
-* `returns` **{Array}**: Returns an array of strings that **do not match** the given patterns.
-
-**Example**
-
-```js
-var nm = require('nanomatch');
-nm.not(list, patterns[, options]);
-
-console.log(nm.not(['a.a', 'b.b', 'c.c'], '*.a'));
-//=> ['b.b', 'c.c']
-```
-
-</details>
-
-<details>
-<summary><strong>.any</strong></summary>
-
-### [.any](index.js#L227)
-
-Returns true if the given `string` matches any of the given glob `patterns`.
+Returns true if some of the elements in the given `list` match any of the given glob `patterns`.
 
 **Params**
 
 * `list` **{String|Array}**: The string or array of strings to test. Returns as soon as the first match is found.
 * `patterns` **{String|Array}**: One or more glob patterns to use for matching.
-* `options` **{Object}**: Any [options](#options) to change how matches are performed
+* `options` **{Object}**: See available [options](#options) for changing how matches are performed
+* `returns` **{Boolean}**: Returns true if any patterns match `str`
+
+**Example**
+
+```js
+var nm = require('nanomatch');
+nm.some(list, patterns[, options]);
+
+console.log(nm.some(['foo.js', 'bar.js'], ['*.js', '!foo.js']));
+// true
+console.log(nm.some(['foo.js'], ['*.js', '!foo.js']));
+// false
+```
+
+### [.every](index.js#L243)
+
+Returns true if every element in the given `list` matches at least one of the given glob `patterns`.
+
+**Params**
+
+* `list` **{String|Array}**: The string or array of strings to test.
+* `patterns` **{String|Array}**: One or more glob patterns to use for matching.
+* `options` **{Object}**: See available [options](#options) for changing how matches are performed
+* `returns` **{Boolean}**: Returns true if any patterns match `str`
+
+**Example**
+
+```js
+var nm = require('nanomatch');
+nm.every(list, patterns[, options]);
+
+console.log(nm.every('foo.js', ['foo.js']));
+// true
+console.log(nm.every(['foo.js', 'bar.js'], ['*.js']));
+// true
+console.log(nm.every(['foo.js', 'bar.js'], ['*.js', '!foo.js']));
+// false
+console.log(nm.every(['foo.js'], ['*.js', '!foo.js']));
+// false
+```
+
+### [.any](index.js#L277)
+
+Returns true if **any** of the given glob `patterns` match the specified `string`.
+
+**Params**
+
+* `str` **{String|Array}**: The string to test.
+* `patterns` **{String|Array}**: One or more glob patterns to use for matching.
+* `options` **{Object}**: See available [options](#options) for changing how matches are performed
 * `returns` **{Boolean}**: Returns true if any patterns match `str`
 
 **Example**
@@ -355,12 +366,58 @@ console.log(nm.any('a.a', 'b.*'));
 //=> false
 ```
 
-</details>
+### [.all](index.js#L325)
 
-<details>
-<summary><strong>.contains</strong></summary>
+Returns true if **all** of the given `patterns` match the specified string.
 
-### [.contains](index.js#L268)
+**Params**
+
+* `str` **{String|Array}**: The string to test.
+* `patterns` **{String|Array}**: One or more glob patterns to use for matching.
+* `options` **{Object}**: See available [options](#options) for changing how matches are performed
+* `returns` **{Boolean}**: Returns true if any patterns match `str`
+
+**Example**
+
+```js
+var nm = require('nanomatch');
+nm.all(string, patterns[, options]);
+
+console.log(nm.all('foo.js', ['foo.js']));
+// true
+
+console.log(nm.all('foo.js', ['*.js', '!foo.js']));
+// false
+
+console.log(nm.all('foo.js', ['*.js', 'foo.js']));
+// true
+
+console.log(nm.all('foo.js', ['*.js', 'f*', '*o*', '*o.js']));
+// true
+```
+
+### [.not](index.js#L359)
+
+Returns a list of strings that _**do not match any**_ of the given `patterns`.
+
+**Params**
+
+* `list` **{Array}**: Array of strings to match.
+* `patterns` **{String|Array}**: One or more glob pattern to use for matching.
+* `options` **{Object}**: See available [options](#options) for changing how matches are performed
+* `returns` **{Array}**: Returns an array of strings that **do not match** the given patterns.
+
+**Example**
+
+```js
+var nm = require('nanomatch');
+nm.not(list, patterns[, options]);
+
+console.log(nm.not(['a.a', 'b.b', 'c.c'], '*.a'));
+//=> ['b.b', 'c.c']
+```
+
+### [.contains](index.js#L394)
 
 Returns true if the given `string` contains the given pattern. Similar to [.isMatch](#isMatch) but the pattern can match any part of the string.
 
@@ -368,7 +425,7 @@ Returns true if the given `string` contains the given pattern. Similar to [.isMa
 
 * `str` **{String}**: The string to match.
 * `patterns` **{String|Array}**: Glob pattern to use for matching.
-* `options` **{Object}**: Any [options](#options) to change how matches are performed
+* `options` **{Object}**: See available [options](#options) for changing how matches are performed
 * `returns` **{Boolean}**: Returns true if the patter matches any part of `str`.
 
 **Example**
@@ -383,12 +440,7 @@ console.log(nm.contains('aa/bb/cc', '*d'));
 //=> false
 ```
 
-</details>
-
-<details>
-<summary><strong>.matchKeys</strong></summary>
-
-### [.matchKeys](index.js#L323)
+### [.matchKeys](index.js#L450)
 
 Filter the keys of the given object with the given `glob` pattern and `options`. Does not attempt to match nested keys. If you need this feature, use [glob-object](https://github.com/jonschlinkert/glob-object) instead.
 
@@ -396,7 +448,7 @@ Filter the keys of the given object with the given `glob` pattern and `options`.
 
 * `object` **{Object}**: The object with keys to filter.
 * `patterns` **{String|Array}**: One or more glob patterns to use for matching.
-* `options` **{Object}**: Any [options](#options) to change how matches are performed
+* `options` **{Object}**: See available [options](#options) for changing how matches are performed
 * `returns` **{Object}**: Returns an object with only keys that match the given patterns.
 
 **Example**
@@ -410,19 +462,14 @@ console.log(nm.matchKeys(obj, '*b'));
 //=> { ab: 'b' }
 ```
 
-</details>
-
-<details>
-<summary><strong>.matcher</strong></summary>
-
-### [.matcher](index.js#L352)
+### [.matcher](index.js#L479)
 
 Returns a memoized matcher function from the given glob `pattern` and `options`. The returned function takes a string to match as its only argument and returns true if the string is a match.
 
 **Params**
 
 * `pattern` **{String}**: Glob pattern
-* `options` **{Object}**: Any [options](#options) to change how matches are performed.
+* `options` **{Object}**: See available [options](#options) for changing how matches are performed.
 * `returns` **{Function}**: Returns a matcher function.
 
 **Example**
@@ -438,19 +485,14 @@ console.log(isMatch('a.b'));
 //=> true
 ```
 
-</details>
-
-<details>
-<summary><strong>.makeRe</strong></summary>
-
-### [.makeRe](index.js#L418)
+### [.makeRe](index.js#L553)
 
 Create a regular expression from the given glob `pattern`.
 
 **Params**
 
 * `pattern` **{String}**: A glob pattern to convert to regex.
-* `options` **{Object}**: Any [options](#options) to change how matches are performed.
+* `options` **{Object}**: See available [options](#options) for changing how matches are performed.
 * `returns` **{RegExp}**: Returns a regex created from the given pattern.
 
 **Example**
@@ -463,12 +505,7 @@ console.log(nm.makeRe('*.js'));
 //=> /^(?:(\.[\\\/])?(?!\.)(?=.)[^\/]*?\.js)$/
 ```
 
-</details>
-
-<details>
-<summary><strong>.create</strong></summary>
-
-### [.create](index.js#L479)
+### [.create](index.js#L616)
 
 Parses the given glob `pattern` and returns an object with the compiled `output` and optional source `map`.
 
@@ -510,12 +547,7 @@ console.log(nm.create('abc/*.js'));
 //   idx: 6 }
 ```
 
-</details>
-
-<details>
-<summary><strong>.parse</strong></summary>
-
-### [.parse](index.js#L518)
+### [.parse](index.js#L655)
 
 Parse the given `str` with the given `options`.
 
@@ -548,12 +580,7 @@ console.log(ast);
 //      { type: 'eos', val: '' } ] }
 ```
 
-</details>
-
-<details>
-<summary><strong>.compile</strong></summary>
-
-### [.compile](index.js#L571)
+### [.compile](index.js#L703)
 
 Compile the given `ast` or string with the given `options`.
 
@@ -587,12 +614,7 @@ console.log(nm.compile(ast));
 //   parsingErrors: [] }
 ```
 
-</details>
-
-<details>
-<summary><strong>.clearCache</strong></summary>
-
-### [.clearCache](index.js#L594)
+### [.clearCache](index.js#L726)
 
 Clear the regex cache.
 
@@ -601,8 +623,6 @@ Clear the regex cache.
 ```js
 nm.clearCache();
 ```
-
-</details>
 
 ## Options
 
@@ -829,7 +849,7 @@ Generate a source map by enabling the `sourcemap` option with the `.parse`, `.co
 
 **Examples**
 
-``` js
+```js
 var nm = require('nanomatch');
 
 var res = nm.create('abc/*.js', {sourcemap: true});
@@ -938,7 +958,7 @@ Nanomatch is part of a suite of libraries aimed at bringing the power and expres
 | [expand-tilde](https://github.com/jonschlinkert/expand-tilde) | Tildes | `~` | [Tilde expansion](https://www.gnu.org/software/bash/manual/html_node/Tilde-Expansion.html#Tilde-Expansion) converts the leading tilde in a file path to the user home directory. |
 | [braces](https://github.com/jonschlinkert/braces) | Braces | `{a,b,c}` | [Brace expansion](https://www.gnu.org/software/bash/manual/html_node/Brace-Expansion.html) |
 | [expand-brackets](https://github.com/jonschlinkert/expand-brackets) | Brackets | `[[:alpha:]]` | [POSIX character classes](https://www.gnu.org/software/grep/manual/html_node/Character-Classes-and-Bracket-Expressions.html) (also referred to as POSIX brackets, or POSIX character classes) |
-| [extglob](https://github.com/jonschlinkert/extglob) | Parens | `!(a\|b)` | [Extglobs](https://www.gnu.org/software/bash/manual/html_node/Pattern-Matching.html#Pattern-Matching) |
+| [extglob](https://github.com/jonschlinkert/extglob) | Parens | `!(a\ | b)` | [Extglobs](https://www.gnu.org/software/bash/manual/html_node/Pattern-Matching.html#Pattern-Matching) |
 | [micromatch](https://github.com/jonschlinkert/micromatch) | All | all | Micromatch is built on top of the other libraries. |
 
 There are many resources available on the web if you want to dive deeper into how these features work in Bash.
@@ -1043,4 +1063,4 @@ Released under the [MIT License](LICENSE).
 
 ***
 
-_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.5.0, on April 11, 2017._
+_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.6.0, on May 28, 2017._
