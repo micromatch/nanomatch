@@ -2,11 +2,11 @@
   "name": "nanomatch",
   "description": "Fast, minimal glob matcher for node.js. Similar to micromatch, minimatch and multimatch, but complete Bash 4.3 wildcard support only (no support for exglobs, posix brackets or braces)",
   "version": "1.1.1",
-  "homepage": "https://github.com/jonschlinkert/nanomatch",
+  "homepage": "https://github.com/micromatch/nanomatch",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
-  "repository": "jonschlinkert/nanomatch",
+  "repository": "micromatch/nanomatch",
   "bugs": {
-    "url": "https://github.com/jonschlinkert/nanomatch/issues"
+    "url": "https://github.com/micromatch/nanomatch/issues"
   },
   "license": "MIT",
   "files": [
@@ -21,14 +21,14 @@
     "test": "mocha"
   },
   "dependencies": {
-    "arr-diff": "^3.0.0",
+    "arr-diff": "^4.0.0",
     "array-unique": "^0.3.2",
-    "define-property": "^0.2.5",
+    "define-property": "^1.0.0",
     "extend-shallow": "^2.0.1",
     "fragment-cache": "^0.2.1",
     "is-extglob": "^2.1.1",
-    "is-odd": "^0.1.1",
-    "kind-of": "^3.1.0",
+    "is-odd": "^1.0.0",
+    "kind-of": "^4.0.0",
     "object.pick": "^1.2.0",
     "regex-not": "^1.0.0",
     "snapdragon": "^0.8.1",
@@ -110,11 +110,20 @@
       ]
     },
     "reflinks": [
+      "a-c",
+      "bash-braces",
+      "bash-brackets",
+      "bash-extglobs",
+      "bash-globs",
+      "bash-tilde",
+      "braces",
       "expand-brackets",
       "expand-tilde",
+      "extglob",
       "glob-object",
       "micromatch",
       "minimatch",
+      "options",
       "snapdragon"
     ],
     "lint": {
