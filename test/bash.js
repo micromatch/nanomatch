@@ -231,7 +231,7 @@ describe('bash options and features:', function() {
       assert(!mm.isMatch('foo', '??'));
       assert(!mm.isMatch('foo', 'bar'));
       assert(!mm.isMatch('foobar', 'foo\\*bar'));
-      assert(mm.isMatch('', ''));
+      assert(!mm.isMatch('', ''));
       assert(mm.isMatch('?a?b', '\\??\\?b'));
       assert(mm.isMatch('aaaaaaabababab', '*ab'));
       assert(mm.isMatch('f\\oo', 'f\\oo'));

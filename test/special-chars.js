@@ -26,8 +26,25 @@ describe('special characters', function() {
     });
   });
 
-  describe('$ dollar signs', function() {
-    it('should treat dollar signs as literal:', function() {
+  describe('spaces:', function() {
+    it('should match spaces', function() {
+      assert(nm.isMatch(' ', ' '));
+      assert(nm.isMatch('  ', '  '));
+      assert(!nm.isMatch(' ', '  '));
+      assert(!nm.isMatch('  ', ' '));
+      assert(nm.isMatch(' /', ' /'));
+      assert(nm.isMatch(' / ', ' / '));
+      assert(nm.isMatch(' /foo', ' /*'));
+      assert(nm.isMatch(' /foo', ' /*'));
+      assert(nm.isMatch('foo ', '* '));
+      assert(nm.isMatch(' foo/foo', ' foo/*'));
+      assert(nm.isMatch('foo /foo', 'foo /*'));
+      assert(nm.isMatch('foo /foo ', 'foo /*'));
+    });
+  });
+
+  describe('$ dollar signs:', function() {
+    it('should treat dollar signs as literal', function() {
       assert(nm.isMatch('$', '$'));
       assert(nm.isMatch('$/foo', '$/*'));
       assert(nm.isMatch('$/foo', '$/*'));

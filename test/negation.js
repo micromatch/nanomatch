@@ -64,7 +64,7 @@ describe('negation', function() {
     nm(['.gitignore', 'a', 'b'], '!.gitignore', ['a', 'b']);
   });
 
-  it('should negate files in the inmediate directory:', function() {
+  it('should negate files in the immediate directory:', function() {
     nm(['a/b.js', 'a.js', 'a/b.md', 'a.md'], '!*.md', ['a/b.js', 'a.js', 'a/b.md']);
   });
 

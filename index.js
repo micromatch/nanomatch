@@ -1,6 +1,14 @@
 'use strict';
 
 /**
+ * Module dependencies
+ */
+
+var util = require('util');
+var toRegex = require('to-regex');
+var extend = require('extend-shallow');
+
+/**
  * Local dependencies
  */
 
@@ -23,16 +31,17 @@ var MAX_LENGTH = 1024 * 64;
  * ```
  * @param {Array} `list` A list of strings to match
  * @param {String|Array} `patterns` One or more glob patterns to use for matching.
- * @param {Object} `options` Any [options](#options) to change how matches are performed
+ * @param {Object} `options` See available [options](#options) for changing how matches are performed
  * @return {Array} Returns an array of matches
+ * @summary false
  * @api public
  */
 
 function nanomatch(list, patterns, options) {
   patterns = utils.arrayify(patterns);
   list = utils.arrayify(list);
-  var len = patterns.length;
 
+  var len = patterns.length;
   if (list.length === 0 || len === 0) {
     return [];
   }
@@ -63,8 +72,6 @@ function nanomatch(list, patterns, options) {
       keep = list.slice();
     } else {
       var unixify = utils.unixify(options);
-      keep = [];
-
       for (var i = 0; i < list.length; i++) {
         keep.push(unixify(list[i]));
       }
@@ -91,7 +98,7 @@ function nanomatch(list, patterns, options) {
  * ```
  * @param {Array} `list` Array of strings to match
  * @param {String} `pattern` Glob pattern to use for matching.
- * @param {Object} `options` Any [options](#options) to change how matches are performed
+ * @param {Object} `options` See available [options](#options) for changing how matches are performed
  * @return {Array} Returns an array of matches
  * @api public
  */
@@ -103,18 +110,16 @@ nanomatch.match = function(list, pattern, options) {
 
   var unixify = utils.unixify(options);
   var isMatch = memoize('match', pattern, options, nanomatch.matcher);
+  var matches = [];
 
   list = utils.arrayify(list);
   var len = list.length;
   var idx = -1;
-  var matches = [];
 
   while (++idx < len) {
-    var origPath = list[idx];
-
-    if (origPath === pattern || isMatch(origPath)) {
-      var unixPath = unixify(origPath);
-      matches.push(utils.value(origPath, unixPath, options, pattern));
+    var ele = list[idx];
+    if (ele === pattern || isMatch(ele)) {
+      matches.push(utils.value(ele, unixify, options));
     }
   }
 
@@ -154,14 +159,18 @@ nanomatch.match = function(list, pattern, options) {
  * ```
  * @param {String} `string` String to match
  * @param {String} `pattern` Glob pattern to use for matching.
- * @param {Object} `options` Any [options](#options) to change how matches are performed
+ * @param {Object} `options` See available [options](#options) for changing how matches are performed
  * @return {Boolean} Returns true if the string matches the glob pattern.
  * @api public
  */
 
 nanomatch.isMatch = function(str, pattern, options) {
   if (typeof str !== 'string') {
-    throw new TypeError('expected a string');
+    throw new TypeError('expected a string: "' + util.inspect(str) + '"');
+  }
+
+  if (isEmptyString(str) || isEmptyString(pattern)) {
+    return false;
   }
 
   var equals = utils.equalsPattern(options);
@@ -174,7 +183,164 @@ nanomatch.isMatch = function(str, pattern, options) {
 };
 
 /**
- * Returns a list of strings that _DO NOT MATCH_ any of the given `patterns`.
+ * Returns true if some of the elements in the given `list` match any of the
+ * given glob `patterns`.
+ *
+ * ```js
+ * var nm = require('nanomatch');
+ * nm.some(list, patterns[, options]);
+ *
+ * console.log(nm.some(['foo.js', 'bar.js'], ['*.js', '!foo.js']));
+ * // true
+ * console.log(nm.some(['foo.js'], ['*.js', '!foo.js']));
+ * // false
+ * ```
+ * @param  {String|Array} `list` The string or array of strings to test. Returns as soon as the first match is found.
+ * @param {String|Array} `patterns` One or more glob patterns to use for matching.
+ * @param {Object} `options` See available [options](#options) for changing how matches are performed
+ * @return {Boolean} Returns true if any patterns match `str`
+ * @api public
+ */
+
+nanomatch.some = function(list, patterns, options) {
+  if (typeof list === 'string') {
+    list = [list];
+  }
+
+  for (var i = 0; i < list.length; i++) {
+    if (nanomatch(list[i], patterns, options).length === 1) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+/**
+ * Returns true if every element in the given `list` matches
+ * at least one of the given glob `patterns`.
+ *
+ * ```js
+ * var nm = require('nanomatch');
+ * nm.every(list, patterns[, options]);
+ *
+ * console.log(nm.every('foo.js', ['foo.js']));
+ * // true
+ * console.log(nm.every(['foo.js', 'bar.js'], ['*.js']));
+ * // true
+ * console.log(nm.every(['foo.js', 'bar.js'], ['*.js', '!foo.js']));
+ * // false
+ * console.log(nm.every(['foo.js'], ['*.js', '!foo.js']));
+ * // false
+ * ```
+ * @param  {String|Array} `list` The string or array of strings to test.
+ * @param {String|Array} `patterns` One or more glob patterns to use for matching.
+ * @param {Object} `options` See available [options](#options) for changing how matches are performed
+ * @return {Boolean} Returns true if any patterns match `str`
+ * @api public
+ */
+
+nanomatch.every = function(list, patterns, options) {
+  if (typeof list === 'string') {
+    list = [list];
+  }
+
+  for (var i = 0; i < list.length; i++) {
+    if (nanomatch(list[i], patterns, options).length !== 1) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+/**
+ * Returns true if **any** of the given glob `patterns`
+ * match the specified `string`.
+ *
+ * ```js
+ * var nm = require('nanomatch');
+ * nm.any(string, patterns[, options]);
+ *
+ * console.log(nm.any('a.a', ['b.*', '*.a']));
+ * //=> true
+ * console.log(nm.any('a.a', 'b.*'));
+ * //=> false
+ * ```
+ * @param  {String|Array} `str` The string to test.
+ * @param {String|Array} `patterns` One or more glob patterns to use for matching.
+ * @param {Object} `options` See available [options](#options) for changing how matches are performed
+ * @return {Boolean} Returns true if any patterns match `str`
+ * @api public
+ */
+
+nanomatch.any = function(str, patterns, options) {
+  if (typeof str !== 'string') {
+    throw new TypeError('expected a string: "' + util.inspect(str) + '"');
+  }
+
+  if (isEmptyString(str) || isEmptyString(patterns)) {
+    return false;
+  }
+
+  if (typeof patterns === 'string') {
+    patterns = [patterns];
+  }
+
+  for (var i = 0; i < patterns.length; i++) {
+    if (nanomatch.isMatch(str, patterns[i], options)) {
+      return true;
+    }
+  }
+  return false;
+};
+
+/**
+ * Returns true if **all** of the given `patterns`
+ * match the specified string.
+ *
+ * ```js
+ * var nm = require('nanomatch');
+ * nm.all(string, patterns[, options]);
+ *
+ * console.log(nm.all('foo.js', ['foo.js']));
+ * // true
+ *
+ * console.log(nm.all('foo.js', ['*.js', '!foo.js']));
+ * // false
+ *
+ * console.log(nm.all('foo.js', ['*.js', 'foo.js']));
+ * // true
+ *
+ * console.log(nm.all('foo.js', ['*.js', 'f*', '*o*', '*o.js']));
+ * // true
+ * ```
+ * @param  {String|Array} `str` The string to test.
+ * @param {String|Array} `patterns` One or more glob patterns to use for matching.
+ * @param {Object} `options` See available [options](#options) for changing how matches are performed
+ * @return {Boolean} Returns true if any patterns match `str`
+ * @api public
+ */
+
+nanomatch.all = function(str, patterns, options) {
+  if (typeof str !== 'string') {
+    throw new TypeError('expected a string: "' + util.inspect(str) + '"');
+  }
+
+  if (typeof patterns === 'string') {
+    patterns = [patterns];
+  }
+
+  for (var i = 0; i < patterns.length; i++) {
+    if (!nanomatch.isMatch(str, patterns[i], options)) {
+      return false;
+    }
+  }
+  return true;
+};
+
+/**
+ * Returns a list of strings that _**do not match any**_ of the given `patterns`.
  *
  * ```js
  * var nm = require('nanomatch');
@@ -185,13 +351,13 @@ nanomatch.isMatch = function(str, pattern, options) {
  * ```
  * @param {Array} `list` Array of strings to match.
  * @param {String|Array} `patterns` One or more glob pattern to use for matching.
- * @param {Object} `options` Any [options](#options) to change how matches are performed
+ * @param {Object} `options` See available [options](#options) for changing how matches are performed
  * @return {Array} Returns an array of strings that **do not match** the given patterns.
  * @api public
  */
 
 nanomatch.not = function(list, patterns, options) {
-  var opts = utils.extend({}, options);
+  var opts = extend({}, options);
   var ignore = opts.ignore;
   delete opts.ignore;
 
@@ -203,46 +369,6 @@ nanomatch.not = function(list, patterns, options) {
   }
 
   return opts.nodupes !== false ? utils.unique(matches) : matches;
-};
-
-/**
- * Returns true if the given `string` matches any of the given glob `patterns`.
- *
- * ```js
- * var nm = require('nanomatch');
- * nm.any(string, patterns[, options]);
- *
- * console.log(nm.any('a.a', ['b.*', '*.a']));
- * //=> true
- * console.log(nm.any('a.a', 'b.*'));
- * //=> false
- * ```
- * @param  {String|Array} `list` The string or array of strings to test. Returns as soon as the first match is found.
- * @param {String|Array} `patterns` One or more glob patterns to use for matching.
- * @param {Object} `options` Any [options](#options) to change how matches are performed
- * @return {Boolean} Returns true if any patterns match `str`
- * @api public
- */
-
-nanomatch.any = function(list, patterns, options) {
-  var isMatch = memoize('any', patterns, options, nanomatch.matcher);
-
-  list = utils.arrayify(list);
-  var len = list.length;
-  var idx = -1;
-
-  while (++idx < len) {
-    var ele = list[idx];
-    if (ele === './' || ele === '') continue;
-
-    if (isMatch(ele)) {
-      if (options && options.ignore && nanomatch.not(ele, options.ignored)) {
-        continue;
-      }
-      return true;
-    }
-  }
-  return false;
 };
 
 /**
@@ -260,14 +386,18 @@ nanomatch.any = function(list, patterns, options) {
  * ```
  * @param {String} `str` The string to match.
  * @param {String|Array} `patterns` Glob pattern to use for matching.
- * @param {Object} `options` Any [options](#options) to change how matches are performed
+ * @param {Object} `options` See available [options](#options) for changing how matches are performed
  * @return {Boolean} Returns true if the patter matches any part of `str`.
  * @api public
  */
 
 nanomatch.contains = function(str, patterns, options) {
+  if (typeof str !== 'string') {
+    throw new TypeError('expected a string: "' + util.inspect(str) + '"');
+  }
+
   if (typeof patterns === 'string') {
-    if (patterns === '') {
+    if (isEmptyString(str) || isEmptyString(patterns)) {
       return false;
     }
 
@@ -281,11 +411,8 @@ nanomatch.contains = function(str, patterns, options) {
     }
   }
 
-  var opts = utils.extend({}, options);
-  opts.strictClose = false;
-  opts.strictOpen = false;
-  opts.contains = true;
-  return nanomatch(str, patterns, opts).length > 0;
+  var opts = extend({}, options, {contains: true});
+  return nanomatch.any(str, patterns, opts);
 };
 
 /**
@@ -315,7 +442,7 @@ nanomatch.matchBase = function(pattern, options) {
  * ```
  * @param {Object} `object` The object with keys to filter.
  * @param {String|Array} `patterns` One or more glob patterns to use for matching.
- * @param {Object} `options` Any [options](#options) to change how matches are performed
+ * @param {Object} `options` See available [options](#options) for changing how matches are performed
  * @return {Object} Returns an object with only keys that match the given patterns.
  * @api public
  */
@@ -344,14 +471,20 @@ nanomatch.matchKeys = function(obj, patterns, options) {
  * //=> true
  * ```
  * @param {String} `pattern` Glob pattern
- * @param {Object} `options` Any [options](#options) to change how matches are performed.
+ * @param {Object} `options` See available [options](#options) for changing how matches are performed.
  * @return {Function} Returns a matcher function.
  * @api public
  */
 
 nanomatch.matcher = function matcher(pattern, options) {
+  if (isEmptyString(pattern)) {
+    return function() {
+      return false;
+    }
+  }
+
   if (Array.isArray(pattern)) {
-    return utils.compose(pattern, options, matcher);
+    return compose(pattern, options, matcher);
   }
 
   // if pattern is a regex
@@ -361,7 +494,7 @@ nanomatch.matcher = function matcher(pattern, options) {
 
   // if pattern is invalid
   if (!utils.isString(pattern)) {
-    throw new TypeError('expected pattern to be a string or regex');
+    throw new TypeError('expected pattern to be an array, string or regex');
   }
 
   // if pattern is a non-glob string
@@ -396,7 +529,9 @@ nanomatch.matcher = function matcher(pattern, options) {
     };
   }
 
-  return test(re);
+  var fn = test(re);
+  fn.result = re.result;
+  return fn;
 };
 
 /**
@@ -410,7 +545,7 @@ nanomatch.matcher = function matcher(pattern, options) {
  * //=> /^(?:(\.[\\\/])?(?!\.)(?=.)[^\/]*?\.js)$/
  * ```
  * @param {String} `pattern` A glob pattern to convert to regex.
- * @param {Object} `options` Any [options](#options) to change how matches are performed.
+ * @param {Object} `options` See available [options](#options) for changing how matches are performed.
  * @return {RegExp} Returns a regex created from the given pattern.
  * @api public
  */
@@ -431,7 +566,9 @@ nanomatch.makeRe = function(pattern, options) {
   function makeRe() {
     var res = nanomatch.create(pattern, options);
     var opts = utils.extend({wrap: false}, options);
-    return utils.toRegex(res.output, opts);
+    var regex = toRegex(res.output, opts);
+    regex.result = res;
+    return regex;
   }
 
   return memoize('makeRe', pattern, options, makeRe);
@@ -524,11 +661,6 @@ nanomatch.parse = function(pattern, options) {
     var snapdragon = utils.instantiate(null, options);
     parsers(snapdragon, options);
 
-    if (pattern.slice(0, 2) === './') {
-      pattern = pattern.slice(2);
-    }
-
-    pattern = utils.combineDuplicates(pattern, '\\*\\*\\/|\\/\\*\\*');
     var ast = snapdragon.parse(pattern, options);
     utils.define(ast, 'snapdragon', snapdragon);
     ast.input = pattern;
@@ -594,6 +726,45 @@ nanomatch.compile = function(ast, options) {
 nanomatch.clearCache = function() {
   nanomatch.cache.__data__ = {};
 };
+
+/**
+ * Returns true if the given value is effectively an empty string
+ */
+
+function isEmptyString(val) {
+  return String(val) === '' || String(val) === './';
+}
+
+/**
+ * Compose a matcher function with the given patterns.
+ * This allows matcher functions to be compiled once and
+ * called multiple times.
+ */
+
+function compose(patterns, options, matcher) {
+  var matchers;
+
+  return memoize('compose', String(patterns), options, function() {
+    return function(file) {
+      // delay composition until it's invoked the first time,
+      // after that it won't be called again
+      if (!matchers) {
+        matchers = [];
+        for (var i = 0; i < patterns.length; i++) {
+          matchers.push(matcher(patterns[i], options));
+        }
+      }
+
+      var len = matchers.length;
+      while (len--) {
+        if (matchers[len](file) === true) {
+          return true;
+        }
+      }
+      return false;
+    };
+  });
+}
 
 /**
  * Memoize a generated regex or function. A unique key is generated

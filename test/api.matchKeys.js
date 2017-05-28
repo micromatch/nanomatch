@@ -15,15 +15,15 @@ describe('.matchKeys method', function() {
     it('should throw when the first argument is not an object', function() {
       assert.throws(function() {
         nm.matchKeys();
-      }, /expected the first argument to be an object/);
+      });
 
       assert.throws(function() {
         nm.matchKeys('foo');
-      }, /expected the first argument to be an object/);
+      });
 
       assert.throws(function() {
         nm.matchKeys(['foo']);
-      }, /expected the first argument to be an object/);
+      });
     });
   });
 
