@@ -53,7 +53,7 @@ describe('minimatch parity:', function() {
   describe('minimatch issues (as of 12/7/2016)', function() {
     it('https://github.com/isaacs/minimatch/issues/29', function() {
       assert(mm.isMatch('foo/bar.txt', 'foo/**/*.txt'));
-      assert(mm.makeRe('foo/**/*.txt' ).test( 'foo/bar.txt'));
+      assert(mm.makeRe('foo/**/*.txt').test('foo/bar.txt'));
     });
 
     it('https://github.com/isaacs/minimatch/issues/30', function() {
@@ -61,7 +61,7 @@ describe('minimatch parity:', function() {
       assert(mm.isMatch('./foo/bar.js', './**/foo/**'));
       assert(mm.isMatch('./foo/bar.js', '**/foo/**'));
       assert(mm.isMatch('./foo/bar.txt', 'foo/**/*.txt'));
-      assert(mm.makeRe('./foo/**/*.txt' ).test( 'foo/bar.txt'));
+      assert(mm.makeRe('./foo/**/*.txt').test('foo/bar.txt'));
     });
 
     it('https://github.com/isaacs/minimatch/issues/50', function() {
