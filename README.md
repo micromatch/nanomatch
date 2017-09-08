@@ -2,9 +2,14 @@
 
 > Fast, minimal glob matcher for node.js. Similar to micromatch, minimatch and multimatch, but complete Bash 4.3 wildcard support only (no support for exglobs, posix brackets or braces)
 
-<details>
-<summary><strong>Table of Contents</strong></summary>
+Follow this project's author, [Jon Schlinkert](https://github.com/jonschlinkert), for updates on this project and others.
 
+## Table of Contents
+
+<details>
+<summary><strong>Details</strong></summary>
+
+- [Install](#install)
 - [What is nanomatch?](#what-is-nanomatch)
 - [Getting started](#getting-started)
   * [Installing nanomatch](#installing-nanomatch)
@@ -36,13 +41,16 @@
   * [Running benchmarks](#running-benchmarks)
   * [Latest results](#latest-results)
 - [About](#about)
-  * [Related projects](#related-projects)
-  * [Contributing](#contributing)
-  * [Running tests](#running-tests)
-  * [Author](#author)
-  * [License](#license)
 
 </details>
+
+## Install
+
+Install with [npm](https://www.npmjs.com/):
+
+```sh
+$ npm install --save nanomatch
+```
 
 <details>
 <summary><strong>Release history</strong></summary>
@@ -128,7 +136,7 @@ Nanomatch uses [snapdragon](https://github.com/jonschlinkert/snapdragon) for par
 
 Nanomatch supports [basic globbing only](#features), which is limited to `*`, `**`, `?` and regex-like brackets.
 
-If you need support for the other [bash "expansion" types](#bash-expansion-libs) (in addition to the wildcard matching provided by nanomatch), consider using [micromatch](https://github.com/jonschlinkert/micromatch) instead. _(micromatch >=3.0.0  uses the nanomatch parser and compiler for basic glob matching)_
+If you need support for the other [bash "expansion" types](#bash-expansion-libs) (in addition to the wildcard matching provided by nanomatch), consider using [micromatch](https://github.com/micromatch/micromatch) instead. _(micromatch >=3.0.0  uses the nanomatch parser and compiler for basic glob matching)_
 
 </details>
 
@@ -485,7 +493,30 @@ console.log(isMatch('a.b'));
 //=> true
 ```
 
-### [.makeRe](index.js#L553)
+### [.capture](index.js#L556)
+
+Returns an array of matches captured by `pattern` in `string, or`null` if the pattern did not match.
+
+**Params**
+
+* `pattern` **{String}**: Glob pattern to use for matching.
+* `string` **{String}**: String to match
+* `options` **{Object}**: See available [options](#options) for changing how matches are performed
+* `returns` **{Boolean}**: Returns an array of captures if the string matches the glob pattern, otherwise `null`.
+
+**Example**
+
+```js
+var nm = require('nanomatch');
+nm.capture(pattern, string[, options]);
+
+console.log(nm.capture('test/*.js', 'test/foo.js));
+//=> ['foo']
+console.log(nm.capture('test/*.js', 'foo/bar.css'));
+//=> null
+```
+
+### [.makeRe](index.js#L591)
 
 Create a regular expression from the given glob `pattern`.
 
@@ -505,7 +536,7 @@ console.log(nm.makeRe('*.js'));
 //=> /^(?:(\.[\\\/])?(?!\.)(?=.)[^\/]*?\.js)$/
 ```
 
-### [.create](index.js#L616)
+### [.create](index.js#L654)
 
 Parses the given glob `pattern` and returns an object with the compiled `output` and optional source `map`.
 
@@ -547,7 +578,7 @@ console.log(nm.create('abc/*.js'));
 //   idx: 6 }
 ```
 
-### [.parse](index.js#L655)
+### [.parse](index.js#L693)
 
 Parse the given `str` with the given `options`.
 
@@ -580,7 +611,7 @@ console.log(ast);
 //      { type: 'eos', val: '' } ] }
 ```
 
-### [.compile](index.js#L703)
+### [.compile](index.js#L741)
 
 Compile the given `ast` or string with the given `options`.
 
@@ -614,7 +645,7 @@ console.log(nm.compile(ast));
 //   parsingErrors: [] }
 ```
 
-### [.clearCache](index.js#L726)
+### [.clearCache](index.js#L764)
 
 Clear the regex cache.
 
@@ -946,7 +977,7 @@ The following extended-globbing features are not supported:
 * [extglobs](https://github.com/jonschlinkert/extglob) (e.g. `@(a|!(c|d))`)
 * [POSIX brackets](https://github.com/jonschlinkert/expand-brackets) (e.g. `[[:alpha:][:digit:]]`)
 
-If you need any of these features consider using [micromatch](https://github.com/jonschlinkert/micromatch) instead.
+If you need any of these features consider using [micromatch](https://github.com/micromatch/micromatch) instead.
 
 ## Bash expansion libs
 
@@ -959,7 +990,7 @@ Nanomatch is part of a suite of libraries aimed at bringing the power and expres
 | [braces](https://github.com/jonschlinkert/braces) | Braces | `{a,b,c}` | [Brace expansion](https://www.gnu.org/software/bash/manual/html_node/Brace-Expansion.html) |
 | [expand-brackets](https://github.com/jonschlinkert/expand-brackets) | Brackets | `[[:alpha:]]` | [POSIX character classes](https://www.gnu.org/software/grep/manual/html_node/Character-Classes-and-Bracket-Expressions.html) (also referred to as POSIX brackets, or POSIX character classes) |
 | [extglob](https://github.com/jonschlinkert/extglob) | Parens | `!(a\ | b)` | [Extglobs](https://www.gnu.org/software/bash/manual/html_node/Pattern-Matching.html#Pattern-Matching) |
-| [micromatch](https://github.com/jonschlinkert/micromatch) | All | all | Micromatch is built on top of the other libraries. |
+| [micromatch](https://github.com/micromatch/micromatch) | All | all | Micromatch is built on top of the other libraries. |
 
 There are many resources available on the web if you want to dive deeper into how these features work in Bash.
 
@@ -1032,6 +1063,8 @@ Benchmarking: (6 of 6)
 
 ### Related projects
 
+You might also be interested in these projects:
+
 * [is-extglob](https://www.npmjs.com/package/is-extglob): Returns true if a string has an extglob. | [homepage](https://github.com/jonschlinkert/is-extglob "Returns true if a string has an extglob.")
 * [is-glob](https://www.npmjs.com/package/is-glob): Returns `true` if the given string looks like a glob pattern or an extglob pattern… [more](https://github.com/jonschlinkert/is-glob) | [homepage](https://github.com/jonschlinkert/is-glob "Returns `true` if the given string looks like a glob pattern or an extglob pattern. This makes it easy to create code that only uses external modules like node-glob when necessary, resulting in much faster code execution and initialization time, and a bet")
 
@@ -1040,6 +1073,23 @@ Benchmarking: (6 of 6)
 Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](../../issues/new).
 
 Please read the [contributing guide](.github/contributing.md) for advice on opening issues, pull requests, and coding standards.
+
+### Contributors
+
+| **Commits** | **Contributor** | 
+| --- | --- |
+| 132 | [jonschlinkert](https://github.com/jonschlinkert) |
+| 1 | [devongovett](https://github.com/devongovett) |
+
+### Building docs
+
+_(This project's readme.md is generated by [verb](https://github.com/verbose/verb-generate-readme), please don't edit the readme directly. Any changes to the readme must be made in the [.verb.md](.verb.md) readme template.)_
+
+To generate the readme, run the following command:
+
+```sh
+$ npm install -g verbose/verb#dev verb-generate-readme && verb
+```
 
 ### Running tests
 
@@ -1063,4 +1113,4 @@ Released under the [MIT License](LICENSE).
 
 ***
 
-_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.6.0, on May 28, 2017._
+_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.6.0, on September 07, 2017._
