@@ -480,7 +480,7 @@ nanomatch.matcher = function matcher(pattern, options) {
   if (isEmptyString(pattern)) {
     return function() {
       return false;
-    }
+    };
   }
 
   if (Array.isArray(pattern)) {

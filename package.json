@@ -26,7 +26,6 @@
     "define-property": "^1.0.0",
     "extend-shallow": "^2.0.1",
     "fragment-cache": "^0.2.1",
-    "is-extglob": "^2.1.1",
     "is-odd": "^1.0.0",
     "kind-of": "^5.0.2",
     "object.pick": "^1.3.0",
