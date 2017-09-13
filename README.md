@@ -1007,55 +1007,47 @@ npm i -d && node benchmark
 ### Latest results
 
 ```bash
-Benchmarking: (6 of 6)
- · globstar-basic
- · large-list-globstar
- · long-list-globstar
- · negation-basic
- · not-glob-basic
- · star-basic
+# globstar-basic (182 bytes)
+  minimatch x 70,508 ops/sec ±0.44% (92 runs sampled)
+  multimatch x 63,220 ops/sec ±0.76% (94 runs sampled)
+  nanomatch x 377,146 ops/sec ±0.45% (89 runs sampled)
 
-# benchmark/fixtures/match/globstar-basic.js (182 bytes)
-  minimatch x 31,046 ops/sec ±0.56% (87 runs sampled)
-  multimatch x 27,787 ops/sec ±1.02% (88 runs sampled)
-  nanomatch x 453,686 ops/sec ±1.11% (89 runs sampled)
+  fastest is nanomatch (by 564% avg)
 
-  fastest is nanomatch
+# large-list-globstar (485686 bytes)
+  minimatch x 35.67 ops/sec ±0.47% (61 runs sampled)
+  multimatch x 34.80 ops/sec ±1.77% (60 runs sampled)
+  nanomatch x 509 ops/sec ±0.43% (90 runs sampled)
 
-# benchmark/fixtures/match/large-list-globstar.js (485686 bytes)
-  minimatch x 25.23 ops/sec ±0.46% (44 runs sampled)
-  multimatch x 25.20 ops/sec ±0.97% (43 runs sampled)
-  nanomatch x 735 ops/sec ±0.66% (89 runs sampled)
+  fastest is nanomatch (by 1445% avg)
 
-  fastest is nanomatch
+# long-list-globstar (194085 bytes)
+  minimatch x 397 ops/sec ±0.96% (89 runs sampled)
+  multimatch x 400 ops/sec ±0.32% (90 runs sampled)
+  nanomatch x 843 ops/sec ±0.40% (92 runs sampled)
 
-# benchmark/fixtures/match/long-list-globstar.js (194085 bytes)
-  minimatch x 258 ops/sec ±0.87% (83 runs sampled)
-  multimatch x 264 ops/sec ±0.90% (82 runs sampled)
-  nanomatch x 1,858 ops/sec ±0.56% (89 runs sampled)
+  fastest is nanomatch (by 212% avg)
 
-  fastest is nanomatch
+# negation-basic (132 bytes)
+  minimatch x 224,342 ops/sec ±1.07% (90 runs sampled)
+  multimatch x 68,071 ops/sec ±0.80% (89 runs sampled)
+  nanomatch x 442,204 ops/sec ±1.09% (91 runs sampled)
 
-# benchmark/fixtures/match/negation-basic.js (132 bytes)
-  minimatch x 74,240 ops/sec ±1.22% (88 runs sampled)
-  multimatch x 25,360 ops/sec ±1.18% (89 runs sampled)
-  nanomatch x 545,835 ops/sec ±1.12% (88 runs sampled)
+  fastest is nanomatch (by 302% avg)
 
-  fastest is nanomatch
+# not-glob-basic (93 bytes)
+  minimatch x 222,156 ops/sec ±0.98% (89 runs sampled)
+  multimatch x 179,724 ops/sec ±1.04% (91 runs sampled)
+  nanomatch x 1,446,098 ops/sec ±0.45% (92 runs sampled)
 
-# benchmark/fixtures/match/not-glob-basic.js (93 bytes)
-  minimatch x 92,753 ops/sec ±1.59% (86 runs sampled)
-  multimatch x 50,125 ops/sec ±1.43% (87 runs sampled)
-  nanomatch x 1,195,648 ops/sec ±1.18% (87 runs sampled)
+  fastest is nanomatch (by 720% avg)
 
-  fastest is nanomatch
+# star-basic (93 bytes)
+  minimatch x 165,049 ops/sec ±1.22% (91 runs sampled)
+  multimatch x 132,553 ops/sec ±0.57% (90 runs sampled)
+  nanomatch x 522,080 ops/sec ±1.20% (92 runs sampled)
 
-# benchmark/fixtures/match/star-basic.js (93 bytes)
-  minimatch x 70,746 ops/sec ±1.51% (86 runs sampled)
-  multimatch x 54,317 ops/sec ±1.45% (89 runs sampled)
-  nanomatch x 602,748 ops/sec ±1.17% (86 runs sampled)
-
-  fastest is nanomatch
+  fastest is nanomatch (by 351% avg)
 
 ```
 
@@ -1065,8 +1057,10 @@ Benchmarking: (6 of 6)
 
 You might also be interested in these projects:
 
+* [extglob](https://www.npmjs.com/package/extglob): Extended glob support for JavaScript. Adds (almost) the expressive power of regular expressions to glob… [more](https://github.com/jonschlinkert/extglob) | [homepage](https://github.com/jonschlinkert/extglob "Extended glob support for JavaScript. Adds (almost) the expressive power of regular expressions to glob patterns.")
 * [is-extglob](https://www.npmjs.com/package/is-extglob): Returns true if a string has an extglob. | [homepage](https://github.com/jonschlinkert/is-extglob "Returns true if a string has an extglob.")
 * [is-glob](https://www.npmjs.com/package/is-glob): Returns `true` if the given string looks like a glob pattern or an extglob pattern… [more](https://github.com/jonschlinkert/is-glob) | [homepage](https://github.com/jonschlinkert/is-glob "Returns `true` if the given string looks like a glob pattern or an extglob pattern. This makes it easy to create code that only uses external modules like node-glob when necessary, resulting in much faster code execution and initialization time, and a bet")
+* [micromatch](https://www.npmjs.com/package/micromatch): Glob matching for javascript/node.js. A drop-in replacement and faster alternative to minimatch and multimatch. | [homepage](https://github.com/micromatch/micromatch "Glob matching for javascript/node.js. A drop-in replacement and faster alternative to minimatch and multimatch.")
 
 ### Contributing
 
@@ -1078,7 +1072,7 @@ Please read the [contributing guide](.github/contributing.md) for advice on open
 
 | **Commits** | **Contributor** | 
 | --- | --- |
-| 132 | [jonschlinkert](https://github.com/jonschlinkert) |
+| 138 | [jonschlinkert](https://github.com/jonschlinkert) |
 | 1 | [devongovett](https://github.com/devongovett) |
 
 ### Building docs
@@ -1113,4 +1107,4 @@ Released under the [MIT License](LICENSE).
 
 ***
 
-_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.6.0, on September 07, 2017._
+_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.6.0, on September 13, 2017._

@@ -116,7 +116,15 @@
         "is-glob"
       ]
     },
-    "reflinks": [],
+    "reflinks": [
+      "expand-brackets",
+      "expand-tilde",
+      "glob-object",
+      "micromatch",
+      "minimatch",
+      "options",
+      "snapdragon"
+    ],
     "lint": {
       "reflinks": true
     }
