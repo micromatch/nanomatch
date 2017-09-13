@@ -510,7 +510,7 @@ Returns an array of matches captured by `pattern` in `string, or`null` if the pa
 var nm = require('nanomatch');
 nm.capture(pattern, string[, options]);
 
-console.log(nm.capture('test/*.js', 'test/foo.js));
+console.log(nm.capture('test/*.js', 'test/foo.js'));
 //=> ['foo']
 console.log(nm.capture('test/*.js', 'foo/bar.css'));
 //=> null
@@ -989,7 +989,7 @@ Nanomatch is part of a suite of libraries aimed at bringing the power and expres
 | [expand-tilde](https://github.com/jonschlinkert/expand-tilde) | Tildes | `~` | [Tilde expansion](https://www.gnu.org/software/bash/manual/html_node/Tilde-Expansion.html#Tilde-Expansion) converts the leading tilde in a file path to the user home directory. |
 | [braces](https://github.com/jonschlinkert/braces) | Braces | `{a,b,c}` | [Brace expansion](https://www.gnu.org/software/bash/manual/html_node/Brace-Expansion.html) |
 | [expand-brackets](https://github.com/jonschlinkert/expand-brackets) | Brackets | `[[:alpha:]]` | [POSIX character classes](https://www.gnu.org/software/grep/manual/html_node/Character-Classes-and-Bracket-Expressions.html) (also referred to as POSIX brackets, or POSIX character classes) |
-| [extglob](https://github.com/jonschlinkert/extglob) | Parens | `!(a\ | b)` | [Extglobs](https://www.gnu.org/software/bash/manual/html_node/Pattern-Matching.html#Pattern-Matching) |
+| [extglob](https://github.com/jonschlinkert/extglob) | Parens | `!(a\|b)` | [Extglobs](https://www.gnu.org/software/bash/manual/html_node/Pattern-Matching.html#Pattern-Matching) |
 | [micromatch](https://github.com/micromatch/micromatch) | All | all | Micromatch is built on top of the other libraries. |
 
 There are many resources available on the web if you want to dive deeper into how these features work in Bash.
@@ -1048,7 +1048,6 @@ npm i -d && node benchmark
   nanomatch x 522,080 ops/sec ±1.20% (92 runs sampled)
 
   fastest is nanomatch (by 351% avg)
-
 ```
 
 ## About

@@ -541,7 +541,7 @@ nanomatch.matcher = function matcher(pattern, options) {
  * var nm = require('nanomatch');
  * nm.capture(pattern, string[, options]);
  *
- * console.log(nm.capture('test/*.js', 'test/foo.js));
+ * console.log(nm.capture('test/*.js', 'test/foo.js'));
  * //=> ['foo']
  * console.log(nm.capture('test/*.js', 'foo/bar.css'));
  * //=> null
