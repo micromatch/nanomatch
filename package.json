@@ -34,9 +34,7 @@
     "to-regex": "^3.0.1"
   },
   "devDependencies": {
-    "ansi-cyan": "^0.1.1",
     "bash-match": "^1.0.2",
-    "benchmarked": "^1.1.1",
     "for-own": "^1.0.0",
     "gulp": "^3.9.1",
     "gulp-format-md": "^1.0.0",
@@ -44,13 +42,11 @@
     "gulp-mocha": "^3.0.1",
     "gulp-unused": "^0.2.1",
     "helper-changelog": "^0.3.0",
-    "is-primitive": "^2.0.0",
     "is-windows": "^1.0.1",
-    "isobject": "^3.0.1",
     "minimatch": "^3.0.4",
+    "minimist": "^1.2.0",
     "mocha": "^3.5.0",
-    "multimatch": "^2.1.0",
-    "yargs-parser": "^7.0.0"
+    "multimatch": "^2.1.0"
   },
   "keywords": [
     "bash",
@@ -83,11 +79,21 @@
     "wildcard"
   ],
   "lintDeps": {
-    "files": {
-      "merge": true,
-      "devDependencies": [
-        "benchmark/**/*.js"
-      ]
+    "dependencies": {
+      "options": {
+        "lock": {
+          "snapdragon": "^0.8.1"
+        }
+      }
+    },
+    "devDependencies": {
+      "files": {
+        "options": {
+          "ignore": [
+            "benchmark/**"
+          ]
+        }
+      }
     }
   },
   "verb": {
@@ -104,27 +110,13 @@
     ],
     "related": {
       "list": [
+        "extglob",
+        "micromatch",
         "is-extglob",
         "is-glob"
       ]
     },
-    "reflinks": [
-      "a-c",
-      "bash-braces",
-      "bash-brackets",
-      "bash-extglobs",
-      "bash-globs",
-      "bash-tilde",
-      "braces",
-      "expand-brackets",
-      "expand-tilde",
-      "extglob",
-      "glob-object",
-      "micromatch",
-      "minimatch",
-      "options",
-      "snapdragon"
-    ],
+    "reflinks": [],
     "lint": {
       "reflinks": true
     }

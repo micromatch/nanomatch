@@ -1,18 +1,17 @@
 {
-  "name": "extglob-benchmarks",
+  "name": "nanomatch-benchmarks",
   "version": "0.0.0",
   "private": true,
   "main": "index.js",
   "scripts": {
     "test": "mocha"
   },
+  "dependencies": {
+    "benchmarked": "^2.0.0",
+    "minimist": "^1.2.0",
+    "write": "^1.0.3"
+  },
   "devDependencies": {
-    "ansi-cyan": "^0.1.1",
-    "benchmarked": "^0.2.2",
-    "is-primitive": "^2.0.0",
-    "isobject": "^3.0.0",
-    "minimatch": "^3.0.0",
-    "multimatch": "^2.1.0",
-    "yargs-parser": "^4.2.0"
+    "mocha": "^3.5.3"
   }
 }
