@@ -530,7 +530,11 @@ nanomatch.matcher = function matcher(pattern, options) {
   }
 
   var fn = test(re);
-  fn.result = re.result;
+  Object.defineProperty(fn, 'result', {
+    configurable: true,
+    enumerable: false,
+    value: re.result
+  });
   return fn;
 };
 
@@ -605,7 +609,11 @@ nanomatch.makeRe = function(pattern, options) {
     var res = nanomatch.create(pattern, options);
     var opts = utils.extend({wrap: false}, options);
     var regex = toRegex(res.output, opts);
-    regex.result = res;
+    Object.defineProperty(regex, 'result', {
+      configurable: true,
+      enumerable: false,
+      value: res
+    });
     return regex;
   }
 
