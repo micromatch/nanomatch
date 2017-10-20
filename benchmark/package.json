@@ -3,15 +3,24 @@
   "version": "0.0.0",
   "private": true,
   "main": "index.js",
-  "scripts": {
-    "test": "mocha"
-  },
   "dependencies": {
     "benchmarked": "^2.0.0",
     "minimist": "^1.2.0",
     "write": "^1.0.3"
   },
-  "devDependencies": {
-    "mocha": "^3.5.3"
+  "lintDeps": {
+    "dependencies": {
+      "options": {
+        "ignore": [
+          "index.js"
+        ]
+      }
+    },
+    "devDependencies": {
+      "files": [
+        "code/**/*.js",
+        "*.js"
+      ]
+    }
   }
 }

@@ -1,4 +1,3 @@
-var multimatch = require('multimatch');
 var minimatch = require('minimatch');
 
 module.exports = function(files, pattern) {

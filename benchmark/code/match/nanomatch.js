@@ -1,5 +1,3 @@
-'use strict';
-
 var nanomatch = require('../../..');
 
 module.exports = function(files, pattern) {
