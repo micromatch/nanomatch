@@ -169,7 +169,7 @@ nanomatch.isMatch = function(str, pattern, options) {
     throw new TypeError('expected a string: "' + util.inspect(str) + '"');
   }
 
-  if (isEmptyString(str) || isEmptyString(pattern)) {
+  if (utils.isEmptyString(str) || utils.isEmptyString(pattern)) {
     return false;
   }
 
@@ -279,7 +279,7 @@ nanomatch.any = function(str, patterns, options) {
     throw new TypeError('expected a string: "' + util.inspect(str) + '"');
   }
 
-  if (isEmptyString(str) || isEmptyString(patterns)) {
+  if (utils.isEmptyString(str) || utils.isEmptyString(patterns)) {
     return false;
   }
 
@@ -397,7 +397,7 @@ nanomatch.contains = function(str, patterns, options) {
   }
 
   if (typeof patterns === 'string') {
-    if (isEmptyString(str) || isEmptyString(patterns)) {
+    if (utils.isEmptyString(str) || utils.isEmptyString(patterns)) {
       return false;
     }
 
@@ -477,7 +477,7 @@ nanomatch.matchKeys = function(obj, patterns, options) {
  */
 
 nanomatch.matcher = function matcher(pattern, options) {
-  if (isEmptyString(pattern)) {
+  if (utils.isEmptyString(pattern)) {
     return function() {
       return false;
     };
@@ -764,14 +764,6 @@ nanomatch.compile = function(ast, options) {
 nanomatch.clearCache = function() {
   nanomatch.cache.__data__ = {};
 };
-
-/**
- * Returns true if the given value is effectively an empty string
- */
-
-function isEmptyString(val) {
-  return String(val) === '' || String(val) === './';
-}
 
 /**
  * Compose a matcher function with the given patterns.
