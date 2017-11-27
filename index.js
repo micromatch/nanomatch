@@ -539,7 +539,8 @@ nanomatch.matcher = function matcher(pattern, options) {
 };
 
 /**
- * Returns an array of matches captured by `pattern` in `string, or `null` if the pattern did not match.
+ * Returns an array of matches captured by `pattern` in `string, or
+ * `null` if the pattern did not match.
  *
  * ```js
  * var nm = require('nanomatch');
@@ -606,8 +607,8 @@ nanomatch.makeRe = function(pattern, options) {
   }
 
   function makeRe() {
-    var res = nanomatch.create(pattern, options);
     var opts = utils.extend({wrap: false}, options);
+    var res = nanomatch.create(pattern, opts);
     var regex = toRegex(res.output, opts);
     Object.defineProperty(regex, 'result', {
       configurable: true,

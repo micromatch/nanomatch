@@ -28,6 +28,24 @@ describe('issue-related tests', function() {
     assert(nm.makeRe('**/*.js', {unixify: true}).test('foo\\bar.js'));
   });
 
+  it('issue #111', function() {
+    assert(!nm.isMatch('something/file.js', '../something/*.js'));
+    assert(!nm.isMatch('./something/file.js', '../something/*.js'));
+    assert(nm.isMatch('./something/file.js', './something/*.js'));
+    assert(nm.isMatch('./something/file.js', 'something/*.js'));
+    assert(nm.isMatch('./something/file.js', '*/file.js'));
+    assert(nm.isMatch('./something/file.js', './*/*.js'));
+    assert(nm.isMatch('./something/file.js', '*/*.js'));
+
+    assert(!nm.makeRe('something/*.js').test('../something/file.js'));
+    assert(!nm.makeRe('./something/*.js').test('../something/file.js'));
+    assert(nm.makeRe('./something/*.js').test('./something/file.js'));
+    assert(nm.makeRe('something/*.js').test('./something/file.js'));
+    assert(nm.makeRe('./*/file.js').test('./something/file.js'));
+    assert(nm.makeRe('./*/*.js').test('./something/file.js'));
+    assert(nm.makeRe('*/*.js').test('./something/file.js'));
+  });
+
   // https://github.com/jonschlinkert/micromatch/issues/15
   it('issue #15', function() {
     assert(nm.isMatch('a/b-c/d/e/z.js', 'a/b-*/**/z.js'));
