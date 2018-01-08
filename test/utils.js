@@ -5,6 +5,25 @@ var assert = require('assert');
 var utils = require('../lib/utils');
 
 describe('utils', function() {
+  describe('.combineDupes', function() {
+    it('should combine duplicate patterns in the given string', function() {
+      assert.equal(utils.combineDupes('/*/*/*/*/', '*/'), '/*/');
+      assert.equal(utils.combineDupes('/*/*/*/*/', '/*/*'), '/*/*/');
+      assert.equal(utils.combineDupes('/**/**/**/*/', '**/'), '/**/*/');
+      assert.equal(utils.combineDupes('/*/*/**/**/*/*/', '**/'), '/*/*/**/*/*/');
+    });
+
+    it('should take an array of patterns', function() {
+      assert.equal(utils.combineDupes('/*/*/*/**/**/*/*/', ['**/', '/*(?=\\/(?!\\*\\*))']), '/*/**/*/');
+      assert.equal(utils.combineDupes('/*/*/a/a/*/*/*', ['/*', '*/', 'a/']), '/*/a/*');
+      assert.equal(utils.combineDupes('/*/*/a/a/*/*/*', '/*|*/|a/'), '/*/a/*');
+    });
+
+    it('should take an array of patterns', function() {
+      assert.equal(utils.combineDupes('/*/*/*/*/a/a/', ['*/', 'a/']), '/*/a/');
+    });
+  });
+
   describe('.hasSpecialChars', function() {
     it('should return true when the pattern has wildcards', function() {
       assert(utils.hasSpecialChars('a*b'));
