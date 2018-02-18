@@ -25,6 +25,7 @@ describe('issue-related tests', function() {
     assert(nm.makeRe('**/*.js').test('./foo/bar.js'));
     assert(nm.makeRe('**/*.js').test('foo/bar.js'));
     assert(nm.makeRe('**/*.js').test('.\\foo\\bar.js'));
+    assert(nm.makeRe('**/*.js', {unixify: true}).test('.\\foo\\bar.js'));
     assert(nm.makeRe('**/*.js', {unixify: true}).test('foo\\bar.js'));
   });
 
