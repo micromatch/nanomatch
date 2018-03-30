@@ -6,7 +6,8 @@
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
   "contributors": [
     "Devon Govett (http://badassjs.com)",
-    "Jon Schlinkert (http://twitter.com/jonschlinkert)"
+    "Jon Schlinkert (http://twitter.com/jonschlinkert)",
+    "Tony Colston (http://twitter.com/tonetheman)"
   ],
   "repository": "micromatch/nanomatch",
   "bugs": {
