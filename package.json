@@ -49,7 +49,7 @@
     "helper-changelog": "^0.3.0",
     "minimatch": "^3.0.4",
     "minimist": "^1.2.0",
-    "mocha": "^3.5.3",
+    "mocha": "^5.1.1",
     "multimatch": "^2.1.0"
   },
   "keywords": [
