@@ -7,7 +7,8 @@
   "contributors": [
     "Devon Govett (http://badassjs.com)",
     "Jon Schlinkert (http://twitter.com/jonschlinkert)",
-    "Tony Colston (http://twitter.com/tonetheman)"
+    "Tony Colston (http://twitter.com/tonetheman)",
+    "Daniel Tschinder (https://github.com/danez)"
   ],
   "repository": "micromatch/nanomatch",
   "bugs": {
