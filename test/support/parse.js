@@ -2,7 +2,6 @@
 
 var fs = require('fs');
 var path = require('path');
-var extend = require('extend-shallow');
 var nm = require('../..');
 
 /**
@@ -10,7 +9,7 @@ var nm = require('../..');
  */
 
 function parseFiles(pattern, options) {
-  var opts = extend({cwd: process.cwd()}, options);
+  var opts = Object.assign({cwd: process.cwd()}, options);
   var cwd = opts.cwd;
 
   var files = nm(fs.readdirSync(cwd), pattern);

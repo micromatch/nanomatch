@@ -1,7 +1,6 @@
 'use strict';
 
 var assert = require('assert');
-var extend = require('extend-shallow');
 var utils = require('../../lib/utils');
 var matcher = require('./matcher');
 var compare = require('./compare');
@@ -19,7 +18,7 @@ module.exports = function(fixtures, patterns, expected, options) {
 
   assert.deepEqual(actual, expected, patterns);
 };
-extend(module.exports, matcher);
+Object.assign(module.exports, matcher);
 
 module.exports.match = function fn(fixtures, pattern, expected, options) {
   if (!Array.isArray(expected)) {

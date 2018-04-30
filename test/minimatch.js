@@ -3,7 +3,6 @@
 var path = require('path');
 var assert = require('assert');
 var isWindows = require('is-windows');
-var extend = require('extend-shallow');
 var patterns = require('./fixtures/patterns');
 var mm = require('./support/match');
 
@@ -28,7 +27,7 @@ describe('basic tests', function() {
 
       var pattern = unit[0];
       var expected = (unit[1] || []).sort(compare);
-      var options = extend({}, unit[2]);
+      var options = Object.assign({}, unit[2]);
       var fixtures = unit[3] || patterns.fixtures;
       mm.match(fixtures, pattern, expected, options);
     });

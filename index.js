@@ -6,7 +6,6 @@
 
 var util = require('util');
 var toRegex = require('to-regex');
-var extend = require('extend-shallow');
 
 /**
  * Local dependencies
@@ -357,7 +356,7 @@ nanomatch.all = function(str, patterns, options) {
  */
 
 nanomatch.not = function(list, patterns, options) {
-  var opts = extend({}, options);
+  var opts = Object.assign({}, options);
   var ignore = opts.ignore;
   delete opts.ignore;
 
@@ -411,7 +410,7 @@ nanomatch.contains = function(str, patterns, options) {
     }
   }
 
-  var opts = extend({}, options, {contains: true});
+  var opts = Object.assign({}, options, {contains: true});
   return nanomatch.any(str, patterns, opts);
 };
 
@@ -558,7 +557,7 @@ nanomatch.matcher = function matcher(pattern, options) {
  */
 
 nanomatch.capture = function(pattern, str, options) {
-  var re = nanomatch.makeRe(pattern, extend({capture: true}, options));
+  var re = nanomatch.makeRe(pattern, Object.assign({capture: true}, options));
   var unixify = utils.unixify(options);
 
   function match() {
@@ -606,7 +605,7 @@ nanomatch.makeRe = function(pattern, options) {
   }
 
   function makeRe() {
-    var opts = utils.extend({wrap: false}, options);
+    var opts = Object.assign({wrap: false}, options);
     var result = nanomatch.create(pattern, opts);
     var regex = toRegex(result.output, opts);
     utils.define(regex, 'result', result);
