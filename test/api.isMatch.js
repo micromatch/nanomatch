@@ -21,6 +21,18 @@ describe('.isMatch():', function() {
       assert(nm.isMatch('coffee+/src/glimini.js', 'coffee+/src/*'));
     });
 
+    it('should escape plus signs that follow other special characters', function() {
+      var str = 'Microsoft Visual C++ 2013 x86 Additional Runtime - 12.0.21005';
+      assert(nm.isMatch(str, '*Microsoft Visual C++*'));
+      assert(nm.isMatch(str, 'Microsoft Visual C++*'));
+      assert(!nm.isMatch(str, 'Microsoft Visual C+++'));
+    });
+
+    it('should escape plus signs defined first in a glob', function() {
+      var arr = ['+foo', '+bar', '+baz'];
+      assert.deepEqual(nm.match(arr, '+(b|f)*'), arr);
+    });
+
     it('should not escape plus signs that follow brackets', function() {
       assert(nm.isMatch('a', '[a]+'));
       assert(nm.isMatch('aa', '[a]+'));
