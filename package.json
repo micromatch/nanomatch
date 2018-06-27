@@ -42,14 +42,11 @@
   "devDependencies": {
     "bash-match": "^1.0.2",
     "for-own": "^1.0.0",
-    "gulp": "^3.9.1",
     "gulp-format-md": "^1.0.0",
-    "gulp-istanbul": "^1.1.3",
-    "gulp-mocha": "^5.0.0",
     "helper-changelog": "^0.3.0",
     "minimatch": "^3.0.4",
     "minimist": "^1.2.0",
-    "mocha": "^5.1.1",
+    "mocha": "^3.5.3",
     "multimatch": "^2.1.0"
   },
   "keywords": [
