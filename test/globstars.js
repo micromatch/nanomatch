@@ -113,4 +113,10 @@ describe('globstars', function() {
     assert(nm.isMatch('node_modules/foobar/foo.bar', 'node_modules/foobar/**/*.bar'));
     nm(['node_modules/foobar/foo.bar'], 'node_modules/foobar/**/*.bar', ['node_modules/foobar/foo.bar']);
   });
+
+  it('issue micromatch#140', function() {
+    var fixtures = ['a/b/some/c.md', 'a/b/c.md', 'a/bb/c.md', 'a/bbc/c.md'];
+
+    nm(fixtures, '**/b/**/c.md', ['a/b/c.md', 'a/b/some/c.md']);
+  });
 });
