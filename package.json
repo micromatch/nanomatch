@@ -8,7 +8,8 @@
     "Devon Govett (http://badassjs.com)",
     "Jon Schlinkert (http://twitter.com/jonschlinkert)",
     "Tony Colston (http://twitter.com/tonetheman)",
-    "Daniel Tschinder (https://github.com/danez)"
+    "Daniel Tschinder (https://github.com/danez)",
+    "Tomasz Kopacki (https://github.com/tk-o)"
   ],
   "repository": "micromatch/nanomatch",
   "bugs": {
@@ -32,7 +33,7 @@
     "define-property": "^2.0.2",
     "fragment-cache": "^0.2.1",
     "is-windows": "^1.0.2",
-    "kind-of": "^6.0.2",
+    "kind-of": "^6.0.3",
     "object.pick": "^1.3.0",
     "regex-not": "^1.0.0",
     "snapdragon": "^0.12.0",
