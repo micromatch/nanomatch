@@ -86,6 +86,25 @@ function nanomatch(list, patterns, options) {
 }
 
 /**
+ * Similar to the main function, but returns matched patterns, instead of matched values
+ *
+ * ```js
+ * const nm = require('nanomatch');
+ * nm.matchingPatterns(list, pattern[, options]);
+ *
+ * console.log(nm.matchingPatterns(['a.a', 'a.aa', 'a.b', 'a.c'], ['*.a', '*.d']));
+ * //=> ['*.a']
+ * ```
+ * @param {Array} `list` Array of strings to match
+ * @param {String} `pattern` Glob pattern to use for matching.
+ * @param {Object} `options` See available [options](#options) for changing how matches are performed
+ * @return {Array} Returns an array of matched patterns
+ * @api public
+ */
+nanomatch.matchingPatterns = function(list, pattern, options) {
+}
+
+/**
  * Similar to the main function, but `pattern` must be a string.
  *
  * ```js
