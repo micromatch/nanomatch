@@ -87,6 +87,7 @@ function nanomatch(list, patterns, options) {
 
 /**
  * Similar to the main function, but returns matched patterns, instead of matched values
+ * Doesn't work with negative lookup, because it the most cases it doesn't have sense
  *
  * ```js
  * const nm = require('nanomatch');
@@ -96,7 +97,7 @@ function nanomatch(list, patterns, options) {
  * //=> ['*.a']
  * ```
  * @param {Array} `list` Array of strings to match
- * @param {String} `pattern` Glob pattern to use for matching.
+ * @param {Array} `pattern` Array of patterns
  * @param {Object} `options` See available [options](#options) for changing how matches are performed
  * @return {Array} Returns an array of matched patterns
  * @api public
