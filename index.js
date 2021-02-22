@@ -86,6 +86,52 @@ function nanomatch(list, patterns, options) {
 }
 
 /**
+ * Similar to the main function, but returns matched patterns, instead of matched values
+ * Doesn't work with negative lookup, because it the most cases it doesn't have sense
+ *
+ * ```js
+ * const nm = require('nanomatch');
+ * nm.matchingPatterns(list, pattern[, options]);
+ *
+ * console.log(nm.matchingPatterns(['a.a', 'a.aa', 'a.b', 'a.c'], ['*.a', '*.d']));
+ * //=> ['*.a']
+ * ```
+ * @param {Array} `list` Array of strings to match
+ * @param {Array} `pattern` Array of patterns
+ * @param {Object} `options` See available [options](#options) for changing how matches are performed
+ * @return {Array} Returns an array of matched patterns
+ * @api public
+ */
+nanomatch.matchingPatterns = function(list, patterns, options) {
+  patterns = utils.arrayify(patterns);
+  list = utils.arrayify(list);
+
+  const len = patterns.length;
+  if (list.length === 0 || len === 0) {
+    return [];
+  }
+
+  const omit = [];
+  const keep = [];
+  let idx = -1;
+
+  while (++idx < len) {
+    const pattern = patterns[idx];
+    const match = nanomatch.match(list, pattern, options);
+
+    match.length > 0 && keep.push(pattern);
+  }
+
+  const matches = utils.diff(keep, omit);
+
+  if (!options || options.nodupes !== false) {
+    return utils.unique(matches);
+  }
+
+  return matches;
+}
+
+/**
  * Similar to the main function, but `pattern` must be a string.
  *
  * ```js
