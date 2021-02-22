@@ -657,6 +657,28 @@ Clear the regex cache.
 nm.clearCache();
 ```
 
+### [.matchingPatterns](index.js#L105)
+
+Similar to the main function, but returns matched patterns, instead of matched values
+Doesn't work with negative lookup, because it the most cases it doesn't have sense
+
+**Params**
+
+* `list` **{Array}**: A list of strings to match
+* `patterns` **{String|Array}**: One or more glob patterns to use for matching
+* `options` **{Object}**: See available [options](#options) for changing how matches are performed
+* `returns` **{Array}**: Returns an array of metched patterns
+
+**Example**
+
+```js
+var nm = require('nanomatch');
+nm.matchingPatterns(list, pattern[, options]);
+
+console.log(nm.matchingPatterns(['a.a', 'a.aa', 'a.b', 'a.c'], ['*.a', '*.d']));
+//=> ['*.a']
+```
+
 ## Options
 
 <details>
