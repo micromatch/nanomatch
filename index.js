@@ -110,39 +110,19 @@ nanomatch.matchingPatterns = function(list, patterns, options) {
     return [];
   }
 
-  let negated = false;
   const omit = [];
   const keep = [];
   let idx = -1;
 
   while (++idx < len) {
     const pattern = patterns[idx];
+    const match = nanomatch.match(list, pattern, options);
 
-    if (typeof pattern === 'string' && pattern.charCodeAt(0) === 33 /* ! */) {
-      const match = nanomatch.match(list, pattern, options);
-
-      match.length > 0 && omit.push(pattern);
-      negated = true;
-    } else {
-      const match = nanomatch.match(list, pattern, options);
-
-      match.length > 0 && keep.push(pattern);
-    }
-  }
-
-  // minimatch.match parity
-  if (negated && keep.length === 0) {
-    if (options && options.unixify === false) {
-      keep = list.slice();
-    } else {
-      const unixify = utils.unixify(options);
-      for (var i = 0; i < list.length; i++) {
-        keep.push(unixify(list[i]));
-      }
-    }
+    match.length > 0 && keep.push(pattern);
   }
 
   const matches = utils.diff(keep, omit);
+
   if (!options || options.nodupes !== false) {
     return utils.unique(matches);
   }
