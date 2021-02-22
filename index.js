@@ -101,7 +101,53 @@ function nanomatch(list, patterns, options) {
  * @return {Array} Returns an array of matched patterns
  * @api public
  */
-nanomatch.matchingPatterns = function(list, pattern, options) {
+nanomatch.matchingPatterns = function(list, patterns, options) {
+  patterns = utils.arrayify(patterns);
+  list = utils.arrayify(list);
+
+  const len = patterns.length;
+  if (list.length === 0 || len === 0) {
+    return [];
+  }
+
+  let negated = false;
+  const omit = [];
+  const keep = [];
+  let idx = -1;
+
+  while (++idx < len) {
+    const pattern = patterns[idx];
+
+    if (typeof pattern === 'string' && pattern.charCodeAt(0) === 33 /* ! */) {
+      const match = nanomatch.match(list, pattern, options);
+
+      match.length > 0 && omit.push(pattern);
+      negated = true;
+    } else {
+      const match = nanomatch.match(list, pattern, options);
+
+      match.length > 0 && keep.push(pattern);
+    }
+  }
+
+  // minimatch.match parity
+  if (negated && keep.length === 0) {
+    if (options && options.unixify === false) {
+      keep = list.slice();
+    } else {
+      const unixify = utils.unixify(options);
+      for (var i = 0; i < list.length; i++) {
+        keep.push(unixify(list[i]));
+      }
+    }
+  }
+
+  const matches = utils.diff(keep, omit);
+  if (!options || options.nodupes !== false) {
+    return utils.unique(matches);
+  }
+
+  return matches;
 }
 
 /**
