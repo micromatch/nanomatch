@@ -17,8 +17,10 @@
   "license": "MIT",
   "files": [
     "index.js",
+    "index.d.ts",
     "lib"
   ],
+  "typings": "index.d.ts",
   "main": "index.js",
   "engines": {
     "node": ">=4.0.0"

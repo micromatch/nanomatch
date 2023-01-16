@@ -552,7 +552,7 @@ nanomatch.matcher = function matcher(pattern, options) {
  * @param {String} `pattern` Glob pattern to use for matching.
  * @param {String} `string` String to match
  * @param {Object} `options` See available [options](#options) for changing how matches are performed
- * @return {Boolean} Returns an array of captures if the string matches the glob pattern, otherwise `null`.
+ * @return {Array|null} Returns an array of captures if the string matches the glob pattern, otherwise `null`.
  * @api public
  */
 
